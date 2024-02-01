@@ -68,8 +68,7 @@
         </td>
         </tr>
         @endforeach
-    </tbody>
-
+    </tbody> 
 </table>
                     <hr class="panel-wide"> 
                     <div class="form-group">
