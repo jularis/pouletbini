@@ -71,8 +71,7 @@
     </tbody>
 
 </table>
-                    <hr class="panel-wide">
-
+                    <hr class="panel-wide"> 
                     <div class="form-group">
                         <button type="submit" class="btn btn--primary btn-block h-45 w-100">@lang('Envoyer')</button>
                     </div>
