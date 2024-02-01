@@ -1,0 +1,52 @@
+{
+           
+    "contact_us": {
+        "builder": true,
+        "no_selection": true,
+        "name": "Contact Us",
+        "content": {
+            "images": {
+                "contact_image": {
+                    "size": "655x615"
+                }
+            },
+            "title": "text",
+            "heading": "text",
+            "sub_heading": "text"
+        }
+    },
+    "contactInfo": {
+        "builder": true,
+        "no_selection": true,
+        "name": "Contact Info",
+        "content": {
+            "address": "text",
+            "mobile": "text",
+            "fax": "text",
+            "email": "text"
+        }
+    },
+    "social_icon": {
+        "builder": true,
+        "no_selection": true,
+        "name": "Social Icons",
+        "element": {
+            "social_icon": "icon",
+            "url": "text",
+            "modal": true
+        }
+    },
+    "footer": {
+        "builder": true,
+        "no_selection": true,
+        "name": "Footer Section",
+        "content": {
+            "images": {
+                "background_image": {
+                    "size": "1920x1080"
+                }
+            },
+            "heading": "text"
+        }
+    }
+}
