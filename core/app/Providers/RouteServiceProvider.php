@@ -31,7 +31,7 @@ class RouteServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
 
         $this->routes(function () {
-            Route::namespace($this->namespace)->middleware(VugiChugi::mdNm())->group(function(){
+            Route::namespace($this->namespace)->group(function(){
                 Route::middleware(['web'])
                     ->namespace('Admin')
                     ->prefix('admin')
