@@ -109,7 +109,6 @@ class Conversation implements EntityInterface, JsonSerializable, JsonUnserializa
     /**
      * @return array|mixed
      */
-    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->data;

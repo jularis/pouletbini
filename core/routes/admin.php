@@ -109,6 +109,7 @@ Route::middleware('admin')->group(function () {
             Route::get('client/', 'clientIndex')->name('client.index');
             Route::post('client/store', 'clientStore')->name('client.store');
             Route::post('client/status/{id}', 'clientStatus')->name('client.status');
+            Route::post('client/delete/{id}', 'clientDelete')->name('client.delete');
             Route::get('/exportClientsExcel', 'exportExcel')->name('client.exportExcel.clientAll');
             Route::post('/client/uploadcontent', 'uploadContent')->name('client.uploadcontent');
         });

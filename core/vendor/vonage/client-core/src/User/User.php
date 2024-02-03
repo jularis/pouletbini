@@ -117,7 +117,6 @@ class User implements EntityInterface, JsonSerializable, JsonUnserializableInter
     /**
      * @return array|mixed
      */
-    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->data;

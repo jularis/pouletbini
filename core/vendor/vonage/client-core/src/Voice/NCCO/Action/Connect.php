@@ -77,7 +77,6 @@ class Connect implements ActionInterface
     /**
      * @return array|mixed
      */
-    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->toNCCOArray();

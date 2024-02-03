@@ -93,12 +93,17 @@ class JoinRelationship
             $callback = null,
             $joinType = 'join',
             $useAlias = false,
-            bool $disableExtraConditions = false
+            bool $disableExtraConditions = false,
+            string $morphable = null
         ) {
             $joinType = JoinsHelper::$joinMethodsMap[$joinType] ?? $joinType;
             $useAlias = is_string($callback) ? false : $useAlias;
             $joinHelper = JoinsHelper::make($this->getModel());
             $callback = $joinHelper->formatJoinCallback($callback);
+
+            $this->getQuery()->beforeQuery(function () use ($joinHelper) {
+                $joinHelper->clear();
+            });
 
             if (is_null($this->getSelect())) {
                 $this->select(sprintf('%s.*', $this->getModel()->getTable()));
@@ -112,13 +117,22 @@ class JoinRelationship
 
             $relation = $this->getModel()->{$relationName}();
             $relationQuery = $relation->getQuery();
-            $alias = $joinHelper->getAliasName($useAlias, $relation, $relationName,
-                $relationQuery->getModel()->getTable(), $callback);
+            $alias = $joinHelper->getAliasName(
+                $useAlias,
+                $relation,
+                $relationName,
+                $relationQuery->getModel()->getTable(),
+                $callback
+            );
 
             if ($relation instanceof BelongsToMany && !is_array($alias)) {
-                $extraAlias = $joinHelper->getAliasName($useAlias, $relation, $relationName,
+                $extraAlias = $joinHelper->getAliasName(
+                    $useAlias,
+                    $relation,
+                    $relationName,
                     $relation->getTable(),
-                    $callback);
+                    $callback
+                );
                 $alias = [$extraAlias, $alias];
             }
 
@@ -141,7 +155,8 @@ class JoinRelationship
                 joinType: $joinType,
                 callback: $callback,
                 alias: $alias,
-                disableExtraConditions: $disableExtraConditions
+                disableExtraConditions: $disableExtraConditions,
+                morphable: $morphable,
             );
 
             return $this;
@@ -254,11 +269,23 @@ class JoinRelationship
                     $relationCallback = $callback[$fullRelationName];
                 }
 
-                $alias = $joinHelper->getAliasName($useAlias, $relation, $relationName,
-                    $relation->getQuery()->getModel()->getTable(), $relationCallback);
+                $alias = $joinHelper->getAliasName(
+                    $useAlias,
+                    $relation,
+                    $relationName,
+                    $relation->getQuery()->getModel()->getTable(),
+                    $relationCallback
+                );
+
                 if ($alias && $relation instanceof BelongsToMany && !is_array($alias)) {
-                    $extraAlias = $joinHelper->getAliasName($useAlias, $relation, $relationName, $relation->getTable(),
-                        $relationCallback);
+                    $extraAlias = $joinHelper->getAliasName(
+                        $useAlias,
+                        $relation,
+                        $relationName,
+                        $relation->getTable(),
+                        $relationCallback
+                    );
+
                     $alias = [$extraAlias, $alias];
                 }
 
@@ -455,7 +482,7 @@ class JoinRelationship
      */
     public function powerJoinHas(): Closure
     {
-        return function ($relation, $operator = '>=', $count = 1, $boolean = 'and', $callback = null): static {
+        return function ($relation, $operator = '>=', $count = 1, $boolean = 'and', Closure|array $callback = null, string $morphable = null): static {
             if (is_null($this->getSelect())) {
                 $this->select(sprintf('%s.*', $this->getModel()->getTable()));
             }
@@ -473,29 +500,30 @@ class JoinRelationship
 
                 $relation = $this->getRelationWithoutConstraintsProxy($relation);
             }
-
-            $relation->performJoinForEloquentPowerJoins($this, 'leftPowerJoin', $callback);
-            $relation->performHavingForEloquentPowerJoins($this, $operator, $count);
+            $relation->performJoinForEloquentPowerJoins($this, 'leftPowerJoin', $callback, morphable: $morphable);
+            $relation->performHavingForEloquentPowerJoins($this, $operator, $count, morphable: $morphable);
             return $this;
         };
     }
 
     public function hasNestedUsingJoins(): Closure
     {
-        return function ($relations, $operator = '>=', $count = 1, $boolean = 'and', Closure $callback = null): static {
+        return function ($relations, $operator = '>=', $count = 1, $boolean = 'and', Closure|array $callback = null): static {
             $relations = explode('.', $relations);
 
             /** @var Relation */
             $latestRelation = null;
 
             foreach ($relations as $index => $relation) {
-                if (!$latestRelation) {
+                $relationName = $relation;
+
+                if (! $latestRelation) {
                     $relation = $this->getRelationWithoutConstraintsProxy($relation);
                 } else {
                     $relation = $latestRelation->getModel()->query()->getRelationWithoutConstraintsProxy($relation);
                 }
 
-                $relation->performJoinForEloquentPowerJoins($this, 'leftPowerJoin', $callback);
+                $relation->performJoinForEloquentPowerJoins($this, 'leftPowerJoin', is_callable($callback) ? $callback : $callback[$relationName] ?? null);
 
                 if (count($relations) === ($index + 1)) {
                     $relation->performHavingForEloquentPowerJoins($this, $operator, $count);

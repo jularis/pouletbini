@@ -1,6 +1,22 @@
 <?php $__env->startSection('panel'); ?>
     <div class="row">
         <div class="col-lg-12">
+        <div class="card b-radius--10 mb-3">
+                <div class="card-body">
+                    <form action="">
+                        <div class="d-flex flex-wrap gap-4">
+                            <div class="flex-grow-1">
+                                <label><?php echo app('translator')->get('Entrer un nom'); ?></label>
+                                <input type="text" name="search" value="<?php echo e(request()->search); ?>" class="form-control">
+                            </div>
+                             
+                            <div class="flex-grow-1 align-self-end">
+                                <button class="btn btn--primary w-100 h-45"><i class="fas fa-filter"></i> <?php echo app('translator')->get('Filtrer'); ?></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
             <div class="card b-radius--10 ">
                 <div class="card-body p-0">
                     <div class="table-responsive--sm table-responsive">
@@ -38,7 +54,7 @@
                                         <td>
                                             <span><?php echo e(__($client->address)); ?></span>
                                         </td>
-                                        <td>
+<td>
                                             <?php if($client->longitude): ?>
                                             <span><a href="https://maps.google.com?daddr=<?php echo e(__($client->latitude)); ?>,<?php echo e(__($client->longitude)); ?>" target="_blank"><i class="fa fa-map-marker"></i> Voir l'itinéraire
     </a></span><?php endif; ?>
@@ -61,7 +77,10 @@
                                                 data-genre="<?php echo e($client->genre); ?>"
                                                 data-phone="<?php echo e($client->phone); ?>"
                                                 data-address="<?php echo e($client->address); ?>"
-                                                data-email="<?php echo e($client->email); ?>"><i
+                                                data-email="<?php echo e($client->email); ?>"
+                                                data-longitude="<?php echo e($client->longitude); ?>"
+                                                data-latitude="<?php echo e($client->latitude); ?>"
+                                                ><i
                                                     class="las la-pen"></i><?php echo app('translator')->get('Edit'); ?></button>
 
                                             <?php if($client->status == Status::DISABLE): ?>
@@ -79,6 +98,12 @@
                                                     <i class="la la-eye-slash"></i><?php echo app('translator')->get("Désactiver"); ?>
                                                 </button>
                                             <?php endif; ?>
+                                            <a href="javascript:void();"
+                                                class="btn btn-sm btn-outline--danger confirmationBtn"
+                                                data-action="<?php echo e(route('admin.livraison.categorie.client.delete', encrypt($client->id))); ?>"
+                                                data-question="<?php echo app('translator')->get('Êtes-vous sûr de supprimer ce client?'); ?>"
+                                                ><i
+                                                    class="las la-trash"></i><?php echo app('translator')->get('Supprimer'); ?></a>
                                         </td>
                                     </tr>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
@@ -111,8 +136,9 @@
                 <form action="<?php echo e(route('admin.livraison.categorie.client.store')); ?>" method="POST">
                     <?php echo csrf_field(); ?>
                     <div class="modal-body">
+                        <input type="hidden" name="id">
                         <div class="form-group">
-                            <label><?php echo app('translator')->get('Nom'); ?></label>
+                            <label><?php echo app('translator')->get('Nom & Prénom(s)'); ?></label>
                             <input type="text" class="form-control" name="name" required>
                         </div>
 
@@ -137,6 +163,20 @@
                             <label><?php echo app('translator')->get('Adresse'); ?></label>
                             <input type="text" class="form-control" name="address" >
                         </div>
+                        <div class="form-group">
+            <?php echo e(Form::label(__('Longitude'), null, ['class' => 'control-label'])); ?> 
+            <?php echo Form::text('longitude', null, array('placeholder' => __('Longitude'),'class' => 'form-control','id'=>'longitude')); ?> 
+    </div>
+    <div class="form-group">
+            <?php echo e(Form::label(__('Latitude'), null, ['class' => 'control-label'])); ?> 
+            <?php echo Form::text('latitude', null, array('placeholder' => __('Latitude'),'class' => 'form-control','id'=>'latitude')); ?> 
+    </div>
+    <div class="form-group">
+            <?php echo e(Form::label(__(''), null, ['class' => 'control-label'])); ?> 
+            <p id="status"></p>
+            <a href="javascript:void(0)" id="find-me" class="btn btn--info">Obtenir les coordonnées GPS</a> 
+    </div>
+                        
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn--primary w-100 h-45 "><?php echo app('translator')->get("Envoyer"); ?></button>
@@ -146,56 +186,8 @@
         </div>
     </div>
 
+ 
 
-    <div id="updateCategorieModel" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><?php echo app('translator')->get('Update Livraison client'); ?></h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Fermer">
-                        <i class="las la-times"></i>
-                    </button>
-                </div>
-                <form action="<?php echo e(route('admin.livraison.categorie.client.store')); ?>" method="POST">
-                    <?php echo csrf_field(); ?>
-                    <input type="hidden" name="id">
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label><?php echo app('translator')->get('Nom'); ?></label>
-                            <input type="text" class="form-control" name="name" placeholder="<?php echo app('translator')->get('Enter Name'); ?>"
-                                required>
-                        </div>
-
-                        <div class="form-group">
-                            <label><?php echo app('translator')->get('Select Categorie'); ?></label>
-                            <select class="form-control" name="genre" required>
-                                <option value=""><?php echo app('translator')->get('Selectionner une Option'); ?></option>
-                                <option value="<?php echo e(__('Homme')); ?>"><?php echo e(__('Homme')); ?></option> 
-                                <option value="<?php echo e(__('Femme')); ?>"><?php echo e(__('Femme')); ?></option> 
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label><?php echo app('translator')->get('Téléphone'); ?></label>
-                            <input type="text" class="form-control" name="phone" required>
-                        </div>
-                        <div class="form-group">
-                            <label><?php echo app('translator')->get('Email'); ?></label>
-                            <input type="text" class="form-control" name="email" >
-                        </div>
-                        <div class="form-group">
-                            <label><?php echo app('translator')->get('Adresse'); ?></label>
-                            <input type="text" class="form-control" name="address" >
-                        </div>
-
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn--primary w-100 h-45"><?php echo app('translator')->get("Envoyer"); ?></button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
     <div id="typeModel" class="modal fade" tabindex="-1" role="dialog" style="z-index: 2147483647 !important;">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -244,7 +236,6 @@
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startPush('breadcrumb-plugins'); ?>
-
     <button class="btn btn-sm btn-outline--primary addCategorie"><i class="las la-plus"></i><?php echo app('translator')->get("Créer un nouveau"); ?></button>
     <a class="btn btn-sm btn-outline--warning addType"><i class="las la-cloud-upload-alt"></i> Importer des clients</a>
 <?php $__env->stopPush(); ?>
@@ -262,13 +253,15 @@
             });
 
             $('.updateCategorie').on('click', function() {
-                var modal = $('#updateCategorieModel');
+                var modal = $('#categorieModel');
                 modal.find('input[name=id]').val($(this).data('id'));
                 modal.find('input[name=name]').val($(this).data('name'));
                 modal.find('input[name=phone]').val($(this).data('phone'));
                 modal.find('input[name=email]').val($(this).data('email'));
                 modal.find('input[name=address]').val($(this).data('address'));
                 modal.find('select[name=genre]').val($(this).data('genre'));
+                modal.find('input[name=latitude]').val($(this).data('latitude'));
+                modal.find('input[name=longitude]').val($(this).data('longitude'));
                 modal.modal('show');
             });
         })(jQuery);

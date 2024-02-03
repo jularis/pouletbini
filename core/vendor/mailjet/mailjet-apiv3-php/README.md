@@ -51,7 +51,7 @@ Check out all the resources and PHP code examples in the [Offical Documentation]
 
 ### Compatibility
 
-This library requires **PHP v5.4** or higher.
+This library requires **PHP v8.1** or higher.
 
 ### Installation
 
@@ -373,6 +373,24 @@ require 'vendor/autoload.php';
 use \Mailjet\Resources;
 $mj = new \Mailjet\Client(getenv('MJ_APIKEY_PUBLIC'), getenv('MJ_APIKEY_PRIVATE'));
 $response = $mj->delete(Resources::$Template, ['id' => $id]);
+$response->success() && var_dump($response->getData());
+?>
+```
+
+```php
+<?php
+/*
+Delete a contact from contact list:
+*/
+require 'vendor/autoload.php';
+use \Mailjet\Resources;
+$mj = new \Mailjet\Client(
+  getenv('MJ_APIKEY_PUBLIC'),
+  getenv('MJ_APIKEY_PRIVATE'),
+  true,
+  ['version' => 'v4']
+);
+$response = $mj->delete(Resources::$Contacts, ['ID' => xxxx]);
 $response->success() && var_dump($response->getData());
 ?>
 ```

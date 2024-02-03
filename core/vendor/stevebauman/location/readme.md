@@ -5,21 +5,9 @@ Retrieve a visitor's location from their IP address using various services.
 </p>
 
 <p align="center">
-<a href="https://github.com/stevebauman/location/actions">
-<img src="https://img.shields.io/github/actions/workflow/status/stevebauman/location/run-tests.yml?branch=master&style=flat-square">
-</a>
-
-<a href="https://scrutinizer-ci.com/g/stevebauman/location/?branch=master">
-<img src="https://img.shields.io/scrutinizer/g/stevebauman/location.svg?style=flat-square">
-</a>
-
-<a href="https://packagist.org/packages/stevebauman/location">
-<img src="https://img.shields.io/packagist/dt/stevebauman/location.svg?style=flat-square">
-</a>
-
-<a href="https://packagist.org/packages/stevebauman/location">
-<img src="https://img.shields.io/packagist/l/stevebauman/location.svg?style=flat-square">
-</a>
+<a href="https://github.com/stevebauman/location/actions"><img src="https://img.shields.io/github/actions/workflow/status/stevebauman/location/run-tests.yml?branch=master&style=flat-square"></a>
+<a href="https://packagist.org/packages/stevebauman/location"><img src="https://img.shields.io/packagist/dt/stevebauman/location.svg?style=flat-square"></a>
+<a href="https://packagist.org/packages/stevebauman/location"><img src="https://img.shields.io/packagist/l/stevebauman/location.svg?style=flat-square"></a>
 </p>
 
 - [Requirements](#requirements)
@@ -87,6 +75,7 @@ Available drivers:
 - [GeoPlugin](http://www.geoplugin.com)
 - [MaxMind](https://www.maxmind.com/en/home)
 - [Cloudflare](https://support.cloudflare.com/hc/en-us/articles/200168236-Configuring-IP-geolocation)
+- [IP2Location.io](https://www.ip2location.io/)
 
 #### Setting up MaxMind with a self-hosted database (optional)
 
@@ -151,7 +140,7 @@ Then, insert your driver class name into the configuration file:
 ```php
 // config/location.php
 
-'driver' => App\Locations\MyDriver::class,
+'driver' => App\Location\Drivers\MyDriver::class,
 ```
 
 ## Upgrading from v6

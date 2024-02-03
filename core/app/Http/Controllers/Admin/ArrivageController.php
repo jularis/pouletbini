@@ -90,6 +90,7 @@ class ArrivageController extends Controller
             $arrivage = new Arrivage();  
         }
         $arrivage->total_poulet = $request->total;
+        $arrivage->total_restant = $request->total;
         $arrivage->date_arrivage =  $request->date_arrivage;
         //Verification de l'existance du numero de bande
         $verif = Bande::where([['ferme_id',$request->ferme],['numero_bande',$request->bande]])->first();
@@ -124,6 +125,7 @@ class ArrivageController extends Controller
                     $produit = new Produit();
                     $produit->arrivage_id = $id;
                     $produit->quantity = $qte;
+                    $produit->quantity_restante = $qte;
                     $produit->categorie_id = $categorie[$key];
                     $produit->price = $price[$key];
                     $produit->name = $unit->name.'-'.$categ->name;

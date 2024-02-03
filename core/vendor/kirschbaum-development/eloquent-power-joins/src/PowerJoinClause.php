@@ -9,6 +9,7 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PowerJoinClause extends JoinClause
 {
@@ -36,14 +37,8 @@ class PowerJoinClause extends JoinClause
 
     /**
      * Create a new join clause instance.
-     *
-     * @param  \Illuminate\Database\Query\Builder  $parentQuery
-     * @param  string  $type
-     * @param  string  $table
-     * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @return void
      */
-    public function __construct(Builder $parentQuery, $type, $table, Model $model = null)
+    public function __construct(Builder $parentQuery, $type, string $table, Model $model = null)
     {
         parent::__construct($parentQuery, $type, $table);
 
@@ -93,6 +88,10 @@ class PowerJoinClause extends JoinClause
         foreach ($this->model->getGlobalScopes() as $scope) {
             if ($scope instanceof Closure) {
                 $scope->call($this, $this);
+                continue;
+            }
+
+            if ($scope instanceof SoftDeletingScope) {
                 continue;
             }
 
@@ -200,7 +199,7 @@ class PowerJoinClause extends JoinClause
      */
     public function withTrashed(): self
     {
-        if (! in_array(SoftDeletes::class, class_uses_recursive($this->getModel()))) {
+        if (! $this->getModel() || ! in_array(SoftDeletes::class, class_uses_recursive($this->getModel()))) {
             return $this;
         }
 
@@ -220,7 +219,7 @@ class PowerJoinClause extends JoinClause
      */
     public function onlyTrashed(): self
     {
-        if (! in_array(SoftDeletes::class, class_uses_recursive($this->getModel()))) {
+        if (! $this->getModel() || ! in_array(SoftDeletes::class, class_uses_recursive($this->getModel()))) {
             return $this;
         }
 
@@ -238,6 +237,10 @@ class PowerJoinClause extends JoinClause
     public function __call($name, $arguments)
     {
         $scope = 'scope' . ucfirst($name);
+
+        if (! $this->getModel()) {
+            return;
+        }
 
         if (method_exists($this->getModel(), $scope)) {
             return $this->getModel()->{$scope}($this, ...$arguments);

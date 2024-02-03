@@ -10,9 +10,9 @@
                             <thead>
                                 <tr>
                                     <th>@lang('Categorie')</th>
-                                    <th>@lang('Nom')</th> 
-                                    <th>@lang('Quantite')</th>
+                                    <th>@lang('Nom')</th>  
                                     <th>@lang('Prix Unitaire')</th> 
+                                    <th>@lang('Quantite')</th>
                                     <th>@lang('Quantite Utilisée')</th>
                                     <th>@lang('Quantite Restante')</th>
                                     <th>@lang('Status')</th> 
@@ -29,17 +29,18 @@
                                         <td>
                                             <span class="fw-bold">{{ __($produit->name) }}</span>
                                         </td>
-                                        <td>
-                                            <span class="fw-bold">{{ showAmount($produit->quantity) }}</span>
-                                        </td>
+                                        
                                         <td>
                                             <span>{{ showAmount($produit->price) }} {{ __($general->cur_text) }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="fw-bold">{{ showAmount($produit->quantity) }}</span>
                                         </td>
                                         <td>
                                             <span class="fw-bold">{{ showAmount($produit->quantity_use) }}</span>
                                         </td> 
                                         <td>
-                                            <span class="fw-bold">{{ showAmount($produit->quantity - $produit->quantity_use) }}</span>
+                                            <span class="fw-bold">{{ showAmount($produit->quantity_restante) }}</span>
                                         </td> 
                                         <td>
                                             @php

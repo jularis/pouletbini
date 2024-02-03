@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Unite;
 use App\Models\Client;
 use App\Models\Magasin;
 use App\Models\Produit;
 use App\Constants\Status;
 use App\Models\Categorie;
 use Illuminate\Http\Request;
+use App\Imports\ClientImport;
 use App\Models\LivraisonInfo;
 use App\Models\LivraisonPayment;
 use App\Models\LivraisonProduct;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Imports\ClientImport;
-use App\Models\Unite;
-use Excel;
+use Maatwebsite\Excel\Facades\Excel;
 
 class LivraisonSettingController extends Controller
 {
@@ -82,7 +82,7 @@ class LivraisonSettingController extends Controller
     public function clientIndex()
     {
         $pageTitle = "Gestion des Clients"; 
-        $clients     = Client::orderBy('name')->paginate(getPaginate());
+        $clients     = Client::searchable(['name', 'genre','email','phone','address'])->orderBy('id','desc')->paginate(getPaginate());
         return view('admin.categorie.client', compact('pageTitle', 'clients'));
     }
 
@@ -106,6 +106,13 @@ class LivraisonSettingController extends Controller
         $client->address   = $request->address;
         $client->save();
         $notify[] = ['success', isset($message) ? $message  : 'Client a été ajouté avec succès'];
+        return back()->withNotify($notify);
+    }
+
+    public function clientDelete($id)
+    { 
+        Client::where('id', decrypt($id))->delete();
+        $notify[] = ['success', 'Le client supprimé avec succès'];
         return back()->withNotify($notify);
     }
 

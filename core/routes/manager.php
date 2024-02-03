@@ -57,6 +57,7 @@ Route::middleware('auth')->group(function () {
             Route::controller('LivraisonController')->name('livraison.')->prefix('livraison')->group(function () {
                 Route::get('send', 'create')->name('create');
                 Route::post('store', 'store')->name('store');
+                Route::get('get/produit', 'getProduit')->name('get.produit');
                 Route::post('update/{id}', 'update')->name('update');
                 Route::get('edit/{id}', 'edit')->name('edit');
                 Route::get('details/{id}', 'details')->name('details');
@@ -100,6 +101,7 @@ Route::middleware('auth')->group(function () {
                     Route::get('client/', 'clientIndex')->name('client.index');
                     Route::post('client/store', 'clientStore')->name('client.store');
                     Route::post('client/status/{id}', 'clientStatus')->name('client.status');
+                    Route::post('client/delete/{id}', 'clientDelete')->name('client.delete');
                     Route::get('/exportClientsExcel', 'exportExcel')->name('client.exportExcel.clientAll');
                     Route::post('/client/uploadcontent', 'uploadContent')->name('client.uploadcontent');
                 }); 

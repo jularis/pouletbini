@@ -100,6 +100,12 @@
                                                     <i class="la la-eye-slash"></i>@lang("Désactiver")
                                                 </button>
                                             @endif
+                                            <a href="javascript:void();"
+                                                class="btn btn-sm btn-outline--danger confirmationBtn"
+                                                data-action="{{ route('manager.livraison.categorie.client.delete', encrypt($client->id)) }}"
+                                                data-question="@lang('Êtes-vous sûr de supprimer ce client?')"
+                                                ><i
+                                                    class="las la-trash"></i>@lang('Supprimer')</a>
                                         </td>
                                     </tr>
                                 @empty

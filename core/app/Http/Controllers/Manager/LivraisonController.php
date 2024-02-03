@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Manager;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\AdminNotification;
+use App\Models\Arrivage;
+use App\Models\Bande;
 use App\Models\Client;
 use App\Models\LivraisonInfo;
 use App\Models\LivraisonPayment;
@@ -22,10 +24,11 @@ class LivraisonController extends Controller
     {
         $pageTitle = 'Enregistrer une Livraison';
         $staff = auth()->user();
-        $magasins = Magasin::active()->orderBy('name')->get();
-        $produits = Produit::active()->with('categorie')->orderBy('name')->get();
+        $magasins = Magasin::active()->orderBy('name')->get(); 
         $clients = Client::active()->orderBy('name')->get();
         $staffs = User::active()->where('user_type','staff')->with('magasin')->orderBy('lastname')->get();
+        $produits = Produit::joinRelationship('arrivage')->where('quantity_restante','>',0)->groupby('bande_id')->with('arrivage.bande')->get();
+         
         return view('manager.livraison.create', compact('pageTitle', 'magasins', 'produits','clients','staffs'));
     }
 
@@ -33,19 +36,19 @@ class LivraisonController extends Controller
     {
         
         $request->validate([
-            'magasin'           => 'required|exists:magasins,id',
-            'staff'           => 'required|exists:users,id', 
-            'sender_name'      => 'required|max:255',
-            'sender_email'     => 'required|email|max:255',
-            'sender_phone'     => 'required|string|max:255', 
-            'receiver_name'    => 'required|max:255', 
-            'receiver_phone'   => 'required|string|max:255',
+            'magasin' => 'required|exists:magasins,id',
+            'staff' => 'required|exists:users,id', 
+            'sender_name' => 'required|max:255',
+            'sender_email' => 'required|email|max:255',
+            'sender_phone' => 'required|string|max:255', 
+            'receiver_name' => 'required|max:255', 
+            'receiver_phone' => 'required|string|max:255',
             'receiver_address' => 'required|max:255',
-            'items'            => 'required|array',
-            'items.*.produit'     => 'required|integer|exists:produits,id',
-            'items.*.quantity' => 'required|numeric|gt:0',
-            'items.*.amount'   => 'required|numeric|gt:0',
-            'items.*.name'     => 'nullable|string',
+            'quantite' => 'required|array',
+            'unite' => 'required|array',
+            'categorie' => 'required|array',
+            'price' => 'required|array',
+            'produit' => 'required|array',
             'estimate_date'    => 'required|date|date_format:Y-m-d|after_or_equal:today',
             'payment_status'   => 'required|integer|in:0,1',
         ]);
@@ -75,7 +78,7 @@ class LivraisonController extends Controller
             $client->phone     = $request->receiver_phone;
             $client->address   = $request->receiver_address;
             $client->save();
-            $livraison->receiver_client_id    = $client->id; 
+            $livraison->receiver_client_id = $client->id; 
         }else{
             $client = Client::find($request->client);
             $client->name      = $request->receiver_name;
@@ -94,31 +97,60 @@ class LivraisonController extends Controller
         $livraison->save();
 
         $subTotal = 0;
-        
+        $quantite = $request->quantite;
+        $unite = $request->unite;
+        $categorie = $request->categorie;
+        $prix = $request->price;
+        $produit = $request->produit;
+
         $data = [];
-        foreach ($request->items as $item) {
-            $livraisonProduit = Produit::where('id', $item['produit'])->first();
-            if (!$livraisonProduit) {
+        foreach($request->quantite as $arrivageId => $categorieId) {
+            $categorieArray = array_filter($categorieId);
+            
+            foreach($categorieArray as $categorieId => $total) {
+               
+            $qte = $total; 
+             
+            if($qte==null){
                 continue;
             }
-            $price = $livraisonProduit->price * $item['quantity'];
+
+            $price = $prix[$arrivageId][$categorieId] * $qte;
+            $catId = $categorie[$arrivageId][$categorieId];
+            $uniteId = $unite[$arrivageId][$categorieId];
+            $produitId= $produit[$arrivageId][$categorieId];
             $subTotal += $price;
 
-            $data[] = [
-                'livraison_info_id' => $livraison->id,
-                'livraison_produit_id' => $livraisonProduit->id,
-                'qty'             => $item['quantity'], 
-                'fee'             => $price,
-                'type_price'      => $livraisonProduit->price,
-                'created_at'      => now(),
-            ];
-
-            $livraisonProduit->quantity = $livraisonProduit->quantity - $item['quantity'];
-            $livraisonProduit->quantity_use = $livraisonProduit->quantity_use + $item['quantity'];
+            $livraisonProduit = new LivraisonProduct();
+            $livraisonProduit->livraison_info_id = $livraison->id;
+            $livraisonProduit->livraison_produit_id = $produitId;
+            $livraisonProduit->qty = $qte;
+            $livraisonProduit->fee = $price;
+            $livraisonProduit->type_price = $prix[$arrivageId][$categorieId];
             $livraisonProduit->save();
-        }
+            
+            if($livraisonProduit->id !=null){
+                $product = Produit::where('id',$produitId)->first();
+                if($product !=null)
+                { 
+                    $product->quantity_use = $product->quantity_use + $qte;
+                    $product->quantity_restante = $product->quantity_restante - $qte;
+                    $product->save();
+                }
 
-        LivraisonProduct::insert($data);
+                // $arrivage = Arrivage::where('id',$arrivageId)->first();
+                // if($arrivage !=null)
+                // { 
+                //     $arrivage->total_restant = $product->total_restant - $qte;
+                //     $arrivage->quantity_restante = $product->quantity_restante - $qte;
+                //     $arrivage->save();
+                // }
+                
+            }
+        }
+ 
+        }
+ 
 
         $discount                        = $request->discount ?? 0;
         // $discountAmount                  = ($subTotal / 100) * $discount;
@@ -151,6 +183,65 @@ class LivraisonController extends Controller
 
         $notify[] = ['success', 'La livraison a été ajoutée avec succès'];
         return to_route('manager.livraison.invoice', encrypt($livraison->id))->withNotify($notify);
+    }
+
+    public function getProduit()
+    { 
+        $totalrecu = 0;  
+        
+        if(request()->bande !=null){
+
+        $arrivages = Produit::joinRelationship('arrivage')->whereIn('bande_id', request()->bande)->where('quantity_restante','>',0)->get();  
+
+        if (count($arrivages)) {
+
+                        $somme = 0;
+
+                        $results = '';
+
+                        $i = 0;
+                        $k = 1;
+                        $totalrecu = 0;
+                         
+                        foreach($arrivages as $data) { 
+
+                            $s = 1;  
+                                if($data->quantity_restante==0){
+                                    continue;
+                                } 
+                                $totalrecu +=$data->quantity_restante;
+                                $results .= '<tr class="single-item"><td><input type="hidden" name="produit[' . $data->arrivage_id . '][' . $data->categorie_id . ']" value="' . $data->id . '"><input type="hidden" name="unite[' . $data->arrivage_id . '][' . $data->categorie_id . ']" value="' . $data->categorie->unite_id . '">' . $data->categorie->unite->name . '</td>';
+                                $results .= '<td><input type="hidden" name="categorie[' . $data->arrivage_id . '][' . $data->categorie_id . ']" value="' . $data->categorie_id . '"/>' . $data->categorie->name . '</td>';
+                                $results .= '<td><button class="btn btn-info" type="button">'. $data->arrivage->bande->numero_bande . '</button></td>';
+                                $results .= '<td><input type="hidden" name="price[' . $data->arrivage_id . '][' . $data->categorie_id . ']" value="' . $data->price . '" class="price" />' . $data->price . '</td>';
+                                $results .= '<td><input type="hidden" name="quantiteinitiale['. $data->arrivage_id .']['. $data->categorie_id .']"  value="' . $data->quantity_restante. '" /><button class="btn btn-danger" type="button">' . $data->quantity_restante . '</button></td>';
+                                $results .= '<td><div class="input-group"><input type="number" name="quantite[' . $data->arrivage_id . '][' . $data->categorie_id . ']" min="0" max="' . $data->quantity_restante . '" value="0" id="qte-' . $k . '"  class="form-control totaux quantity-' . $i . ' st-' . $s . '" onchange=getQuantite(' . $i . ',' . $k . ',' . $s . ') ></div></td>'; 
+                                $k++;
+                                $s++;
+                                $i++;
+                                $results .= '</tr>';
+                           
+                        }
+ 
+        } else {
+            $results = '<span style="
+                text-align: center;
+                color: #f70000;
+                font-weight: bold;
+            ">Aucun arrivage de produits n\'est disponible!</span>';
+        }
+    }else {
+            $results = '<span style="
+                text-align: center;
+                color: #f70000;
+                font-weight: bold;
+            ">Veuillez choisir un numero de bande.</span>';
+        }
+
+        $contents['tableau'] = $results;
+        $contents['total'] = $totalrecu;
+
+        return $contents;
     }
 
     public function update(Request $request, $id)

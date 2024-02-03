@@ -90,7 +90,7 @@
                                     <div class="row">
                                     <div class="form-group col-lg-12">
                                             <label>@lang('Selectionner Staff')</label>
-                                            <select class="form-control" name="staff" id="staff" onchange="getStaff()" required>
+                                            <select class="form-control select2-basic" name="staff" id="staff" onchange="getStaff()" required>
                                                 <option value>@lang('Selectionner une Option')</option>
                                                 @foreach($staffs as $staff)
                                                 <option value="{{$staff->id}}" @selected(old('staff') ==$staff->id) data-chained="{{ $staff->magasin_id }}" data-name="{{__($staff->firstname)}} {{__($staff->lastname)}}" data-phone="{{__($staff->mobile)}}" data-email="{{__($staff->email)}}" data-address="{{__($staff->address)}}">{{__($staff->lastname)}} {{__($staff->firstname)}}</option>
@@ -130,53 +130,45 @@
                     <div class="row mb-30">
                         <div class="col-lg-12">
                             <div class="card border--primary mt-3">
-                                <h5 class="card-header bg--primary text-white">@lang('Informations de Livraison')
-                                    <button type="button" class="btn btn-sm btn-outline-light float-end addUserData"><i
-                                            class="la la-fw la-plus"></i>@lang("Ajouter un nouveau")
-                                    </button>
-                                </h5>
-                                <div class="card-body">
-                                    <div class="row" id="addedField">
-                                        @if (old('items'))
-                                            @foreach (old('items') as $item)
-                                            <div class="row single-item gy-2">
-                                                <div class="col-md-4">
-                                                    <select class="form-control selected_type" name="items[{{ $loop->index}}][produit]" required>
-                                                        <option disabled selected value="">@lang('Selectionner Produit')</option>
-                                                        @foreach($produits as $produit)
-                                                            <option value="{{$produit->id}}" @if($produit->quantity==0) disabled @endif  
-                                                                @selected($item['produit']==$produit->id)
-                                                                data-categorie="{{$produit->categorie->name}}" 
-                                                                data-quantity="{{$produit->quantity}}" 
-                                                                data-price="{{ getAmount($produit->price)}}"  >
-                                                                {{__($produit->name)}}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                </div> 
-                                                <div class="col-md-4">
-                                                    <div class="input-group mb-3">
-                                                    
-                                                        <input type="number" class="form-control quantity" value="{{$item['quantity']}}"  name="items[{{ $loop->index }}][quantity]"
-                                                        min="1" max="" required>
-                                                        <span class="input-group-text categorie"><i class="las la-balance-scale"></i></span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="input-group">
-                                                        <input type="text"  class="form-control single-item-amount" value="{{$item['amount']}}"  name="items[{{ $loop->index }}][amount]" required readonly>
-                                                        <span class="input-group-text">{{__($general->cur_text)}}</span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-1">
-                                                    <button class="btn btn--danger w-100 removeBtn w-100 h-45" type="button">
-                                                        <i class="fa fa-times"></i>
-                                                    </button>
-                                                </div>
+                            <div class="card-header bg--primary">
+                            
+                            <div class="form-group row">
+                            <div class="col-xs-12 col-sm-8">
+                            <h5 class="text-white">@lang('Informations de Livraison')</h5>
+                            </div>
+                        <div class="col-xs-12 col-sm-4">
+                        <label class="control-label">@lang('NUMERO DE BANDE')</label>
+                                <select class="form-control select2-multi-select float-end" name="bande[]" id="bande" multiple required> 
+                                                @foreach($produits as $produit)
+                                                <option value="{{$produit->arrivage->bande_id}}" @selected(in_array(@$produit->arrivage->bande_id, @request()->bande ?? array()))>{{__($produit->arrivage->bande->numero_bande)}}</option>
+                                                @endforeach
+                                            </select>
                                             </div>
-                                            @endforeach
-                                        @endif
-                                    </div>
+                    </div>
+                                
+          </div>
+                                
+                                <div class="card-body">
+                                    <div class="row">
+                                    <input type="hidden" name="total" id="total" class="form-control" />
+                                    <input type="hidden" name="qtecommande" id="qtecommande" class="form-control" />
+                                    <input type="hidden" name="somme" id="somme" class="form-control" />
+                                    <table class="table table-striped table-bordered">
+                                    <thead>
+                                        <tr>
+                        <th>Unite</th>
+                        <th>Categorie</th>
+                        <th>Numero de Bande</th>
+                        <th>Prix unitaire</th>
+                        <th>Quantité initiale</th>
+                        <th>Quantité commandée</th>
+                         </tr></thead> 
+                                <tbody id="listeproduits" style="text-align: center;">
+
+                                </tbody>
+                            </table>
+
+                                    </div><br><br>
                                     <div class="border-line-area">
                                         <h6 class="border-line-title">@lang('Resume')</h6>
                                     </div>
@@ -279,106 +271,94 @@
         }
         
     }
-    (function ($) {
+    $('#bande').change(function() {
 
+var urlsend = '{{ route('manager.livraison.get.produit') }}';
 
-        $('.addUserData').on('click', function () {
-            let length=$("#addedField").find('.single-item').length;
-            let html = `
-            <div class="row single-item gy-2">
-                <div class="col-md-4">
-                    <select class="form-control selected_type" name="items[${length}][produit]" required>
-                        <option disabled selected value="">@lang('Selectionner Produit')</option>
-                        @foreach($produits as $produit)
-                            <option value="{{$produit->id}}" @if($produit->quantity==0) disabled @endif
-                            data-categorie="{{$produit->categorie->name}}" data-quantity="{{$produit->quantity}}" data-price={{ getAmount($produit->price)}} >{{__($produit->name)}}</option>
-                        @endforeach
-                    </select>
-                </div> 
-                <div class="col-md-4">
-                    <div class="input-group mb-3">
-                    
-                        <input type="number" class="form-control quantity" placeholder="@lang('Quantite')" disabled min="1" max="" name="items[${length}][quantity]"  required>
-                        <span class="input-group-text categorie"><i class="las la-balance-scale"></i></span>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="input-group">
-                        <input type="text"  class="form-control single-item-amount" placeholder="@lang('Entrer le prix')" name="items[${length}][amount]" required readonly>
-                        <span class="input-group-text">{{__($general->cur_text)}}</span>
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <button class="btn btn--danger w-100 removeBtn w-100 h-45" type="button">
-                        <i class="fa fa-times"></i>
-                    </button>
-                </div>
-            </div>`;
-            $('#addedField').append(html)
-        });
+$.ajax({
+    type: 'GET',
+    url: urlsend,
+    data: $('#flocal').serialize(),
+    success: function(html) {
+        $('#listeproduits').html(html.tableau);
+        $("#total").val(html.total);
+        $("#qtecommande").val(html.total);
+        $("#somme").val(0);
+    }
 
-        $('#addedField').on('change', '.selected_type', function (e) {
-            let categorie = $(this).find('option:selected').data('categorie');
-            let parent = $(this).closest('.single-item');
-            $(parent).find('.quantity').attr('disabled', false);
-            let quantity = $(this).find('option:selected').data('quantity');
-            $(parent).find('.quantity').attr({
-              "max" : quantity,       
-              "min" : 1      
+});
+});
+let discount=0;
+function getQuantite(id, k, s)
+{
+update_amounts(id, k, s);
+calculation();
+}
+function update_amounts(id, k, s) {
+            let total = $('#total').val();
+            var sum = 0;
+            let qtecommande = parseInt($('#qtecommande').val());
+            let max = $('.quantity-' + id).attr('max');
+
+            let quantite = 0;
+            let somme = 0;
+ 
+
+            $('.quantity-' + id).each(function() {
+                var qty = $(this).val();
+                quantite = parseInt(quantite) + parseInt(qty);
+                //  if(quantite>max){
+                //     $('#qte-'+k).val(0); 
+                //     } 
             });
-            $(parent).find('.categorie').html(`${categorie+'('+quantity+')' || '<i class="las la-balance-scale"></i>'}`); 
-            calculation();
-        });
 
-        $('#addedField').on('click', '.removeBtn', function (e) {
-            let length=$("#addedField").find('.single-item').length;
-            if(length <= 1){
-                notify('warning',"@lang('At least one item required')");
-            }else{
-                $(this).closest('.single-item').remove();
+            $('.totaux').each(function() {
+                var nb = $(this).val();
+                // update Quantite survecue 
+                sum = parseInt(sum) + parseInt(nb);
+            });
+
+            if (sum > total) {
+                $('#qte-' + k).val(0);
+                $('.totaux').each(function() {
+                    var nb = $(this).val();
+                    sum = parseInt(sum) + parseInt(nb);
+                });
+            } else {
+                $('#qtecommande').val(sum);
             }
-            calculation();
-        });
+            for (let i = 1; i < 6; i++) {
+                var soustotal = 0;
 
-        let discount=0;
+                $('.st-' + i).each(function() {
+                    var nb = $(this).val();
+                    soustotal = parseInt(soustotal) + parseInt(nb);
 
-        $('.discount').on('input',function (e) {
-            this.value = this.value.replace(/^\.|[^\d\.]/g, '');
+                });
+                $('#soustotal-' + i).val(soustotal);
 
-             discount=parseFloat($(this).val() || 0);
-            //  if(discount >=100){
-            //     discount=100;
-            //     notify('warning',"@lang('Discount can not bigger than 100 %')");
-            //     $(this).val(discount);
-            //  }
-            calculation();
-        });
-
-        $('#addedField').on('input', '.quantity', function (e) {
-            this.value = this.value.replace(/^\.|[^\d\.]/g, '');
-
-            let quantity = $(this).val();
-            if (quantity <= 0) {
-                quantity = 0;
             }
-            quantity=parseFloat(quantity);
 
-            let parent   = $(this).closest('.single-item');
-            let price    = parseFloat($(parent).find('.selected_type option:selected').data('price') || 0);
-            let subTotal = price*quantity;
+            $("#qtecommande").attr({
+                "max": total,
+                "min": 0
+            });
+        }
+        
 
-            $(parent).find('.single-item-amount').val(subTotal.toFixed(2));
+$('.discount').on('input',function (e) {
+    this.value = this.value.replace(/^\.|[^\d\.]/g, '');
+    discount=parseFloat($(this).val() || 0); 
 
-            calculation()
-        });
-
+    calculation();
+});
         function calculation ( ) {
-            let items    = $('#addedField').find('.single-item');
+            let items    = $('#listeproduits').find('.single-item');
             let subTotal = 0;
 
             $.each(items, function (i, item) {
-                let price = parseFloat($(item).find('.selected_type option:selected').data('price') || 0);
-                let quantity = parseFloat($(item).find('.quantity').val() || 0);
+                let price = parseFloat($(item).find('.price').val() || 0);
+                let quantity = parseFloat($(item).find('.totaux').val() || 0);
                 
                 subTotal+=price*quantity;
             });
@@ -387,7 +367,7 @@
 
             // let discountAmount = (subTotal/100)*discount;
             let discountAmount = discount;
-            let total          = subTotal-discountAmount;
+            let total = subTotal-discountAmount;
 
             $('.subtotal').text(subTotal.toFixed(2));
             $('.total').text(total.toFixed(2));
@@ -398,12 +378,6 @@
             dateFormat: 'yyyy-mm-dd',
             minDate   : new Date()
         });
-
-        @if(old('items'))
-            calculation();
-        @endif
-
-    })(jQuery);
 </script>
 @endpush
 

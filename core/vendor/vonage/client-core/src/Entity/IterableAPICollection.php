@@ -185,7 +185,6 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
      * @throws ClientException\Request
      * @throws ClientException\Server
      */
-    #[\ReturnTypeWillChange]
     public function current()
     {
         if (is_null($this->current)) {
@@ -208,7 +207,6 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
      *
      * @return string
      */
-    #[\ReturnTypeWillChange]
     public function key()
     {
         return

@@ -1,14 +1,13 @@
 ## Maintainers
 
 If you have any problems with our library, feel free to reach out to our
-maintainer.
-
-* [James Seconde](https://github.com/secondejk)
-
-### Past Maintainers
+maintainers.
 
 * [Chris Tankersley](https://github.com/dragonmantank)
 * [Lorna Jane Mitchell](https://github.com/lornajane)
+
+### Past Maintainers
+
 * [Tim Lytle](https://github.com/tjlytle)
 * [Micheal Heap](https://github.com/mheap)
 

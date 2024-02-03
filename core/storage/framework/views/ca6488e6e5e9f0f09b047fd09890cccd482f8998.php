@@ -79,11 +79,9 @@
         </td>
         </tr>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-    </tbody>
-
+    </tbody> 
 </table>
-                    <hr class="panel-wide">
-
+                    <hr class="panel-wide"> 
                     <div class="form-group">
                         <button type="submit" class="btn btn--primary btn-block h-45 w-100"><?php echo app('translator')->get('Envoyer'); ?></button>
                     </div>

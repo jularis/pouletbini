@@ -28,7 +28,6 @@ abstract class AbstractCredentials implements CredentialsInterface
         return isset($this->credentials[$offset]);
     }
 
-    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->credentials[$offset];

@@ -142,7 +142,6 @@ class Config implements
         return isset($this->data[$offset]);
     }
 
-    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         trigger_error(

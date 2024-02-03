@@ -22,7 +22,7 @@ class LivraisonSettingController extends Controller
     public function categorieIndex()
     {
         $pageTitle = "Gestion Categorie";
-        $categories     = Categorie::orderBy('name')->paginate(getPaginate());
+        $categories     = Categorie::with('unite')->orderBy('name')->paginate(getPaginate());
         return view('manager.categorie.categorie', compact('pageTitle', 'categories'));
     }
 
@@ -47,7 +47,7 @@ class LivraisonSettingController extends Controller
     {
         $pageTitle = "Gestion des Produits";
         $categories     = Categorie::active()->orderBy('name')->get();
-        $produits     = Produit::orderBy('name')->with('categorie')->paginate(getPaginate());
+        $produits     = Produit::orderBy('name')->where('quantity_restante','>',0)->with('categorie')->paginate(getPaginate());
         return view('manager.categorie.produit', compact('pageTitle', 'produits', 'categories'));
     }
 
@@ -104,6 +104,13 @@ class LivraisonSettingController extends Controller
         $notify[] = ['success', isset($message) ? $message  : 'Client a été ajouté avec succès'];
         return back()->withNotify($notify);
     }
+    public function clientDelete($id)
+    { 
+        Client::where('id', decrypt($id))->delete();
+        $notify[] = ['success', 'Le client supprimé avec succès'];
+        return back()->withNotify($notify);
+    }
+
     public function exportExcel()
     { 
         $filename = 'clients-' . gmdate('dmYhms') . '.xlsx';

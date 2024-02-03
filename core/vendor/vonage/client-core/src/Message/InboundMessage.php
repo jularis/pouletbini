@@ -210,7 +210,6 @@ class InboundMessage implements MessageInterface, ArrayAccess, ArrayHydrateInter
      *
      * @throws Exception
      */
-    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         trigger_error(
