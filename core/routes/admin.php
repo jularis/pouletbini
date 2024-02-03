@@ -98,6 +98,11 @@ Route::middleware('admin')->group(function () {
     Route::controller('LivraisonSettingController')->name('livraison.')->prefix('livraison')->group(function () {
 
         Route::name('categorie.')->prefix('manage')->group(function () {
+
+            Route::get('unite', 'uniteIndex')->name('unite.index');
+            Route::post('unite/store', 'uniteStore')->name('unite.store');
+            Route::post('status/status/{id}', 'uniteStatus')->name('unite.status');
+
             Route::get('categorie', 'categorieIndex')->name('index');
             Route::post('categorie/store', 'categorieStore')->name('store');
             Route::post('status/{id}', 'status')->name('status');

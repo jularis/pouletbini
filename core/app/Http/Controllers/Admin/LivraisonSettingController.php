@@ -19,6 +19,29 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class LivraisonSettingController extends Controller
 {
+    public function uniteIndex()
+    {
+        $pageTitle = "Gestion des Unités";
+        $unites = Unite::paginate(getPaginate()); 
+        return view('admin.categorie.unite', compact('pageTitle', 'unites'));
+    }
+
+    public function uniteStore(Request $request)
+    {
+        $request->validate([
+            'name' => 'required', 
+        ]);
+        if ($request->id) {
+            $unite    = Unite::findOrFail($request->id);
+            $message = 'Unite a été mise à jour avec succès';
+        } else {
+            $unite = new Unite();
+        }
+        $unite->name   = $request->name; 
+        $unite->save();
+        $notify[] = ['success', isset($message) ? $message : 'Unite a été ajouté avec succès'];
+        return back()->withNotify($notify);
+    }
 
     public function categorieIndex()
     {
@@ -140,6 +163,10 @@ class LivraisonSettingController extends Controller
     public function clientStatus($id)
     {
         return Client::changeStatus($id);
+    }
+    public function uniteStatus($id)
+    {
+        return Unite::changeStatus($id);
     }
     public function magasinIncome()
     {

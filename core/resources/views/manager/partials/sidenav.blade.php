@@ -23,27 +23,27 @@
                 <li class="sidebar-menu-item sidebar-dropdown">
                     <a href="javascript:void(0)" class="{{ menuActive('manager.livraison.categorie.*', 3) }}">
                         <i class="menu-icon las la-tasks"></i>
-                        <span class="menu-title">{{ __($general->site_name) }} @lang('Setting')</span>
+                        <span class="menu-title">@lang('Paramètres')</span>
                     </a>
                     <div class="sidebar-submenu {{ menuActive('manager.livraison.categorie.*', 2) }} ">
                         <ul>
                             <li class="sidebar-menu-item {{ menuActive('manager.livraison.categorie.index') }} ">
                                 <a href="{{ route('manager.livraison.categorie.index') }}" class="nav-link">
                                     <i class="menu-icon las la-dot-circle"></i>
-                                    <span class="menu-title">@lang('Gestion Categorie')</span>
+                                    <span class="menu-title">@lang('Gestion Categories')</span>
                                 </a>
                             </li>
 
                             <li class="sidebar-menu-item {{ menuActive('manager.livraison.categorie.produit.index') }} ">
                                 <a href="{{ route('manager.livraison.categorie.produit.index') }}" class="nav-link">
                                     <i class="menu-icon las la-dot-circle"></i>
-                                    <span class="menu-title">@lang('Gestion Produit')</span>
+                                    <span class="menu-title">@lang('Gestion Produits')</span>
                                 </a>
                             </li>
                             <li class="sidebar-menu-item {{ menuActive('manager.livraison.categorie.client.index') }} ">
                                 <a href="{{ route('manager.livraison.categorie.client.index') }}" class="nav-link">
                                     <i class="menu-icon las la-dot-circle"></i>
-                                    <span class="menu-title">@lang('Gestion Client')</span>
+                                    <span class="menu-title">@lang('Gestion Clients')</span>
                                 </a>
                             </li>
                         </ul>

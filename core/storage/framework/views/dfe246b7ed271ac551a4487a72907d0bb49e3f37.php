@@ -56,29 +56,35 @@
                     </div>
                 </li>
                 <li class="sidebar-menu-item sidebar-dropdown">
-                    <a href="javascript:void(0)" class="<?php echo e(menuActive('admin.livraison.categorie*', 3)); ?>">
+                    <a href="javascript:void(0)" class="<?php echo e(menuActive(['admin.livraison.categorie.*'], 3)); ?>">
                         <i class="menu-icon las la-tasks"></i>
-                        <span class="menu-title"><?php echo e(__($general->site_name)); ?> <?php echo app('translator')->get('Setting'); ?></span>
+                        <span class="menu-title"><?php echo app('translator')->get('Paramètres'); ?></span>
                     </a>
-                    <div class="sidebar-submenu <?php echo e(menuActive('admin.livraison.categorie*', 2)); ?> ">
+                    <div class="sidebar-submenu <?php echo e(menuActive(['admin.livraison.categorie.*'], 2)); ?> ">
                         <ul>
+                        <li class="sidebar-menu-item <?php echo e(menuActive('admin.livraison.categorie.unite.index')); ?> ">
+                                <a href="<?php echo e(route('admin.livraison.categorie.unite.index')); ?>" class="nav-link">
+                                    <i class="menu-icon las la-dot-circle"></i>
+                                    <span class="menu-title"><?php echo app('translator')->get('Gestion Unités'); ?></span>
+                                </a>
+                            </li>
                             <li class="sidebar-menu-item <?php echo e(menuActive('admin.livraison.categorie.index')); ?> ">
                                 <a href="<?php echo e(route('admin.livraison.categorie.index')); ?>" class="nav-link">
                                     <i class="menu-icon las la-dot-circle"></i>
-                                    <span class="menu-title"><?php echo app('translator')->get('Gestion Categorie'); ?></span>
+                                    <span class="menu-title"><?php echo app('translator')->get('Gestion Categories'); ?></span>
                                 </a>
                             </li>
 
                             <li class="sidebar-menu-item <?php echo e(menuActive('admin.livraison.categorie.produit.index')); ?> ">
                                 <a href="<?php echo e(route('admin.livraison.categorie.produit.index')); ?>" class="nav-link">
                                     <i class="menu-icon las la-dot-circle"></i>
-                                    <span class="menu-title"><?php echo app('translator')->get('Gestion Produit'); ?></span>
+                                    <span class="menu-title"><?php echo app('translator')->get('Gestion Produits'); ?></span>
                                 </a>
                             </li>
                             <li class="sidebar-menu-item <?php echo e(menuActive('admin.livraison.categorie.client.index')); ?> ">
                                 <a href="<?php echo e(route('admin.livraison.categorie.client.index')); ?>" class="nav-link">
                                     <i class="menu-icon las la-dot-circle"></i>
-                                    <span class="menu-title"><?php echo app('translator')->get('Gestion Client'); ?></span>
+                                    <span class="menu-title"><?php echo app('translator')->get('Gestion Clients'); ?></span>
                                 </a>
                             </li>
                         </ul>
