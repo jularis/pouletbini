@@ -1,3 +1,4 @@
+
 <?php $__env->startSection('panel'); ?>
 <div class="row mb-none-30">
     <div class="col-lg-12 col-md-12 mb-30">
@@ -64,8 +65,7 @@
                                                 value="<?php echo e(old('receiver_phone')); ?>" required>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        
+                                    <div class="row"> 
                                         <div class="form-group col-lg-12">
                                             <label><?php echo app('translator')->get('Email'); ?></label>
                                             <input type="email" class="form-control" name="receiver_email"

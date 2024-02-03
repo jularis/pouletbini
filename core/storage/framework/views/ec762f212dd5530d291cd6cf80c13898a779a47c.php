@@ -1,25 +1,24 @@
-@extends('manager.layouts.app')
-@section('panel')
+<?php $__env->startSection('panel'); ?>
 <div class="row mb-none-30">
     <div class="col-lg-12 col-md-12 mb-30">
         <div class="card">
-            <form action="{{route('manager.livraison.update',encrypt($livraisonInfo->id))}}" method="POST" id="flocal">
+            <form action="<?php echo e(route('manager.livraison.update',encrypt($livraisonInfo->id))); ?>" method="POST" id="flocal">
                 <div class="card-body">
-                    @csrf
+                    <?php echo csrf_field(); ?>
                     <div class="row">
                         <div class="col-6 form-group">
-                            <label for="">@lang("Date estimée d'envoi")</label>
+                            <label for=""><?php echo app('translator')->get("Date estimée d'envoi"); ?></label>
                             <div class="input-group">
-                                <input name="estimate_date" value="{{ showDateTime($livraisonInfo->estimate_date,'Y-m-d')}}" type="text" autocomplete="off"  class="form-control date" placeholder="Date estimée d'envoi" required>
+                                <input name="estimate_date" value="<?php echo e(showDateTime($livraisonInfo->estimate_date,'Y-m-d')); ?>" type="text" autocomplete="off"  class="form-control date" placeholder="Date estimée d'envoi" required>
                                 <span class="input-group-text"><i class="las la-calendar"></i></span>
                             </div>
                         </div>
                         <div class="col-6 form-group">
-                            <label for="">@lang('Status de paiement')</label>
+                            <label for=""><?php echo app('translator')->get('Status de paiement'); ?></label>
                             <div class="input-group">
                                 <select class="form-control" required name="payment_status">
-                                    <option value="0" @selected($livraisonInfo->payment->status==0)>@lang('IMPAYE')</option>
-                                    <option value="1" @selected($livraisonInfo->payment->status==1)>@lang('PAYE')</option>
+                                    <option value="0" <?php if($livraisonInfo->payment->status==0): echo 'selected'; endif; ?>><?php echo app('translator')->get('IMPAYE'); ?></option>
+                                    <option value="1" <?php if($livraisonInfo->payment->status==1): echo 'selected'; endif; ?>><?php echo app('translator')->get('PAYE'); ?></option>
                                 </select>
                                 <span class="input-group-text"><i class="las la-money-bill-wave-alt"></i></span>
                             </div>
@@ -29,56 +28,56 @@
                     <div class="row"> 
                     <div class="col-lg-6">
                             <div class="card border--primary mt-3">
-                                <h5 class="card-header bg--primary  text-white">@lang('Informations du Destinataire')</h5>
+                                <h5 class="card-header bg--primary  text-white"><?php echo app('translator')->get('Informations du Destinataire'); ?></h5>
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="form-group col-lg-6">
-                                            <label>@lang('Selectionner Magasin')</label>
+                                            <label><?php echo app('translator')->get('Selectionner Magasin'); ?></label>
                                             <select class="form-control" name="magasin" required>
-                                                <option value>@lang('Selectionner une Option')</option>
-                                                @foreach($magasins as $magasin)
-                                                <option value="{{$magasin->id}}" @selected($livraisonInfo->receiver_magasin_id==$magasin->id)>{{__($magasin->name)}}</option>
-                                                @endforeach
+                                                <option value><?php echo app('translator')->get('Selectionner une Option'); ?></option>
+                                                <?php $__currentLoopData = $magasins; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $magasin): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <option value="<?php echo e($magasin->id); ?>" <?php if($livraisonInfo->receiver_magasin_id==$magasin->id): echo 'selected'; endif; ?>><?php echo e(__($magasin->name)); ?></option>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </select>
                                         </div>
                                         <div class="form-group col-lg-6">
-                                            <label>@lang('Selectionner Client')</label>
+                                            <label><?php echo app('translator')->get('Selectionner Client'); ?></label>
                                             <select class="form-control select2-basic" name="client" onchange="getCustomer()" required>
-                                                <option value="Autre">@lang('Autre')</option>
-                                                @foreach($clients as $client)
-                                                <option value="{{$client->id}}" @selected($livraisonInfo->receiver_client_id==$client->id) 
-                                                data-name="{{$client->name}}" 
-                                                data-phone="{{$client->phone}}" 
-                                                        data-email="{{$client->email}}" 
-                                                        data-address="{{$client->address}}"
-                                                    >{{__($client->name)}} - {{__($client->phone)}}</option>
-                                                @endforeach
+                                                <option value="Autre"><?php echo app('translator')->get('Autre'); ?></option>
+                                                <?php $__currentLoopData = $clients; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $client): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <option value="<?php echo e($client->id); ?>" <?php if($livraisonInfo->receiver_client_id==$client->id): echo 'selected'; endif; ?> 
+                                                data-name="<?php echo e($client->name); ?>" 
+                                                data-phone="<?php echo e($client->phone); ?>" 
+                                                        data-email="<?php echo e($client->email); ?>" 
+                                                        data-address="<?php echo e($client->address); ?>"
+                                                    ><?php echo e(__($client->name)); ?> - <?php echo e(__($client->phone)); ?></option>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </select>
                                         </div>
                                         <div class="form-group col-lg-6">
-                                            <label>@lang('Nom')</label>
+                                            <label><?php echo app('translator')->get('Nom'); ?></label>
                                             <input type="text" class="form-control" name="receiver_name"
-                                                value="{{$livraisonInfo->receiver_name}}" required>
+                                                value="<?php echo e($livraisonInfo->receiver_name); ?>" required>
                                         </div>
                                         <div class="form-group col-lg-6">
-                                            <label>@lang('Téléphone')</label>
+                                            <label><?php echo app('translator')->get('Téléphone'); ?></label>
                                             <input type="text" class="form-control" name="receiver_phone"
-                                                value="{{ $livraisonInfo->receiver_phone}}" required>
+                                                value="<?php echo e($livraisonInfo->receiver_phone); ?>" required>
                                         </div>
                                     </div>
                                     <div class="row">
                                         
                                         <div class="form-group col-lg-12">
-                                            <label>@lang('Email')</label>
+                                            <label><?php echo app('translator')->get('Email'); ?></label>
                                             <input type="email" class="form-control" name="receiver_email"
-                                                value="{{$livraisonInfo->receiver_email}}">
+                                                value="<?php echo e($livraisonInfo->receiver_email); ?>">
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-lg-12">
-                                            <label>@lang('Adresse')</label>
+                                            <label><?php echo app('translator')->get('Adresse'); ?></label>
                                             <input type="text" class="form-control" name="receiver_address"
-                                                value="{{$livraisonInfo->receiver_address}}" required>
+                                                value="<?php echo e($livraisonInfo->receiver_address); ?>" required>
                                         </div>
                                     </div>
                                 </div>
@@ -86,39 +85,39 @@
                         </div>
                         <div class="col-lg-6">
                             <div class="card border--primary mt-3">
-                                <h5 class="card-header bg--primary  text-white">@lang('Informations Expéditeur')</h5>
+                                <h5 class="card-header bg--primary  text-white"><?php echo app('translator')->get('Informations Expéditeur'); ?></h5>
                                 <div class="card-body">
                                     <div class="row">
                                     <div class="form-group col-lg-12">
                                      
-                                            <label>@lang('Selectionner Staff')</label>
+                                            <label><?php echo app('translator')->get('Selectionner Staff'); ?></label>
                                             <select class="form-control" name="staff" id="staff" onchange="getStaff()" required>
-                                                <option value>@lang('Selectionner une Option')</option>
-                                                @foreach($staffs as $staff)
-                                                <option value="{{$staff->id}}" @selected($livraisonInfo->sender_staff_id==$staff->id) data-chained="{{ $staff->magasin_id }}" data-name="{{__($staff->firstname)}} {{__($staff->lastname)}}" data-phone="{{__($staff->mobile)}}" data-email="{{__($staff->email)}}" data-address="{{__($staff->address)}}">{{__($staff->lastname)}} {{__($staff->firstname)}}</option>
-                                                @endforeach
+                                                <option value><?php echo app('translator')->get('Selectionner une Option'); ?></option>
+                                                <?php $__currentLoopData = $staffs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $staff): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <option value="<?php echo e($staff->id); ?>" <?php if($livraisonInfo->sender_staff_id==$staff->id): echo 'selected'; endif; ?> data-chained="<?php echo e($staff->magasin_id); ?>" data-name="<?php echo e(__($staff->firstname)); ?> <?php echo e(__($staff->lastname)); ?>" data-phone="<?php echo e(__($staff->mobile)); ?>" data-email="<?php echo e(__($staff->email)); ?>" data-address="<?php echo e(__($staff->address)); ?>"><?php echo e(__($staff->lastname)); ?> <?php echo e(__($staff->firstname)); ?></option>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </select>
                                         </div>
                                         <div class="form-group col-lg-6">
-                                            <label>@lang('Nom')</label>
-                                            <input type="text" class="form-control" name="sender_name" value="{{ $livraisonInfo->sender_name }}" readonly required>
+                                            <label><?php echo app('translator')->get('Nom'); ?></label>
+                                            <input type="text" class="form-control" name="sender_name" value="<?php echo e($livraisonInfo->sender_name); ?>" readonly required>
                                         </div>
                                         <div class=" form-group col-lg-6">
-                                            <label>@lang('Téléphone')</label>
-                                            <input type="text" class="form-control" value="{{$livraisonInfo->sender_phone}}" name="sender_phone" readonly required>
+                                            <label><?php echo app('translator')->get('Téléphone'); ?></label>
+                                            <input type="text" class="form-control" value="<?php echo e($livraisonInfo->sender_phone); ?>" name="sender_phone" readonly required>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-lg-12">
-                                            <label>@lang('Email')</label>
-                                            <input type="email" class="form-control" name="sender_email" value="{{ $livraisonInfo->sender_email}}" readonly required>
+                                            <label><?php echo app('translator')->get('Email'); ?></label>
+                                            <input type="email" class="form-control" name="sender_email" value="<?php echo e($livraisonInfo->sender_email); ?>" readonly required>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-lg-12">
-                                            <label>@lang('Adresse')</label>
+                                            <label><?php echo app('translator')->get('Adresse'); ?></label>
                                             <input type="text" class="form-control" name="sender_address"
-                                                value="{{ $livraisonInfo->sender_address }}" readonly>
+                                                value="<?php echo e($livraisonInfo->sender_address); ?>" readonly>
                                         </div>
                                     </div>
                                 </div>
@@ -132,7 +131,7 @@
                             
                             <div class="form-group row">
                             <div class="col-xs-12 col-sm-8">
-                            <h5 class="text-white">@lang('Informations de Livraison')</h5>
+                            <h5 class="text-white"><?php echo app('translator')->get('Informations de Livraison'); ?></h5>
                             </div>
                         <div class="col-xs-12 col-sm-4"> 
                                             </div>
@@ -151,29 +150,29 @@
                         <th>Quantité commandée</th>
                          </tr></thead> 
                                 <tbody id="listeproduits" style="text-align: center;">
-                                @php
+                                <?php
                                 $i = 0;
                                 $k = 1;
-                                @endphp
-                            @foreach($livraisonInfo->products as $item)
-                                @php
+                                ?>
+                            <?php $__currentLoopData = $livraisonInfo->products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <?php
                                 $s = 1; 
-                                @endphp
+                                ?>
                                 <tr class="single-item">
-                                    <td><input type="hidden" name="produit[{{$item->produit->arrivage_id}}][{{$item->produit->categorie_id}}]" value="{{$item->produit->id}}"><input type="hidden" name="unite[{{$item->produit->arrivage_id}}][{{$item->produit->categorie_id}}]" value=" {{$item->produit->categorie->unite_id}}">{{$item->produit->categorie->unite->name}} </td>
+                                    <td><input type="hidden" name="produit[<?php echo e($item->produit->arrivage_id); ?>][<?php echo e($item->produit->categorie_id); ?>]" value="<?php echo e($item->produit->id); ?>"><input type="hidden" name="unite[<?php echo e($item->produit->arrivage_id); ?>][<?php echo e($item->produit->categorie_id); ?>]" value=" <?php echo e($item->produit->categorie->unite_id); ?>"><?php echo e($item->produit->categorie->unite->name); ?> </td>
 
-                                <td><input type="hidden" name="categorie[{{$item->produit->arrivage_id}}][{{$item->produit->categorie_id}}]" value="{{$item->produit->categorie_id}}"/>{{$item->produit->categorie->name}}</td>
-                                <td><button class="btn btn-info" type="button">{{$item->produit->arrivage->bande->numero_bande}}</button></td>
+                                <td><input type="hidden" name="categorie[<?php echo e($item->produit->arrivage_id); ?>][<?php echo e($item->produit->categorie_id); ?>]" value="<?php echo e($item->produit->categorie_id); ?>"/><?php echo e($item->produit->categorie->name); ?></td>
+                                <td><button class="btn btn-info" type="button"><?php echo e($item->produit->arrivage->bande->numero_bande); ?></button></td>
 
-                                <td><input type="hidden" name="price[{{$item->produit->arrivage_id}}][{{$item->produit->categorie_id}}]" value="{{$item->produit->price}}" class="price" />{{$item->produit->price}}</td> 
+                                <td><input type="hidden" name="price[<?php echo e($item->produit->arrivage_id); ?>][<?php echo e($item->produit->categorie_id); ?>]" value="<?php echo e($item->produit->price); ?>" class="price" /><?php echo e($item->produit->price); ?></td> 
 
-                                <td><div class="input-group"><input type="number" name="quantite[{{$item->produit->arrivage_id}}][{{$item->produit->categorie_id}}]" value="{{$item->qty}}" id="qte"  class="form-control totaux quantity-{{$i}} st-{{$s}}" onchange=getQuantite({{$i}},{{$k}},{{$s}}) readonly></div></td> 
-                                @php
+                                <td><div class="input-group"><input type="number" name="quantite[<?php echo e($item->produit->arrivage_id); ?>][<?php echo e($item->produit->categorie_id); ?>]" value="<?php echo e($item->qty); ?>" id="qte"  class="form-control totaux quantity-<?php echo e($i); ?> st-<?php echo e($s); ?>" onchange=getQuantite(<?php echo e($i); ?>,<?php echo e($k); ?>,<?php echo e($s); ?>) readonly></div></td> 
+                                <?php
                                 $k++;
                                 $s++;
                                 $i++;    
-                                @endphp
- 						        @endforeach
+                                ?>
+ 						        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                  </tbody>
                             </table>
                                     </div>
@@ -181,29 +180,29 @@
                                     <br>
                                     
                                     <div class="border-line-area">
-                                        <h6 class="border-line-title">@lang('Resume')</h6>
+                                        <h6 class="border-line-title"><?php echo app('translator')->get('Resume'); ?></h6>
                                     </div>
                                     <div class="d-flex justify-content-end">
                                         <div class="col-md-4">
                                             <div class="input-group">
-                                                <span class="input-group-text">@lang('Reduction')</span>
-                                                <input type="number" name="discount"  class="form-control bg-white text-dark discount" value="{{ $livraisonInfo->payment->discount }}">
+                                                <span class="input-group-text"><?php echo app('translator')->get('Reduction'); ?></span>
+                                                <input type="number" name="discount"  class="form-control bg-white text-dark discount" value="<?php echo e($livraisonInfo->payment->discount); ?>">
                                                 <span class="input-group-text">FCFA</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class=" d-flex justify-content-end mt-2">
                                         <div class="col-md-4  d-flex justify-content-between">
-                                            <span class="fw-bold">@lang('Sous-total'):</span>
-                                            <div><span class="subtotal">{{ showAmount(@$livraisonInfo->payment->amount) }}</span> {{$general->cur_sym}}</div>
+                                            <span class="fw-bold"><?php echo app('translator')->get('Sous-total'); ?>:</span>
+                                            <div><span class="subtotal"><?php echo e(showAmount(@$livraisonInfo->payment->amount)); ?></span> <?php echo e($general->cur_sym); ?></div>
                                             <input type="hidden" name="total" id="total" class="form-control" />
                                     <input type="hidden" name="subtotal" id="subtotal" class="form-control" />
                                         </div>
                                     </div>
                                     <div class=" d-flex justify-content-end mt-2">
                                         <div class="col-md-4  d-flex justify-content-between">
-                                            <span class="fw-bold">@lang('Total'):</span>
-                                            <div><span class="total">{{ showAmount(@$livraisonInfo->payment->final_amount) }}</span> {{$general->cur_sym}}</div>
+                                            <span class="fw-bold"><?php echo app('translator')->get('Total'); ?>:</span>
+                                            <div><span class="total"><?php echo e(showAmount(@$livraisonInfo->payment->final_amount)); ?></span> <?php echo e($general->cur_sym); ?></div>
                                         </div>
                                     </div>
 
@@ -214,14 +213,14 @@
                     <div class="row mb-30">
                         <div class="col-lg-12">
                             <div class="card border--primary mt-3">
-                                <h5 class="card-header bg--primary text-white">@lang('Frais de Livraison') 
+                                <h5 class="card-header bg--primary text-white"><?php echo app('translator')->get('Frais de Livraison'); ?> 
                                 </h5>
                                 <div class="card-body">
                                     <div class="row">
 									<div class="col-md-12">
                                                     <div class="input-group">
-                                                        <input type="number"  class="form-control" name="frais_livraison" value="{{ @$livraisonInfo->payment->frais_livraison }}" required>
-                                                        <span class="input-group-text">{{__($general->cur_text)}}</span>
+                                                        <input type="number"  class="form-control" name="frais_livraison" value="<?php echo e(@$livraisonInfo->payment->frais_livraison); ?>" required>
+                                                        <span class="input-group-text"><?php echo e(__($general->cur_text)); ?></span>
                                                     </div>
                                                 </div>
 									</div>
@@ -229,29 +228,43 @@
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn--primary h-45 w-100 Submitbtn"> @lang("Envoyer")</button>
+                    <button type="submit" class="btn btn--primary h-45 w-100 Submitbtn"> <?php echo app('translator')->get("Envoyer"); ?></button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 </div>
-@endsection
-@push('breadcrumb-plugins')
-    <x-back route="{{ url()->previous() }}" />
-@endpush
-@push('script-lib')
-<script src="{{asset('assets/viseradmin/js/vendor/datepicker.min.js')}}"></script>
-<script src="{{asset('assets/viseradmin/js/vendor/datepicker.fr.js')}}"></script>
-<script src="{{asset('assets/viseradmin/js/vendor/datepicker.en.js')}}"></script>
-<script src="{{asset('assets/viseradmin/js/jquery.chained.js')}}"></script>
-@endpush
+<?php $__env->stopSection(); ?>
+<?php $__env->startPush('breadcrumb-plugins'); ?>
+    <?php if (isset($component)) { $__componentOriginalc254754b9d5db91d5165876f9d051922ca0066f4 = $component; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.back','data' => ['route' => ''.e(url()->previous()).'']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? (array) $attributes->getIterator() : [])); ?>
+<?php $component->withName('back'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag && $constructor = (new ReflectionClass(Illuminate\View\AnonymousComponent::class))->getConstructor()): ?>
+<?php $attributes = $attributes->except(collect($constructor->getParameters())->map->getName()->all()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['route' => ''.e(url()->previous()).'']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginalc254754b9d5db91d5165876f9d051922ca0066f4)): ?>
+<?php $component = $__componentOriginalc254754b9d5db91d5165876f9d051922ca0066f4; ?>
+<?php unset($__componentOriginalc254754b9d5db91d5165876f9d051922ca0066f4); ?>
+<?php endif; ?>
+<?php $__env->stopPush(); ?>
+<?php $__env->startPush('script-lib'); ?>
+<script src="<?php echo e(asset('assets/viseradmin/js/vendor/datepicker.min.js')); ?>"></script>
+<script src="<?php echo e(asset('assets/viseradmin/js/vendor/datepicker.fr.js')); ?>"></script>
+<script src="<?php echo e(asset('assets/viseradmin/js/vendor/datepicker.en.js')); ?>"></script>
+<script src="<?php echo e(asset('assets/viseradmin/js/jquery.chained.js')); ?>"></script>
+<?php $__env->stopPush(); ?>
 
-@push('style-lib')
-<link  rel="stylesheet" href="{{asset('assets/viseradmin/css/vendor/datepicker.min.css')}}">
-@endpush
+<?php $__env->startPush('style-lib'); ?>
+<link  rel="stylesheet" href="<?php echo e(asset('assets/viseradmin/css/vendor/datepicker.min.css')); ?>">
+<?php $__env->stopPush(); ?>
 
-@push('script')
+<?php $__env->startPush('script'); ?>
 <script>
     "use strict";
     $("#staff").chained("#magasin");
@@ -350,7 +363,7 @@ function update_amounts(id, k, s) {
              discount=parseFloat($(this).val() || 0);
             //  if(discount >=100){
             //     discount=100;
-            //     notify('warning',"@lang('Discount can not bigger than 100 %')");
+            //     notify('warning',"<?php echo app('translator')->get('Discount can not bigger than 100 %'); ?>");
             //     $(this).val(discount);
             //  }
             calculation();
@@ -387,9 +400,9 @@ function update_amounts(id, k, s) {
 
     })(jQuery);
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('style')
+<?php $__env->startPush('style'); ?>
     <style>
         .border-line-area {
             position: relative;
@@ -412,4 +425,6 @@ function update_amounts(id, k, s) {
             background-color: #fff;
         }
     </style>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('manager.layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\pouletbini\core\resources\views/manager/livraison/edit.blade.php ENDPATH**/ ?>

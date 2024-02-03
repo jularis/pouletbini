@@ -258,12 +258,6 @@ class LivraisonController extends Controller
             'receiver_name'    => 'required|max:255', 
             'receiver_phone'   => 'required|string|max:255',
             'receiver_address' => 'required|max:255',
-            'items'            => 'required|array',
-            'items.*.produit'     => 'required|integer|exists:produits,id',
-            'items.*.quantity' => 'required|numeric|gt:0',
-            'items.*.amount'   => 'required|numeric|gt:0',
-            'items.*.name'     => 'nullable|string',
-            'estimate_date'    => 'required|date|date_format:Y-m-d|after_or_equal:today',
             'payment_status'   => 'required|integer|in:0,1',
         ]);
 
@@ -293,36 +287,11 @@ class LivraisonController extends Controller
         $livraison->estimate_date      = $request->estimate_date;
         $livraison->save();
 
-        LivraisonProduct::where('livraison_info_id', $id)->delete();
-
-        $subTotal = 0;
-        $data = [];
-        foreach ($request->items as $item) {
-            $livraisonProduit = Produit::where('id', $item['produit'])->first();
-            if (!$livraisonProduit) {
-                continue;
-            }
-            $price     = $livraisonProduit->price * $item['quantity'];
-            $subTotal += $price;
-
-            $data[] = [
-                'livraison_info_id' => $livraison->id,
-                'livraison_produit_id' => $livraisonProduit->id,
-                'qty'             => $item['quantity'], 
-                'fee'             => $price,
-                'type_price'      => $livraisonProduit->price,
-                'created_at'      => now(),
-            ];
-            $livraisonProduit->quantity = $livraisonProduit->quantity - $item['quantity'];
-            $livraisonProduit->quantity_use = $livraisonProduit->quantity_use + $item['quantity'];
-            $livraisonProduit->save();
-        }
-        LivraisonProduct::insert($data);
-
+        $subTotal = $request->subtotal; 
         $discount = $request->discount ?? 0;
         // $discountAmount = ($subTotal / 100) * $discount;
         $discountAmount = $discount;
-        $totalAmount = $subTotal - $discountAmount;
+        $totalAmount = $request->total;
 
         $user = auth()->user();
         if ($request->payment_status == Status::PAID || $request->payment_status == Status::UNPAID) {
