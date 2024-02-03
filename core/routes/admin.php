@@ -135,8 +135,6 @@ Route::middleware('admin')->group(function () {
         Route::get('/', 'list')->name('index');
     });
 
-
-
     // Report
     Route::controller('ReportController')->prefix('report')->name('report.')->group(function () {
         Route::get('login/history', 'loginHistory')->name('login.history');
