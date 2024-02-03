@@ -84,4 +84,23 @@
 @push('breadcrumb-plugins')
     <x-back route="{{ route('admin.arrivage.index') }}" />
 @endpush
+@push('style-lib')
+    <link rel="stylesheet" href="{{ asset('assets/viseradmin/css/vendor/datepicker.min.css') }}">
+@endpush
+@push('script-lib')
+    <script src="{{ asset('assets/viseradmin/js/vendor/datepicker.min.js') }}"></script>
+    <script src="{{asset('assets/viseradmin/js/vendor/datepicker.fr.js')}}"></script>
+    <script src="{{ asset('assets/viseradmin/js/vendor/datepicker.en.js') }}"></script>
+@endpush
+@push('script')
  
+    <script> 
+
+$('.dates').datepicker({
+                maxDate: new Date(),
+                range: false,
+                multipleDatesSeparator: "-",
+                language: 'fr'
+            });
+    </script>
+@endpush

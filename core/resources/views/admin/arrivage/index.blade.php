@@ -107,9 +107,7 @@
 @push('breadcrumb-plugins')
     <a href="{{ route('admin.arrivage.create') }}" class="btn  btn-outline--primary h-45 addNewCooperative">
         <i class="las la-plus"></i>@lang('Ajouter un arrivage')
-    </a>
-     
-
+    </a>  
 @endpush
 @push('style')
     <style>
@@ -119,12 +117,12 @@
     </style>
 @endpush
 @push('style-lib')
-    <link rel="stylesheet" href="{{ asset('assets/fcadmin/css/vendor/datepicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/viseradmin/css/vendor/datepicker.min.css') }}">
 @endpush
-@push('script')
-    <script src="{{ asset('assets/fcadmin/js/vendor/datepicker.min.js') }}"></script>
-    <script src="{{ asset('assets/fcadmin/js/vendor/datepicker.fr.js') }}"></script>
-<script src="{{ asset('assets/fcadmin/js/vendor/datepicker.en.js') }}"></script>
+@push('script-lib')
+    <script src="{{ asset('assets/viseradmin/js/vendor/datepicker.min.js') }}"></script>
+    <script src="{{asset('assets/viseradmin/js/vendor/datepicker.fr.js')}}"></script>
+    <script src="{{ asset('assets/viseradmin/js/vendor/datepicker.en.js') }}"></script>
 @endpush
 @push('script')
     <script> 
