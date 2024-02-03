@@ -65,8 +65,7 @@
                                                 value="{{old('receiver_phone')}}" required>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        
+                                    <div class="row"> 
                                         <div class="form-group col-lg-12">
                                             <label>@lang('Email')</label>
                                             <input type="email" class="form-control" name="receiver_email"
