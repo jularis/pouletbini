@@ -26,8 +26,7 @@
                         </div>
                     </div>
 
-                    <div class="row">
-                        
+                    <div class="row"> 
                     <div class="col-lg-6">
                             <div class="card border--primary mt-3">
                                 <h5 class="card-header bg--primary  text-white">@lang('Informations du Destinataire')</h5>
@@ -129,14 +128,22 @@
                     <div class="row mb-30">
                         <div class="col-lg-12">
                             <div class="card border--primary mt-3">
-                                <h5 class="card-header bg--primary text-white">@lang('Informations de Livraison')
-                                    <button type="button" class="btn btn-sm btn-outline-light float-end addUserData"><i
-                                            class="la la-fw la-plus"></i>@lang("Ajouter un nouveau")
-                                    </button>
-                                </h5>
+                            <div class="form-group row">
+                            <div class="col-xs-12 col-sm-8">
+                            <h5 class="text-white">@lang('Informations de Livraison')</h5>
+                            </div>
+                        <div class="col-xs-12 col-sm-4">
+                        <label class="control-label">@lang('NUMERO DE BANDE')</label>
+                                <select class="form-control select2-multi-select float-end" name="bande[]" id="bande" multiple required> 
+                                                @foreach($produits as $produit)
+                                                <option value="{{$produit->arrivage->bande_id}}" @selected(in_array(@$produit->arrivage->bande_id, @request()->bande ?? array()))>{{__($produit->arrivage->bande->numero_bande)}}</option>
+                                                @endforeach
+                                            </select>
+                                            </div>
+                    </div>
                                 <div class="card-body">
                                     <div class="row" id="addedField">
-                                         @foreach ($livraisonInfo->products as $item)
+                                         @foreach($livraisonInfo->products as $item)
                                          <div class="row single-item gy-2">
                                              <div class="col-md-4">
                                                     <select class="form-control selected_type" name="items[{{ $loop->index}}][produit]" required>
