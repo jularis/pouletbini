@@ -11,7 +11,26 @@
                                 <label>@lang('Recherche par Mot(s) clé(s)')</label>
                                 <input type="text" name="search" value="{{ request()->search }}" class="form-control">
                             </div>
-                             
+                            <div class="flex-grow-1">
+                                <label>@lang('Ferme')</label>
+                                <select name="ferme" class="form-control" id="ferme">
+                                    <option value="">@lang("Tous")</option>  
+                                    @foreach($fermes as $ferme)
+                                        <option value="{{ $ferme->id }}" {{ request()->ferme == $ferme->id ? 'selected' : '' }} >
+                                        {{ $ferme->nom }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="flex-grow-1">
+                                <label>@lang('Bande')</label>
+                                <select name="bande" class="form-control" id="bande">
+                                    <option value="">@lang("Tous")</option>  
+                                    @foreach($bandes as $bande)
+                                        <option value="{{ $bande->id }}" {{ request()->bande == $bande->id ? 'selected' : '' }} >
+                                        {{ $bande->numero_bande }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                             <div class="flex-grow-1">
                                 <label>@lang('Date')</label>
                                 <input name="date" type="text" class="dates form-control"

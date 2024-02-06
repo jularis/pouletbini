@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\admin;
 
+use Carbon\Carbon;
 use App\Models\Bande;
 use App\Models\Ferme;
+use App\Models\Unite;
+use App\Models\Produit;
 use App\Models\Arrivage;
+use App\Models\Categorie;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Categorie;
-use App\Models\Produit;
-use App\Models\Unite;
 
 class ArrivageController extends Controller
 {
@@ -22,11 +23,32 @@ class ArrivageController extends Controller
     {
         $pageTitle      = "Gestion des arrivages";
         $fermes = Ferme::get();
-        $bandes = Bande::dateFilter()->searchable(['numero_bande'])
-                                ->latest('id')
+        $bandes = Bande::latest('id')
+                                ->when(request()->ferme, function ($query, $ferme) {
+                                    $query->where('ferme_id',$ferme);
+                                })
                                 ->with('ferme')
                                 ->get();
-        $arrivages = Arrivage::dateFilter()->searchable([])
+        $arrivages = Arrivage::joinRelationship('bande')
+                                ->joinRelationship('bande.ferme')
+                                ->searchable(['numero_bande','fermes.nom'])
+                                ->when(request()->ferme, function ($query, $ferme) {
+                                    $query->where('ferme_id',$ferme); 
+                                })
+                                ->when(request()->bande, function ($query, $bande) {
+                                    $query->where('bande_id',$bande);
+                                })
+                                ->when(request()->date, function ($query, $date) {
+                                    $date      = explode('-', request()->date); 
+                                    $startDate = Carbon::parse(trim($date[0]))->format('Y-m-d'); 
+                                    $endDate = @$date[1] ? Carbon::parse(trim(@$date[1]))->format('Y-m-d') : $startDate;
+                                    request()->merge(['start_date' => $startDate, 'end_date' => $endDate]); 
+                                    request()->validate([
+                                        'start_date' => 'required|date_format:Y-m-d',
+                                        'end_date'   => 'nullable|date_format:Y-m-d',
+                                    ]);
+                                    $query->whereDate('date_arrivage', '>=', $startDate)->whereDate('date_arrivage', '<=', $endDate);
+                                })
                                 ->latest('id')
                                 ->with('bande')
                                 ->paginate(getPaginate());
