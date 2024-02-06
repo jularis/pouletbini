@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Constants\Status;
-use App\Http\Controllers\Controller;
-use App\Lib\CurlRequest;
-use App\Models\Admin;
-use App\Models\AdminNotification;
-use App\Models\Magasin;
-use App\Models\LivraisonInfo;
-use App\Models\LivraisonPayment;
-use App\Models\User;
-use App\Models\UserLogin;
-use App\Rules\FileTypeValidate;
 use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Admin;
+use App\Models\Magasin;
+use App\Lib\CurlRequest;
+use App\Models\Arrivage;
+use App\Constants\Status;
+use App\Models\UserLogin;
 use Illuminate\Http\Request;
+use App\Models\LivraisonInfo;
+use App\Rules\FileTypeValidate;
+use App\Models\LivraisonPayment;
+use App\Models\AdminNotification;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
@@ -26,14 +28,18 @@ class AdminController extends Controller
         $pageTitle        = 'Dashboard';
         $magasinCount      = Magasin::count();
         $magasins         = Magasin::orderBy('name', 'ASC')->take(5)->get();
-        $livraisonInfoCount = LivraisonInfo::count();
+        $livraisonInfoCount = LivraisonInfo::where('status', 3)->count();
+        $livraisonInfoCountCancel = LivraisonInfo::where('status', 1)->count();
         $managerCount     = User::manager()->count();
         $totalIncome      = LivraisonPayment::where('status', Status::PAID)->sum('final_amount');
+        $totalIncomeDays      = LivraisonPayment::where('status', Status::PAID)->whereDate('date',gmdate('Y-m-d'))->sum('final_amount');
         $sentInQueue      = LivraisonInfo::where('status', Status::COURIER_QUEUE)->count();
         $shippingLivraison  = LivraisonInfo::where('status', Status::COURIER_DISPATCH)->count();
-        $deliveryInQueue  = LivraisonInfo::where('status', Status::COURIER_DELIVERYQUEUE)->count();
+        $deliveryInQueue  = LivraisonInfo::where('status', 2)->count();
         $delivered        = LivraisonInfo::where('status', Status::COURIER_DELIVERED)->count();
-
+          $arrivageByFerme = Arrivage::joinRelationship('bande.ferme')->select('fermes.nom', DB::RAW('count(arrivages.id) as total'))->groupby('ferme_id')->get();
+          
+        
         // user Browsing, Country, Operating Log
         $userLoginData = UserLogin::where('created_at', '>=', Carbon::now()->subDay(30))->get(['browser', 'os', 'country']);
 
@@ -47,7 +53,7 @@ class AdminController extends Controller
             return collect($item)->count();
         })->sort()->reverse()->take(5);
 
-        return view('admin.dashboard', compact('pageTitle', 'chart', 'sentInQueue', 'shippingLivraison', 'deliveryInQueue', 'delivered', 'magasinCount', 'totalIncome', 'magasins', 'managerCount', 'livraisonInfoCount'));
+        return view('admin.dashboard', compact('pageTitle', 'chart', 'sentInQueue', 'shippingLivraison', 'deliveryInQueue', 'delivered', 'magasinCount', 'totalIncome', 'magasins', 'managerCount', 'livraisonInfoCount','livraisonInfoCountCancel','totalIncomeDays','arrivageByFerme'));
     }
 
     public function profile()
