@@ -17,6 +17,7 @@ use App\Models\LivraisonPayment;
 use App\Models\AdminNotification;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\LivraisonProduct;
 use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
@@ -32,28 +33,24 @@ class AdminController extends Controller
         $livraisonInfoCountCancel = LivraisonInfo::where('status', 1)->count();
         $managerCount     = User::manager()->count();
         $totalIncome      = LivraisonPayment::where('status', Status::PAID)->sum('final_amount');
+
         $totalIncomeDays      = LivraisonPayment::where('status', Status::PAID)->whereDate('date',gmdate('Y-m-d'))->sum('final_amount');
+
+        $totalLivraisonDays      = LivraisonInfo::where('status', 3)->whereDate('estimate_date',gmdate('Y-m-d'))->count();
+
         $sentInQueue      = LivraisonInfo::where('status', Status::COURIER_QUEUE)->count();
         $shippingLivraison  = LivraisonInfo::where('status', Status::COURIER_DISPATCH)->count();
         $deliveryInQueue  = LivraisonInfo::where('status', 2)->count();
         $delivered        = LivraisonInfo::where('status', Status::COURIER_DELIVERED)->count();
-          $arrivageByFerme = Arrivage::joinRelationship('bande.ferme')->select('fermes.nom', DB::RAW('count(arrivages.id) as total'))->groupby('ferme_id')->get();
-          
         
-        // user Browsing, Country, Operating Log
-        $userLoginData = UserLogin::where('created_at', '>=', Carbon::now()->subDay(30))->get(['browser', 'os', 'country']);
+        $arrivageByFerme = Arrivage::joinRelationship('bande.ferme')->select('fermes.nom', DB::RAW('count(arrivages.id) as total'))->groupby('ferme_id')->get();
 
-        $chart['user_browser_counter'] = $userLoginData->groupBy('browser')->map(function ($item, $key) {
-            return collect($item)->count();
-        });
-        $chart['user_os_counter'] = $userLoginData->groupBy('os')->map(function ($item, $key) {
-            return collect($item)->count();
-        });
-        $chart['user_country_counter'] = $userLoginData->groupBy('country')->map(function ($item, $key) {
-            return collect($item)->count();
-        })->sort()->reverse()->take(5);
-
-        return view('admin.dashboard', compact('pageTitle', 'chart', 'sentInQueue', 'shippingLivraison', 'deliveryInQueue', 'delivered', 'magasinCount', 'totalIncome', 'magasins', 'managerCount', 'livraisonInfoCount','livraisonInfoCountCancel','totalIncomeDays','arrivageByFerme'));
+        $livraisonByCategorie = LivraisonProduct::joinRelationship('info')->joinRelationship('produit')->joinRelationship('produit.categorie')->where('livraison_infos.status',3)->select('categories.name', DB::RAW('count(livraison_products.id) as total'))->groupby('categorie_id')->get();
+          
+        $livraisonByLivreur = LivraisonInfo::joinRelationship('senderStaff')->where('livraison_infos.status',3)->select(DB::RAW('concat(lastname," ", firstname) as name'), DB::RAW('count(livraison_infos.id) as total'))->groupby('sender_staff_id')->get();
+    
+        
+        return view('admin.dashboard', compact('pageTitle', 'livraisonByLivreur', 'sentInQueue', 'shippingLivraison', 'deliveryInQueue', 'delivered', 'magasinCount', 'totalIncome', 'magasins', 'managerCount', 'livraisonInfoCount','livraisonInfoCountCancel','totalIncomeDays','arrivageByFerme','livraisonByCategorie','totalLivraisonDays'));
     }
 
     public function profile()

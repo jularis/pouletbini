@@ -52,40 +52,6 @@
                 </div>
             </div>
         </div><!-- dashboard-w1 end -->
-      
- 
-        <div class="col-xxl-3 col-sm-6">
-            <div class="card bg--orange has-link box--shadow2">
-                <a href="#" class="item-link"></a>
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-4">
-                            <i class="las la-money-bill-wave f-size--56"></i>
-                        </div>
-                        <div class="col-8 text-end">
-                            <span class="text-white text--small">@lang("Revenus Journaliers")</span>
-                            <h2 class="text-white">{{ showAmount($totalIncomeDays) }} {{ $general->cur_sym }}</h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div><!-- dashboard-w1 end -->
-        <div class="col-xxl-3 col-sm-6">
-            <div class="card bg--orange has-link box--shadow2">
-                <a href="#" class="item-link"></a>
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-4">
-                            <i class="las la-money-bill-wave f-size--56"></i>
-                        </div>
-                        <div class="col-8 text-end">
-                            <span class="text-white text--small">@lang("Total Revenus")</span>
-                            <h2 class="text-white">{{ showAmount($totalIncome) }} {{ $general->cur_sym }}</h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div><!-- dashboard-w1 end -->
         <div class="col-xxl-3 col-sm-6">
             <div class="card bg--primary has-link overflow-hidden box--shadow2">
                 <a href="{{ route('admin.magasin.index') }}" class="item-link"></a>
@@ -102,6 +68,56 @@
                 </div>
             </div>
         </div><!-- dashboard-w1 end -->
+ 
+        <div class="col-xxl-4 col-sm-6">
+            <div class="card bg--orange has-link box--shadow2">
+                <a href="#" class="item-link"></a>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-2">
+                            <i class="las la-money-bill-wave f-size--56"></i>
+                        </div>
+                        <div class="col-10 text-end">
+                            <span class="text-white text--small">@lang("Revenus Journaliers")</span>
+                            <h2 class="text-white">{{ showAmount($totalIncomeDays) }} {{ $general->cur_sym }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- dashboard-w1 end -->
+        <div class="col-xxl-4 col-sm-6">
+            <div class="card bg--green has-link box--shadow2">
+                <a href="#" class="item-link"></a>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-2">
+                            <i class="las la-dolly-flatbed f-size--56"></i>
+                        </div>
+                        <div class="col-10 text-end">
+                            <span class="text-white text--small">@lang('Total Livraison Journaliere')</span>
+                            <h2 class="text-white">{{ $totalLivraisonDays }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- dashboard-w1 end -->
+        <div class="col-xxl-4 col-sm-6">
+            <div class="card bg--orange has-link box--shadow2">
+                <a href="#" class="item-link"></a>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-2">
+                            <i class="las la-money-bill-wave f-size--56"></i>
+                        </div>
+                        <div class="col-10 text-end">
+                            <span class="text-white text--small">@lang("Total Revenus")</span>
+                            <h2 class="text-white">{{ showAmount($totalIncome) }} {{ $general->cur_sym }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- dashboard-w1 end -->
+      
       
 
     </div><!-- row end-->
@@ -120,7 +136,7 @@
         <div class="col-xl-4 col-lg-6 mb-30">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">@lang('Connexion Par OS') (@lang('30 Derniers Jours'))</h5>
+                    <h5 class="card-title">Livraison par Categorie</h5>
                     <canvas id="userOsChart"></canvas>
                 </div>
             </div>
@@ -128,7 +144,7 @@
         <div class="col-xl-4 col-lg-6 mb-30">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">@lang('Login By Country') (@lang('30 Derniers Jours'))</h5>
+                    <h5 class="card-title">Livraison par Livreur</h5>
                     <canvas id="userCountryChart"></canvas>
                 </div>
             </div>
@@ -143,7 +159,7 @@
         "use strict";
         var ctx = document.getElementById('userBrowserChart');
         var myChart = new Chart(ctx, {
-            type: 'doughnut',
+            type: 'pie',
             data: {
                 labels: @json(Arr::whereNotNull(Arr::pluck($arrivageByFerme,'nom'))),
                 datasets: [{
@@ -204,11 +220,11 @@
         });
         var ctx = document.getElementById('userOsChart');
         var myChart = new Chart(ctx, {
-            type: 'doughnut',
+            type: 'bar',
             data: {
-                labels: @json($chart['user_os_counter']->keys()),
+                labels: @json(Arr::whereNotNull(Arr::pluck($livraisonByCategorie,'name'))),
                 datasets: [{
-                    data: {{ $chart['user_os_counter']->flatten() }},
+                    data: @json(Arr::whereNotNull(Arr::pluck($livraisonByCategorie,'total'))),
                     backgroundColor: [
                         '#ff7675',
                         '#6c5ce7',
@@ -251,10 +267,10 @@
                 },
                 scales: {
                     xAxes: [{
-                        display: false
+                        display: true
                     }],
                     yAxes: [{
-                        display: false
+                        display: true
                     }]
                 },
                 legend: {
@@ -265,11 +281,11 @@
         // Donut chart
         var ctx = document.getElementById('userCountryChart');
         var myChart = new Chart(ctx, {
-            type: 'doughnut',
+            type: 'bar',
             data: {
-                labels: @json($chart['user_country_counter']->keys()),
+                labels: @json(Arr::whereNotNull(Arr::pluck($livraisonByLivreur,'name'))),
                 datasets: [{
-                    data: {{ $chart['user_country_counter']->flatten() }},
+                    data: @json(Arr::whereNotNull(Arr::pluck($livraisonByLivreur,'total'))),
                     backgroundColor: [
                         '#ff7675',
                         '#6c5ce7',
@@ -312,10 +328,10 @@
                 },
                 scales: {
                     xAxes: [{
-                        display: false
+                        display: true
                     }],
                     yAxes: [{
-                        display: false
+                        display: true
                     }]
                 },
                 legend: {
