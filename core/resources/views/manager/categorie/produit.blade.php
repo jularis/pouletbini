@@ -14,8 +14,7 @@
                                     <th>@lang('Quantite')</th>
                                     <th>@lang('Quantite Utilisée')</th>
                                     <th>@lang('Quantite Restante')</th>
-                                    <th>@lang('Status')</th> 
-                                    <th>@lang('Last Update')</th> 
+                                    <th>@lang('Status')</th>  
                                 </tr>
                             </thead>
                             <tbody>
@@ -45,11 +44,7 @@
                                                 echo $produit->statusBadge;
                                             @endphp
                                         </td>
-
-                                        <td>
-                                            <span class="d-block">{{ showDateTime($produit->updated_at) }}</span>
-                                            <span>{{ diffForHumans($produit->updated_at) }}</span>
-                                        </td> 
+ 
 
                                     </tr>
                                 @empty
