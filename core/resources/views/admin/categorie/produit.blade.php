@@ -11,6 +11,7 @@
                                 <tr>
                                     <th>@lang('Categorie')</th>
                                     <th>@lang('Nom')</th>  
+                                    <th>@lang('Numero de bande')</th>  
                                     <th>@lang('Prix Unitaire')</th> 
                                     <th>@lang('Quantite')</th>
                                     <th>@lang('Quantite Utilisée')</th>
@@ -29,7 +30,9 @@
                                         <td>
                                             <span class="fw-bold">{{ __($produit->name) }}</span>
                                         </td>
-                                        
+                                        <td>
+                                            <span class="fw-bold">{{ __($produit->arrivage->bande->numero_bande) }}</span>
+                                        </td>
                                         <td>
                                             <span>{{ showAmount($produit->price) }} {{ __($general->cur_text) }}</span>
                                         </td>
