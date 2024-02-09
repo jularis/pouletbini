@@ -105,54 +105,89 @@ class LivraisonController extends Controller
         
         $data = [];
         foreach ($request->items as $item) {
-            $productArray = Produit::where([['categorie_id',$item['produit']],['quantity_restante','>',0]])->orderby('id','asc')->get();
+            $productArray = Produit::where([['categorie_id',$item['produit']],['quantity_restante','>',0]])
+                                    ->orderby('id','asc');
+            $total = $productArray->sum('quantity_restante');
+            
+            $productArray = $productArray->get();
             $qterestante = $quantityAcceptee = 0;
 
             if($productArray !=null)
             {
-
+                if($total>$item['quantity']){
+                    $qtebrouillon = 0;
+                    $item['quantity'] = $item['quantity'];
+                }elseif($total ==$item['quantity']){
+                    $qtebrouillon=0;
+                    $item['quantity'] = $item['quantity'];
+                }else{
+                    $qtebrouillon = $item['quantity'] - $total; 
+                    $item['quantity'] = $total;
+                }
+                
             foreach($productArray as $data){
+
+                if($item['quantity']==0){
+                    continue;
+                }
                  $qteInitial = $data->quantity_restante;
-                 $qtecommandee = !is_null($qterestante) ? $qterestante : $item['quantity'];
+                 $qtecommandee =  $item['quantity'];
+                 if($qterestante >0){
+                    $qtecommandee = $qterestante;
+                 }
+                  
                  if($qtecommandee>$qteInitial){
                     $qterestante = $qtecommandee-$qteInitial;
                     $quantityAcceptee = $qteInitial;
                  }elseif($qtecommandee<$qteInitial){
-                    $qterestante = $qtecommandee-$qteInitial;
+                    $qterestante = ($qtecommandee-$qteInitial)* -1;
                     $quantityAcceptee = $qtecommandee;
                  }else{
                     $qterestante = 0;
                     $quantityAcceptee = $qtecommandee;
                  }
-
+                 
             
             $livraisonProduit = Produit::where('id', $data->id)->first();
-            if (!$livraisonProduit) {
-                continue;
-            }
-
             $price = $livraisonProduit->price * $quantityAcceptee;
             $subTotal += $price;
 
-            $data[] = [
+            
+            LivraisonProduct::insert([
                 'livraison_info_id' => $livraison->id,
                 'livraison_produit_id' => $livraisonProduit->id,
                 'qty'             => $quantityAcceptee, 
                 'fee'             => $price,
                 'type_price'      => $livraisonProduit->price,
                 'created_at'      => now(),
-            ];
-
+            ]);    
             $livraisonProduit->quantity_restante = $livraisonProduit->quantity_restante - $quantityAcceptee;
             $livraisonProduit->quantity_use = $livraisonProduit->quantity_use + $quantityAcceptee; 
             $livraisonProduit->save();
+            $item['quantity'] = $qterestante;
+           // dd('Quantite restante:'.$qterestante.' Quantite acceptee'.$quantityAcceptee);
          }
-
+         if($qtebrouillon>0){
+            $livraisonProduit = Produit::where('categorie_id', $item['produit'])->first();
+            $price = $livraisonProduit->price * $item['quantity'];
+            $subTotal += $price;
+            
+            LivraisonProduct::insert([
+                'livraison_info_id' => $livraison->id,
+                'livraison_produit_id' => $livraisonProduit->id,
+                'qty'             => $qtebrouillon, 
+                'fee'             => $price,
+                'type_price'      => $livraisonProduit->price,
+                'etat' => 0,
+                'created_at'      => now(),
+            ]);         
+         }
         }else{
             $livraisonProduit = Produit::where('categorie_id', $item['produit'])->first();
             $price = $livraisonProduit->price * $item['quantity'];
             $subTotal += $price;
-            $data[] = [
+            
+            LivraisonProduct::insert([
                 'livraison_info_id' => $livraison->id,
                 'livraison_produit_id' => $livraisonProduit->id,
                 'qty'             => $item['quantity'], 
@@ -160,12 +195,12 @@ class LivraisonController extends Controller
                 'type_price'      => $livraisonProduit->price,
                 'etat' => 0,
                 'created_at'      => now(),
-            ];
+            ]);                      
         }
 
         }
 
-        LivraisonProduct::insert($data);
+        
 
         $discount                        = $request->discount ?? 0;
         // $discountAmount                  = ($subTotal / 100) * $discount;
