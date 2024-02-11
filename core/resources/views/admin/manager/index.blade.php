@@ -39,15 +39,20 @@
                                         </td>
                                         <td> @php echo $manager->statusBadge; @endphp </td>
                                         <td>
+                                        <a href="{{ route('admin.magasin.manager.dashboard', $manager->id) }}"
+                                        class="btn btn-sm btn-outline--success" target="_blank"><i class="las la-sign-in-alt"></i>
+                                                    @lang('Login')
+                                                </a>
+                                                <a href="{{ route('admin.magasin.manager.staff.list', $manager->magasin_id) }}"
+                                                class="btn btn-sm btn-outline--info"><i class="las la-user-friends"></i>
+                                                    @lang('Liste des Staffs')</a>
                                             <button type="button" class="btn btn-sm btn-outline--primary" data-bs-toggle="dropdown" aria-expanded="false"><i
                                                     class="las la-ellipsis-v"></i>@lang('Action')
                                              </button>
                                             <div class="dropdown-menu p-0">
                                                 <a href="{{ route('admin.magasin.manager.edit', $manager->id) }}"
                                                     class="dropdown-item"><i class="la la-pen"></i>@lang('Edit')</a>
-                                                <a href="{{ route('admin.magasin.manager.staff.list', $manager->magasin_id) }}"
-                                                    class="dropdown-item"><i class="las la-user-friends"></i>
-                                                    @lang('Liste des Staffs')</a>
+                                                
                                                 @if ($manager->status == Status::DISABLE)
                                                     <button type="button" class="confirmationBtn  dropdown-item"
                                                         data-action="{{ route('admin.magasin.manager.status', $manager->id) }}"
@@ -61,10 +66,7 @@
                                                         <i class="la la-eye-slash"></i> @lang("Désactiver")
                                                     </button>
                                                 @endif
-                                                <a href="{{ route('admin.magasin.manager.dashboard', $manager->id) }}"
-                                                    class="dropdown-item" target="_blank"><i class="las la-sign-in-alt"></i>
-                                                    @lang('Login')
-                                                </a>
+                                                
                                             </div>
                                         </td>
                                     </tr>

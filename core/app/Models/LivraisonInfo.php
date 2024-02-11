@@ -89,4 +89,9 @@ class LivraisonInfo extends Model
     {
         return $this->hasOne(LivraisonPayment::class, 'livraison_info_id', 'id');
     }
+
+    public function product()
+    {
+        return $this->hasOne(LivraisonProduct::class, 'livraison_info_id', 'id');
+    }
 }

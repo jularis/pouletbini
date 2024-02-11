@@ -119,7 +119,13 @@
                         </ul>
                     </div>
                 </li>
-                <li class="sidebar-menu-item  {{ menuActive(['admin.livraison.info*', 'admin.livraison.invoice']) }}">
+                <li class="sidebar-menu-item  {{ menuActive(['admin.livraison.brouillon']) }}">
+                    <a href="{{ route('admin.livraison.brouillon') }}" class="nav-link">
+                        <i class="menu-icon las la-fax"></i>
+                        <span class="menu-title">@lang('Commandes en brouillon')</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item  {{ menuActive(['admin.livraison.invoice']) }}">
                     <a href="{{ route('admin.livraison.info.index') }}" class="nav-link">
                         <i class="menu-icon las la-fax"></i>
                         <span class="menu-title">@lang('Gestion Commandes')</span>

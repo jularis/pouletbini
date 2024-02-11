@@ -283,7 +283,7 @@ class LivraisonController extends Controller
         $livraison->estimate_date      = $request->estimate_date;
         $livraison->save();
 
-        LivraisonProduct::where('livraison_info_id', $id)->delete();
+        //LivraisonProduct::where('livraison_info_id', $id)->delete();
 
         $subTotal = 0;
         $data = [];
@@ -295,19 +295,19 @@ class LivraisonController extends Controller
             $price     = $livraisonProduit->price * $item['quantity'];
             $subTotal += $price;
 
-            $data[] = [
-                'livraison_info_id' => $livraison->id,
-                'livraison_produit_id' => $livraisonProduit->id,
-                'qty'             => $item['quantity'], 
-                'fee'             => $price,
-                'type_price'      => $livraisonProduit->price,
-                'created_at'      => now(),
-            ];
-            $livraisonProduit->quantity = $livraisonProduit->quantity - $item['quantity'];
-            $livraisonProduit->quantity_use = $livraisonProduit->quantity_use + $item['quantity'];
-            $livraisonProduit->save();
+            // $data[] = [
+            //     'livraison_info_id' => $livraison->id,
+            //     'livraison_produit_id' => $livraisonProduit->id,
+            //     'qty'             => $item['quantity'], 
+            //     'fee'             => $price,
+            //     'type_price'      => $livraisonProduit->price,
+            //     'created_at'      => now(),
+            // ];
+            // $livraisonProduit->quantity = $livraisonProduit->quantity - $item['quantity'];
+            // $livraisonProduit->quantity_use = $livraisonProduit->quantity_use + $item['quantity'];
+            // $livraisonProduit->save();
         }
-        LivraisonProduct::insert($data);
+        // LivraisonProduct::insert($data);
 
         $discount = $request->discount ?? 0;
         // $discountAmount = ($subTotal / 100) * $discount;

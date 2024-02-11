@@ -1,9 +1,9 @@
-@extends('manager.layouts.app')
+@extends('admin.layouts.app')
 @section('panel')
 <div class="row mb-none-30">
     <div class="col-lg-12 col-md-12 mb-30">
         <div class="card">
-            <form action="{{route('manager.livraison.update',encrypt($livraisonInfo->id))}}" method="POST" id="flocal">
+            <form action="{{route('admin.livraison.brouillon.update',encrypt($livraisonInfo->id))}}" method="POST" id="flocal">
                 <div class="card-body">
                     @csrf
                     <div class="row">
@@ -136,16 +136,11 @@
                                 </h5>
                                 <div class="card-body">
                                     <div class="row" id="addedField">
-                                         @foreach ($livraisonInfo->products as $item)
-                                         @php
-                                            if($item->etat==0)
-                                            {
-                                                continue;
-                                            }
-                                         @endphp
+                                         @foreach ($livraisonInfo->products->where('etat',0) as $item)
+                                          
                                          <div class="row single-item gy-2">
                                              <div class="col-md-4">
-                                                    <select class="form-control selected_type" name="items[{{ $loop->index}}][produit]" readonly>
+                                                    <select class="form-control selected_type" name="items[{{ $loop->index}}][produit]" required>
                                                         <option disabled selected value="">@lang('Selectionner produit')</option>
                                                         @foreach($produits as $produit)
                                                             <option value="{{$produit->id}}"
@@ -160,7 +155,7 @@
                                                 <div class="col-md-4">
                                                     <div class="input-group mb-3">
                                                     
-                                                        <input type="number" class="form-control quantity" value="{{ $item->qty }}"  name="items[{{ $loop->index }}][quantity]"   readonly>
+                                                        <input type="number" class="form-control quantity" value="{{ $item->qty }}"  name="items[{{ $loop->index }}][quantity]"   required>
                                                         <span class="input-group-text categorie"><i class="las la-balance-scale"></i></span>
                                                     </div>
                                                 </div>
