@@ -27,6 +27,9 @@ class Commandes implements FromView
                 ->when(request()->search, function ($query, $search) {
                     $query->where('code',$search); 
                 })
+                ->when(request()->etat, function ($query, $etat) {
+                    $query->where('etat',$etat); 
+                })
                 ->when(request()->staff, function ($query, $staff) {
                     $query->where('receiver_staff_id',$staff); 
                 })

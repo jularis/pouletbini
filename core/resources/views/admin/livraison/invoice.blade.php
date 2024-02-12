@@ -68,17 +68,19 @@
                                         <th>@lang("Date d'envoi")</th>
                                         <th>@lang('Prix')</th>
                                         <th>@lang('Qte')</th>
+                                        <th> </th>
                                         <th>@lang('Sous-total')</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($livraisonInfo->products as $livraisonProductInfo)
-                                        <tr>
+                                        <tr @if($livraisonProductInfo->etat==0) style="opacity:0.5" @endif>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ __($livraisonProductInfo->produit->name) }}</td>
                                             <td>{{ showDateTime($livraisonProductInfo->created_at) }}</td>
                                             <td>{{ showAmount($livraisonProductInfo->fee) }} {{ $general->cur_sym }}</td>
-                                            <td>{{ $livraisonProductInfo->qty }} {{ __(@$livraisonProductInfo->produit->categorie->name) }}</td>
+                                            <td>{{ $livraisonProductInfo->qty }}</td>
+                                            <td>@if($livraisonProductInfo->etat==0) <span class="text-danger" style="font-size: 12px;"> Brouillon</span> @endif</td>
                                             <td>{{ showAmount($livraisonProductInfo->fee) }} {{ $general->cur_sym }}</td>
                                         </tr>
                                     @endforeach

@@ -34,16 +34,24 @@
                                 <label>@lang('Status de livraison')</label>
                                 <select name="status" class="form-control">
                                     <option value="">@lang("Tous")</option> 
-                                    <option value="2">@lang('En attente')</option>
-                                    <option value="3">@lang('Livré')</option>
+                                    <option value="2" {{ request()->status == '2' ? 'selected' : '' }}>@lang('En attente')</option>
+                                    <option value="3" {{ request()->status == '3' ? 'selected' : '' }}>@lang('Livré')</option>
+                                </select>
+                            </div>
+                            <div class="flex-grow-1">
+                                <label>@lang('Status de commande')</label>
+                                <select name="etat" class="form-control">
+                                    <option value="">@lang("Tous")</option> 
+                                    <option value="1" {{ request()->etat == '1' ? 'selected' : '' }}>@lang('Validé')</option>
+                                    <option value="2"{{ request()->etat == '2' ? 'selected' : '' }}>@lang('En brouillon')</option>
                                 </select>
                             </div>
                             <div class="flex-grow-1">
                                 <label>@lang('Status de paiement')</label>
                                 <select name="payment_status" class="form-control">
                                     <option value="" selected>@lang("Tous")</option>
-                                    <option value="1">@lang('Payé')</option>
-                                    <option value="0">@lang('Impayé')</option>
+                                    <option value="1" {{ request()->payment_status == '1' ? 'selected' : '' }}>@lang('Payé')</option>
+                                    <option value="0" {{ request()->payment_status == '0' ? 'selected' : '' }}>@lang('Impayé')</option>
                                 </select>
                             </div>
                             <div class="flex-grow-1">

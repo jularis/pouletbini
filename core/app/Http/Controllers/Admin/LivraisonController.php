@@ -27,7 +27,20 @@ class LivraisonController extends Controller
         $magasins = Magasin::get(); 
 
         $livraisonInfos = LivraisonInfo::dateFilter()->searchable(['code'])->filter(['status','receiver_magasin_id','sender_magasin_id'])->where(function ($q) {
-            $q->OrWhereHas('payment', function ($myQuery) {
+           
+           
+            $q->WhereHas('product', function ($myQuery) {
+                if(request()->etat != null){
+                    $etat=1;
+                    if(request()->etat==2){
+                        $etat = 0;
+                    }
+                $myQuery->where('etat',$etat); 
+                } 
+           });
+           
+            
+            $q->WhereHas('payment', function ($myQuery) {
                 if(request()->payment_status != null){
                     $myQuery->where('status',request()->payment_status);
                 }
