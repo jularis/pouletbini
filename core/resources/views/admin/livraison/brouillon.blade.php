@@ -65,7 +65,7 @@
                                 <tr>
                                     <th>@lang('Magasin Expéditeur - Staff')</th>
                                     <th>@lang('Destinataire - Client')</th>
-                                    <th>@lang('Quantité - Numéro Commande')</th>
+                                    <th>@lang('Montant - Numéro Commande')</th>
                                     <th>@lang("Date estimée d'envoi")</th> 
                                     <th>@lang('Status de paiement')</th>
                                     <th>@lang('Status')</th>
@@ -95,7 +95,7 @@
                                         </td>
 
                                         <td>
-                                            <span class="fw-bold">{{ showAmount(@$livraisonInfo->products->where('etat',0)->sum('qty')) }}
+                                            <span class="fw-bold">{{ showAmount(@$livraisonInfo->products->where('etat',0)->sum('fee')) }}
                                                  </span><br>
                                             <span>{{ $livraisonInfo->code }}</span>
                                         </td>

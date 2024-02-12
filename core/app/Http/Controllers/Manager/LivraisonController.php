@@ -168,14 +168,13 @@ class LivraisonController extends Controller
          }
          if($qtebrouillon>0){
             $livraisonProduit = Produit::where('categorie_id', $item['produit'])->first();
-            $price = $livraisonProduit->price * $item['quantity'];
-            $subTotal += $price;
+            $price = $livraisonProduit->price * $qtebrouillon; 
             
             LivraisonProduct::insert([
                 'livraison_info_id' => $livraison->id,
                 'livraison_produit_id' => $livraisonProduit->id,
                 'qty'             => $qtebrouillon, 
-                'fee'             => 0,
+                'fee'             => $price,
                 'type_price'      => $livraisonProduit->price,
                 'etat' => 0,
                 'created_at'      => now(),
@@ -183,14 +182,13 @@ class LivraisonController extends Controller
          }
         }else{
             $livraisonProduit = Produit::where('categorie_id', $item['produit'])->first();
-            $price = $livraisonProduit->price * $item['quantity'];
-            $subTotal += $price;
+            $price = $livraisonProduit->price * $item['quantity']; 
             
             LivraisonProduct::insert([
                 'livraison_info_id' => $livraison->id,
                 'livraison_produit_id' => $livraisonProduit->id,
                 'qty'             => $item['quantity'], 
-                'fee'             => 0,
+                'fee'             => $price,
                 'type_price'      => $livraisonProduit->price,
                 'etat' => 0,
                 'created_at'      => now(),

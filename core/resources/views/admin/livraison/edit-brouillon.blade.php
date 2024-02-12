@@ -140,7 +140,7 @@
                                           
                                          <div class="row single-item gy-2">
                                              <div class="col-md-4">
-                                                    <select class="form-control selected_type" name="items[{{ $loop->index}}][produit]" required>
+                                                    <select class="form-control selected_type" name="items[{{ $loop->index}}][produit]" readonly>
                                                         <option disabled selected value="">@lang('Selectionner produit')</option>
                                                         @foreach($produits as $produit)
                                                             <option value="{{$produit->id}}"
@@ -155,7 +155,7 @@
                                                 <div class="col-md-4">
                                                     <div class="input-group mb-3">
                                                     
-                                                        <input type="number" class="form-control quantity" value="{{ $item->qty }}"  name="items[{{ $loop->index }}][quantity]"   required>
+                                                        <input type="number" class="form-control quantity" value="{{ $item->qty }}"  name="items[{{ $loop->index }}][quantity]" readonly>
                                                         <span class="input-group-text categorie"><i class="las la-balance-scale"></i></span>
                                                     </div>
                                                 </div>

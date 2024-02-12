@@ -106,6 +106,7 @@ class LivraisonController extends Controller
     {
 
         $id = decrypt($id);
+ 
 
         $request->validate([
             'magasin'           => 'required|exists:magasins,id',
@@ -116,8 +117,7 @@ class LivraisonController extends Controller
             'receiver_name'    => 'required|max:255', 
             'receiver_phone'   => 'required|string|max:255',
             'receiver_address' => 'required|max:255',
-            'items'            => 'required|array',
-            'items.*.produit'     => 'required|integer|exists:produits,id',
+            'items'            => 'required|array', 
             'items.*.quantity' => 'required|numeric|gt:0',
             'items.*.amount'   => 'required|numeric|gt:0',
             'items.*.name'     => 'nullable|string',
@@ -126,10 +126,10 @@ class LivraisonController extends Controller
         ]);
 
         $sender                      = auth()->user();
-        $livraison                     = LivraisonInfo::findOrFail($id);
+        $livraison                     = new LivraisonInfo();
         $livraison->invoice_id         = getTrx();
         $livraison->code               = getTrx();
-        $livraison->sender_magasin_id   = $sender->magasin_id; 
+        $livraison->sender_magasin_id   = $sender->magasin_id;
         $livraison->sender_staff_id    = $sender->id; 
         if($sender->user_type !='Staff'){
             $livraison->sender_staff_id    = $request->staff;
@@ -143,72 +143,163 @@ class LivraisonController extends Controller
         $livraison->receiver_staff_id    = $request->staff;
         $livraison->receiver_client_id    = $request->client;
         $livraison->receiver_magasin_id = $request->magasin;
+        if($request->client=='Autre'){
+            $client = new Client();
+            $client->name      = $request->receiver_name;
+            $client->email     = $request->receiver_email;
+            $client->phone     = $request->receiver_phone;
+            $client->address   = $request->receiver_address;
+            $client->save();
+            $livraison->receiver_client_id    = $client->id; 
+        }else{
+            $client = Client::find($request->client);
+            $client->name      = $request->receiver_name;
+            $client->email     = $request->receiver_email;
+            $client->phone     = $request->receiver_phone;
+            $client->address   = $request->receiver_address;
+            $client->save();
+            $livraison->receiver_client_id    = $client->id;
+        }
         $livraison->receiver_name      = $request->receiver_name;
         $livraison->receiver_email     = $request->receiver_email;
         $livraison->receiver_phone     = $request->receiver_phone;
         $livraison->receiver_address   = $request->receiver_address;
-        $livraison->status   = Status::COURIER_DELIVERYQUEUE;
+ 
         $livraison->estimate_date      = $request->estimate_date;
         $livraison->save();
 
-        //LivraisonProduct::where('livraison_info_id', $id)->delete();
+        LivraisonProduct::where([['livraison_info_id', $id],['etat',0]])->delete();
 
-        $subTotal = 0;
+        $subTotal = $qtebrouillon = $qterestante = $quantityAcceptee = 0;
+        
         $data = [];
         foreach ($request->items as $item) {
-            $livraisonProduit = Produit::where('id', $item['produit'])->first();
-            if (!$livraisonProduit) {
-                continue;
-            }
-            $price     = $livraisonProduit->price * $item['quantity'];
+            $productArray = Produit::where([['categorie_id',$item['produit']],['quantity_restante','>',0]])
+                                    ->orderby('id','asc');
+            $total = $productArray->sum('quantity_restante');
+            
+            $productArray = $productArray->get();
+            $qterestante = $quantityAcceptee = 0;
+
+            if($productArray !=null)
+            {
+                if($total>$item['quantity']){
+                    $qtebrouillon = 0;
+                    $item['quantity'] = $item['quantity'];
+                }elseif($total ==$item['quantity']){
+                    $qtebrouillon=0;
+                    $item['quantity'] = $item['quantity'];
+                }else{
+                    $qtebrouillon = $item['quantity'] - $total; 
+                    $item['quantity'] = $total;
+                }
+                
+            foreach($productArray as $data){
+
+                if($item['quantity']==0){
+                    continue;
+                }
+                 $qteInitial = $data->quantity_restante;
+                 $qtecommandee =  $item['quantity'];
+                 if($qterestante >0){
+                    $qtecommandee = $qterestante;
+                 }
+                  
+                 if($qtecommandee>$qteInitial){
+                    $qterestante = $qtecommandee-$qteInitial;
+                    $quantityAcceptee = $qteInitial;
+                 }elseif($qtecommandee<$qteInitial){
+                    $qterestante = ($qtecommandee-$qteInitial)* -1;
+                    $quantityAcceptee = $qtecommandee;
+                 }else{
+                    $qterestante = 0;
+                    $quantityAcceptee = $qtecommandee;
+                 }
+                 
+            
+            $livraisonProduit = Produit::where('id', $data->id)->first();
+            $price = $livraisonProduit->price * $quantityAcceptee;
             $subTotal += $price;
 
-            // $data[] = [
-            //     'livraison_info_id' => $livraison->id,
-            //     'livraison_produit_id' => $livraisonProduit->id,
-            //     'qty'             => $item['quantity'], 
-            //     'fee'             => $price,
-            //     'type_price'      => $livraisonProduit->price,
-            //     'created_at'      => now(),
-            // ];
-            // $livraisonProduit->quantity = $livraisonProduit->quantity - $item['quantity'];
-            // $livraisonProduit->quantity_use = $livraisonProduit->quantity_use + $item['quantity'];
-            // $livraisonProduit->save();
+            
+            LivraisonProduct::insert([
+                'livraison_info_id' => $livraison->id,
+                'livraison_produit_id' => $livraisonProduit->id,
+                'qty'             => $quantityAcceptee, 
+                'fee'             => $price,
+                'type_price'      => $livraisonProduit->price,
+                'created_at'      => now(),
+            ]);    
+            $livraisonProduit->quantity_restante = $livraisonProduit->quantity_restante - $quantityAcceptee;
+            $livraisonProduit->quantity_use = $livraisonProduit->quantity_use + $quantityAcceptee; 
+            $livraisonProduit->save();
+            $item['quantity'] = $qterestante;
+            
+         }
+         if($qtebrouillon>0){
+            $livraisonProduit = Produit::where('categorie_id', $item['produit'])->first();
+            $price = $livraisonProduit->price * $qtebrouillon; 
+            
+            LivraisonProduct::insert([
+                'livraison_info_id' => $livraison->id,
+                'livraison_produit_id' => $livraisonProduit->id,
+                'qty'             => $qtebrouillon, 
+                'fee'             => $price,
+                'type_price'      => $livraisonProduit->price,
+                'etat' => 0,
+                'created_at'      => now(),
+            ]);         
+         }
+        }else{
+            $livraisonProduit = Produit::where('categorie_id', $item['produit'])->first();
+            $price = $livraisonProduit->price * $item['quantity']; 
+            
+            LivraisonProduct::insert([
+                'livraison_info_id' => $livraison->id,
+                'livraison_produit_id' => $livraisonProduit->id,
+                'qty'             => $item['quantity'], 
+                'fee'             => $price,
+                'type_price'      => $livraisonProduit->price,
+                'etat' => 0,
+                'created_at'      => now(),
+            ]);                      
         }
-        // LivraisonProduct::insert($data);
 
-        $discount = $request->discount ?? 0;
-        // $discountAmount = ($subTotal / 100) * $discount;
-        $discountAmount = $discount;
-        $totalAmount = $subTotal - $discountAmount;
+        }
 
-        $user = auth()->user();
-        if ($request->payment_status == Status::PAID || $request->payment_status == Status::UNPAID) {
+        
 
-            $livraisonPayment               = LivraisonPayment::where('livraison_info_id', $livraison->id)->first();
-            $livraisonPayment->amount       = $subTotal;
-            $livraisonPayment->discount     = $discountAmount;
-            $livraisonPayment->final_amount = $totalAmount+$request->frais_livraison;
-            $livraisonPayment->frais_livraison = $request->frais_livraison;
-            $livraisonPayment->percentage   = $request->discount;
-            $livraisonPayment->status       = $request->payment_status;
-            $livraisonPayment->save();
+        $discount                        = $request->discount ?? 0;
+        // $discountAmount                  = ($subTotal / 100) * $discount;
+        $discountAmount                  =  $discount;
+        $totalAmount                     = $subTotal - $discountAmount;
 
+        $livraisonPayment                  = new LivraisonPayment();
+        $livraisonPayment->livraison_info_id = $livraison->id;
+        $livraisonPayment->amount          = $subTotal;
+        $livraisonPayment->discount        = $discountAmount;
+        $livraisonPayment->final_amount    = $totalAmount+$request->frais_livraison;
+        $livraisonPayment->frais_livraison = $request->frais_livraison;
+        $livraisonPayment->percentage      = $discount;
+        $livraisonPayment->status          = $request->payment_status;
+        $livraisonPayment->save();
+
+        if ($livraisonPayment->status == Status::PAID) {
             $adminNotification            = new AdminNotification();
             $adminNotification->user_id   = $sender->id;
-            $adminNotification->title     = $livraison->code . ' Paiement Livraison Updated  by ' . $user->username;
+            $adminNotification->title     = 'Paiement Livraison ' . $sender->username;
             $adminNotification->click_url = urlPath('admin.livraison.info.details', $livraison->id);
             $adminNotification->save();
         }
 
         $adminNotification            = new AdminNotification();
         $adminNotification->user_id   = $sender->id;
-        $adminNotification->title     = $livraison->code . ' La livraison a été mise à jour par ' . $user->username;
+        $adminNotification->title     = 'Nouvelle livraison créée par ' . $sender->username;
         $adminNotification->click_url = urlPath('admin.livraison.info.details', $livraison->id);
-        $adminNotification->save();
+        $adminNotification->save(); 
 
-        $notify[] = ['success', 'La livraison a été mise à jour avec succès'];
-        return to_route('admin.livraison.invoice', encrypt($livraison->id))->withNotify($notify);
+        $notify[] = ['success', 'La commande en brouillon a été mise à jour avec succès'];
+        return to_route('admin.livraison.brouillon.details', encrypt($livraison->id))->withNotify($notify);
     }
     
     public function invoice($id)

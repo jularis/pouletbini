@@ -130,7 +130,7 @@ Route::middleware('admin')->group(function () {
         Route::get('brouillon/details/{id}', 'livraisonBrouillonDetail')->name('brouillon.details');
         Route::get('brouillon/edit/{id}', 'editBrouillon')->name('brouillon.edit');
         Route::post('brouillon/update/{id}', 'updateBrouillon')->name('brouillon.update');
-        Route::get('delete/{id}', 'delete')->name('delete');
+        Route::post('delete/{id}', 'delete')->name('delete');
         Route::get('/exportCommandesExcel', 'exportExcel')->name('exportExcel.commandeAll');
     });
 
