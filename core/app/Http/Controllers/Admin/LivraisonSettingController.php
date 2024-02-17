@@ -76,7 +76,12 @@ class LivraisonSettingController extends Controller
     {
         $pageTitle = "Gestion des Produits";
         $categories     = Categorie::active()->with('unite')->orderBy('name')->get();
-        $produits     = Produit::orderBy('name')->with('categorie')->paginate(getPaginate());
+        $produits     = Produit::orderBy('name')->where('quantity_restante','>',0)
+                                ->with('categorie')
+                                ->groupby('categorie_id')
+                                ->select('id','produits.arrivage_id','produits.categorie_id','produits.name','produits.price','produits.status','produits.created_at','produits.updated_at'
+                                ,DB::RAW('SUM(quantity) as quantity'),DB::RAW('SUM(quantity_use) as quantity_use'),DB::RAW('SUM(quantity_restante) as quantity_restante'))
+                                ->paginate(getPaginate());
         return view('admin.categorie.produit', compact('pageTitle', 'produits', 'categories'));
     }
 
