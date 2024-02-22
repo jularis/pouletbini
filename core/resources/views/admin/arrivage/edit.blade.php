@@ -49,7 +49,7 @@
             </tr>
         </thead>
     <tbody>
-        @foreach($arrivage->arrivageDetail as $data)
+        @foreach($arrivage->arrivageDetail->where('niveau',0) as $data)
  <tr>
             <td> 
             {!! Form::hidden('unite[]', $data->categorie->unite_id, array()) !!} 
@@ -64,7 +64,7 @@
             {{ $data->price}}
             </td>
             <td>
-            {!! Form::number('quantite[]', $data->quantity, array('placeholder' => __('Qté'),'class' => 'form-control', 'min'=>'0')) !!} 
+            {!! Form::number('quantite[]', $data->quantity_restante, array('placeholder' => __('Qté'),'class' => 'form-control', 'min'=>'0')) !!} 
         </td>
         </tr>
         @endforeach
