@@ -16,9 +16,13 @@
     @stack('style-lib')
 
     <link rel="stylesheet" href="{{asset('assets/viseradmin/css/vendor/select2.min.css')}}">
-    <link rel="stylesheet" href="{{asset('assets/viseradmin/css/app.css')}}">
-
-
+    <link rel="stylesheet" href="{{asset('assets/viseradmin/css/app.css')}}"> 
+<style type="text/css">
+    .error{
+        color: #ff0000;
+        font-size: 10px;
+    }
+</style>
     @stack('style')
 </head>
 <body>
@@ -28,6 +32,8 @@
 
 
 <script src="{{asset('assets/global/js/jquery-3.6.0.min.js')}}"></script>
+<script src="{{asset('assets/global/js/jquery.validate.js')}}"></script> 
+<script src="{{asset('assets/global/js/messages_fr.js')}}"></script> 
 <script src="{{asset('assets/global/js/bootstrap.bundle.min.js')}}"></script>
 <script src="{{asset('assets/viseradmin/js/vendor/bootstrap-toggle.min.js')}}"></script>
 <script src="{{asset('assets/viseradmin/js/vendor/jquery.slimscroll.min.js')}}"></script>
@@ -58,7 +64,9 @@
         });
     })(jQuery);
 </script>
-
+<script>
+$("#flocal").validate();
+</script>
 @stack('script')
 
 

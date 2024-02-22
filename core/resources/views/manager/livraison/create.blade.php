@@ -33,7 +33,7 @@
                                     <div class="row">
                                         <div class="form-group col-lg-6">
                                             <label>@lang('Selectionner Magasin')</label>
-                                            <select class="form-control" name="magasin" id="magasin" required>
+                                            <select class="form-control " name="magasin" id="magasin" required>
                                                 <option value>@lang('Selectionner une Option')</option>
                                                 @foreach($magasins as $magasin)
                                                 <option value="{{$magasin->id}}" @selected(old('magasin') ==$magasin->id)>{{__($magasin->name)}}</option>

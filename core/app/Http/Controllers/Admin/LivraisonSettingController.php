@@ -15,6 +15,7 @@ use App\Models\LivraisonPayment;
 use App\Models\LivraisonProduct;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Fournisseur;
 use Maatwebsite\Excel\Facades\Excel;
 
 class LivraisonSettingController extends Controller
@@ -67,6 +68,7 @@ class LivraisonSettingController extends Controller
         $categorie->name   = $request->name;
         $categorie->unite_id   = $request->unite;
         $categorie->price   = $request->price;
+        $categorie->niveau   = $request->niveau;
         $categorie->save();
         $notify[] = ['success', isset($message) ? $message : 'Categorie a été ajouté avec succès'];
         return back()->withNotify($notify);
@@ -144,6 +146,44 @@ class LivraisonSettingController extends Controller
         return back()->withNotify($notify);
     }
 
+    public function fournisseurIndex()
+    {
+        $pageTitle = "Gestion des Fournisseurs"; 
+        $fournisseurs     = Fournisseur::searchable(['nom', 'type_fournisseur','email','phone','address'])->orderBy('id','desc')->paginate(getPaginate());
+        return view('admin.categorie.fournisseur', compact('pageTitle', 'fournisseurs'));
+    }
+
+    public function fournisseurStore(Request $request)
+    {
+        $request->validate([
+            'nom'  => 'required',
+            'phone'  => 'required',
+        ]);
+
+        if ($request->id) {
+            $fournisseur    = Fournisseur::findOrFail($request->id);
+            $message = "Fournisseur a été mise à jour avec succès";
+        } else {
+            $fournisseur = new Fournisseur();
+        }
+        $fournisseur->nom    = $request->nom;
+        $fournisseur->type_fournisseur = $request->type_fournisseur;
+        $fournisseur->phone   = $request->phone;
+        $fournisseur->email   = $request->email;
+        $fournisseur->address   = $request->address;
+        $fournisseur->save();
+        $notify[] = ['success', isset($message) ? $message  : 'Fournisseur a été ajouté avec succès'];
+        return back()->withNotify($notify);
+    }
+
+    public function fournisseurDelete($id)
+    { 
+        Fournisseur::where('id', decrypt($id))->delete();
+        $notify[] = ['success', 'Le fournisseur supprimé avec succès'];
+        return back()->withNotify($notify);
+    }
+
+
     public function exportExcel()
     { 
         $filename = 'clients-' . gmdate('dmYhms') . '.xlsx';
@@ -168,6 +208,10 @@ class LivraisonSettingController extends Controller
     public function clientStatus($id)
     {
         return Client::changeStatus($id);
+    }
+    public function fournisseurStatus($id)
+    {
+        return Fournisseur::changeStatus($id);
     }
     public function uniteStatus($id)
     {

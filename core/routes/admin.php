@@ -84,6 +84,7 @@ Route::middleware('admin')->group(function () {
         Route::post('store', 'store')->name('store');
         Route::get('edit/{id}', 'edit')->name('edit');  
         Route::post('status/{id}', 'status')->name('status'); 
+        
     });
     //Arrivage
     Route::controller('ArrivageController')->name('arrivage.')->prefix('arrivage')->group(function () {
@@ -93,6 +94,10 @@ Route::middleware('admin')->group(function () {
         Route::post('get/bande', 'getBande')->name('getBande');
         Route::get('edit/{id}', 'edit')->name('edit');  
         Route::post('status/{id}', 'status')->name('status'); 
+        Route::post('verify/quantity', 'verifyQuantity')->name('verifyQuantity');
+        Route::get('decoupe/{id}', 'decoupe')->name('decoupe');
+        Route::get('create/decoupe/{id}', 'createDecoupe')->name('create.decoupe');
+        Route::post('decoupe/store', 'storeDecoupe')->name('store.decoupe');
     });
 
     Route::controller('LivraisonSettingController')->name('livraison.')->prefix('livraison')->group(function () {
@@ -117,6 +122,12 @@ Route::middleware('admin')->group(function () {
             Route::post('client/delete/{id}', 'clientDelete')->name('client.delete');
             Route::get('/exportClientsExcel', 'exportExcel')->name('client.exportExcel.clientAll');
             Route::post('/client/uploadcontent', 'uploadContent')->name('client.uploadcontent');
+
+            Route::get('fournisseur/', 'fournisseurIndex')->name('fournisseur.index');
+            Route::post('fournisseur/store', 'fournisseurStore')->name('fournisseur.store');
+            Route::post('fournisseur/status/{id}', 'fournisseurStatus')->name('fournisseur.status');
+            Route::post('fournisseur/delete/{id}', 'fournisseurDelete')->name('fournisseur.delete');
+            Route::get('/exportFournisseursExcel', 'exportExcel')->name('fournisseur.exportExcel.fournisseurAll');
         });
 
         Route::get('magasin/income', 'magasinIncome')->name('magasin.income');

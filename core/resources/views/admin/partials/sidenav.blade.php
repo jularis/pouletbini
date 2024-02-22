@@ -87,6 +87,12 @@
                                     <span class="menu-title">@lang('Gestion Clients')</span>
                                 </a>
                             </li>
+                            <li class="sidebar-menu-item {{ menuActive('admin.livraison.categorie.fournisseur.index') }} ">
+                                <a href="{{ route('admin.livraison.categorie.fournisseur.index') }}" class="nav-link">
+                                    <i class="menu-icon las la-dot-circle"></i>
+                                    <span class="menu-title">@lang('Gestion Fournisseurs')</span>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </li>

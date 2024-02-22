@@ -32,8 +32,10 @@
                             <thead>
                                 <tr>
                                     <th>@lang('Ferme')</th>
+                                    <th>@lang('Fournisseur')</th> 
                                     <th>@lang('Numero bande')</th> 
-                                    <th>@lang('Date de création')</th>
+                                    <th>@lang('Nombre de poussins')</th> 
+                                    <th>@lang('Date d\'arrivée')</th>
                                     <th>@lang('Status')</th>
                                     <th>@lang('Action')</th>
                                 </tr>
@@ -45,11 +47,17 @@
                                             <span class="fw-bold">{{ $bande->ferme->nom }}</span>
                                         </td>
                                         <td>
-                                            <span class="fw-bold">{{ $bande->numero_bande }}</span>
-                                        </td>     
+                                            <span class="fw-bold">{{  $bande->fournisseur_id ? $bande->fournisseur->nom : null }}</span>
+                                        </td> 
                                         <td>
-                                            <span class="d-block">{{ showDateTime($bande->created_at) }}</span>
-                                            <span>{{ diffForHumans($bande->created_at) }}</span>
+                                            <span class="fw-bold">{{ $bande->numero_bande }}</span>
+                                        </td>   
+                                        <td>
+                                            <span class="fw-bold">{{ $bande->nombre_poussins }}</span>
+                                        </td>   
+                                        <td>
+                                            <span class="d-block">{{ showDateTime($bande->date_arrivee) }}</span>
+                                            <span>{{ diffForHumans($bande->date_arrivee) }}</span>
                                         </td>
                                         <td> @php echo $bande->statusBadge; @endphp </td>
                                         <td>

@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\admin;
 
 use App\Models\Bande;
+use App\Models\Ferme;
+use App\Models\Fournisseur;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Ferme;
 
 class BandeController extends Controller
 {
@@ -21,7 +22,7 @@ class BandeController extends Controller
         $fermes = Ferme::get();
         $bandes = Bande::dateFilter()->searchable(['numero_bande'])
                                 ->latest('id')
-                                ->with('ferme')
+                                ->with('ferme','fournisseur')
                                 ->paginate(getPaginate());
         return view('admin.bande.index', compact('pageTitle','bandes','fermes'));
     }
@@ -36,7 +37,8 @@ class BandeController extends Controller
         //
         $pageTitle = "Ajouter une Bande";
         $fermes = Ferme::get();
-        return view('admin.bande.create', compact('pageTitle','fermes'));
+        $fournisseurs = Fournisseur::get();
+        return view('admin.bande.create', compact('pageTitle','fermes','fournisseurs'));
     }
 
     /**
@@ -49,7 +51,8 @@ class BandeController extends Controller
     {
         $request->validate([
             'numero' => 'required',
-            'ferme' => 'required' 
+            'ferme' => 'required', 
+            'fournisseur' => 'required',
         ]);
         if ($request->id) {
             $bande  = Bande::findOrFail($request->id);
@@ -61,6 +64,19 @@ class BandeController extends Controller
 
         $bande->numero_bande = $request->numero;
         $bande->ferme_id = $request->ferme; 
+        
+        //Verification de l'existance du fournisseur
+        $verif = Fournisseur::where([['nom',$request->fournisseur]])->Orwhere([['id',$request->fournisseur]])->first();
+        if($verif !=null){
+            $bande->fournisseur_id  = $verif->id;
+        }else{
+            $fournisseur = new Fournisseur(); 
+            $fournisseur->nom = $request->fournisseur;
+            $fournisseur->save();
+            $bande->fournisseur_id = $fournisseur->id;
+        } 
+        $bande->nombre_poussins = $request->nombre_poussins; 
+        $bande->date_arrivee = $request->date_arrivee; 
         $bande->save();
         $notify[] = ['success',$message];
         return back()->withNotify($notify);
@@ -87,8 +103,9 @@ class BandeController extends Controller
     {
         $bande = Bande::find($id);
         $fermes = Ferme::get();
+        $fournisseurs = Fournisseur::get();
         $pageTitle ='Modification de la Bande';
-        return view('admin.bande.edit', compact('pageTitle','bande','fermes'));
+        return view('admin.bande.edit', compact('pageTitle','bande','fermes','fournisseurs'));
     }
     /**
      * Update the specified resource in storage.

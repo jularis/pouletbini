@@ -66,7 +66,7 @@
                                         </td>
                                         <td>
                                             <span class="fw-bold">{{ $arrivage->bande->numero_bande }}</span>
-                                        </td>
+                                        </td> 
                                         <td>
                                             <span class="fw-bold">{{ $arrivage->total_poulet }}</span>
                                         </td>     
@@ -76,7 +76,9 @@
                                         </td>
                                         <td> @php echo $arrivage->statusBadge; @endphp </td>
                                         <td>
-
+                                        <a href="{{ route('admin.arrivage.decoupe', $arrivage->id) }}"
+                                                class="btn btn-sm btn-outline--info"><i class="las la-pen"></i>
+                                                    @lang('Découpes')</a>
                                             <button type="button" class="btn btn-sm btn-outline--primary"
                                                 data-bs-toggle="dropdown" aria-expanded="false"><i
                                                     class="las la-ellipsis-v"></i>@lang('Action')

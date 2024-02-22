@@ -11,6 +11,7 @@
                                 <th>@lang('Unite')</th>
                                     <th>@lang('Nom')</th>
                                     <th>@lang('Prix')</th>
+                                    <th>@lang('Niveau')</th>
                                     <th>@lang('Status')</th>
                                     <th>@lang('Action')</th>
                                 </tr>
@@ -21,12 +22,14 @@
                                     <td>{{ __($categorie->unite->name) }}</td>
                                         <td>{{ __($categorie->name) }}</td>
                                         <td>{{ __($categorie->price) }}</td>
+                                        <td>{{ __($categorie->niveau) }}</td>
                                         <td> @php  echo $categorie->statusBadge; @endphp </td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-outline--primary updateCategorie"
                                                 data-id="{{ $categorie->id }}"
                                                 data-unite="{{ $categorie->unite_id }}" 
                                                 data-price="{{ $categorie->price }}" 
+                                                data-niveau="{{ $categorie->niveau }}"
                                                 data-name="{{ $categorie->name }}"><i
                                                     class="las la-pen"></i>@lang('Edit')</button>
 
@@ -100,6 +103,14 @@
                                 <span class="input-group-text">{{ __($general->cur_text) }}</span>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label>@lang('Niveau')</label>
+                            <select class="form-control" name="niveau" required>
+                                <option value="">@lang('Selectionner une Option')</option>
+                                <option value="0">0</option> 
+                                <option value="1">1</option> 
+                            </select>
+                        </div>
                     </div>
                     
                     <div class="modal-footer">
@@ -135,6 +146,7 @@
                 modal.find('input[name=name]').val(name);
                 modal.find('input[name=price]').val($(this).data('price'));
                 modal.find('select[name=unite]').val($(this).data('unite'));
+                modal.find('select[name=niveau]').val($(this).data('niveau'));
                 modal.modal('show');
             });
         })(jQuery);

@@ -16,4 +16,9 @@ class Bande extends Model
     {
         return $this->belongsTo(Ferme::class);
     }
+
+    public function fournisseur()
+    {
+        return $this->belongsTo(Fournisseur::class);
+    }
 }

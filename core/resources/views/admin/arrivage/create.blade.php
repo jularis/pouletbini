@@ -3,7 +3,7 @@
     <div class="row mb-none-30">
         <div class="col-lg-12 mb-30">
             <div class="card">
-                <div class="card-body">
+                <div class="card-body" >
                     {!! Form::open([
                         'route' => ['admin.arrivage.store'],
                         'method' => 'POST',
@@ -26,21 +26,28 @@
                     <div class="form-group row autosaisie">
                         {{ Form::label(__('Numero de la bande'), null, ['class' => 'col-sm-4 control-label']) }}
                         <div class="col-xs-12 col-sm-8">
-                        <select class="form-control  select2-auto-tokenize" name="bande" id="bande" required>
+                        <select class="form-control  select2-auto-tokenize selected_type" name="bande" id="bande" required>
                                  
                             </select> 
                         </div>
                     </div>
                     <div class="form-group row">
-                        {{ Form::label(__('Quantité de poulets arrivée'), null, ['class' => 'col-sm-4 control-label']) }}
+                        {{ Form::label(__('Total poulets arrivé'), null, ['class' => 'col-sm-4 control-label']) }}
                         <div class="col-xs-12 col-sm-8">
+                            <div class="input-group">
                             <?php echo Form::number('total', null, ['class' => 'form-control', 'id' => 'total', 'required']); ?>
+                           
+                            <div class="input-group-append">
+                                <span class="input-group-text qte_init" style="height: 45px;border-radius: 0;">00</span>
+                            </div>
+                    </div>
+                            
                         </div>
                     </div>
                     <div class="form-group row">
                         {{ Form::label(__('Date d\'arrivage'), null, ['class' => 'col-sm-4 control-label']) }}
                         <div class="col-xs-12 col-sm-8">
-                            <?php echo Form::date('date_arrivage', null, ['class' => 'form-control', 'id' => 'date_arrivage', 'required']); ?>
+                            <?php echo Form::text('date_arrivage', null, ['class' => 'form-control date', 'id' => 'date_arrivage', 'required']); ?>
                         </div>
                     </div>
                     
@@ -57,9 +64,9 @@
                 <th class="text-center">Quantité</th>
             </tr>
         </thead>
-    <tbody>
+    <tbody id="addedField">
         @foreach($categories as $data)
- <tr>
+ <tr class="single-item">
             <td> 
             {!! Form::hidden('unite[]', $data->unite_id, array()) !!} 
             {{ $data->unite->name }}
@@ -73,10 +80,14 @@
             {{ $data->price}}
             </td>
             <td>
-            {!! Form::number('quantite[]', null, array('placeholder' => __('Qté'),'class' => 'form-control', 'min'=>'0')) !!} 
+            {!! Form::number('quantite[]', null, array('placeholder' => __('Qté'),'class' => 'form-control quantity', 'min'=>'0')) !!} 
         </td>
         </tr>
         @endforeach
+        <tr>
+            <td colspan="3"><div><span style="font-size: 18px;font-weight: bold;">Total</span></div></td>
+            <td><div><span class="total" style="font-size: 18px;font-weight: bold;text-align:center;">0</span></div></td>
+        </tr>
     </tbody>
 
 </table>
@@ -113,6 +124,7 @@
             tags: true,
         });
          $('#ferme').change(function(){ 
+
 var urlsend='{{ route("admin.arrivage.getBande") }}'; 
   $.ajax({
             type:'POST',
@@ -125,11 +137,54 @@ var urlsend='{{ route("admin.arrivage.getBande") }}';
         });
 });
 
-$('.dates').datepicker({
-                maxDate: new Date(),
-                range: false,
-                multipleDatesSeparator: "-",
-                language: 'fr'
+$('#bande').change(function(){ 
+    let qte    = parseFloat($('#bande option:selected').data('qte') || 0);
+    if(qte>0){
+        $('#total').attr('max', qte);
+        $('.qte_init').text(qte);
+    }
+   
+});
+$('#addedField').on('input', '.quantity', function (e) {
+            this.value = this.value.replace(/^\.|[^\d\.]/g, '');
+
+            let quantity = $(this).val();
+            if (quantity <= 0) {
+                quantity = 0;
+            }
+
+            calculation()
+        });
+
+function calculation ( ) {
+            let items    = $('#addedField').find('.single-item');
+            let totalInit = $('#total').val();
+            let subTotal = 0;
+            let subTemp = 0;
+
+            $.each(items, function (i, item) { 
+                 
+                let quantity = parseFloat($(item).find('.quantity').val() || 0);
+                subTemp += quantity;
+                if(totalInit<subTemp){
+                    $(item).find('.quantity').val(0);
+                    quantity = 0;
+                    subTemp = subTemp - quantity;
+                } 
+
+                subTotal += quantity;
+            });
+ 
+
+            // let discountAmount = (subTotal/100)*discount;
+ 
+            $('.total').text(subTotal);
+        };
+
+$('.date').datepicker({
+    language  : 'fr',
+            dateFormat: 'yyyy-mm-dd',
+            maxDate   : new Date()
             });
     </script>
 @endpush

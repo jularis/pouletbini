@@ -9,6 +9,7 @@ use App\Models\Unite;
 use App\Models\Produit;
 use App\Models\Arrivage;
 use App\Models\Categorie;
+use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -54,7 +55,14 @@ class ArrivageController extends Controller
                                 ->paginate(getPaginate());
         return view('admin.arrivage.index', compact('pageTitle','bandes','fermes','arrivages'));
     }
-
+    public function decoupe($id)
+    {
+ 
+        $decoupes = Produit::where([['niveau',1],['arrivage_id',$id]])->paginate(getPaginate());
+        $arrivage = Arrivage::where('id', $id)->first();
+        $pageTitle = "Gestion des découpes pour Arrivage N° ".$arrivage->bande->numero_bande;
+        return view('admin.arrivage.decoupe', compact('pageTitle','decoupes','id'));
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -62,10 +70,21 @@ class ArrivageController extends Controller
      */
     public function create()
     {
-        $pageTitle = "Ajouter une Bande";
+        $pageTitle = "Ajouter un arrivage";
         $fermes = Ferme::get(); 
-        $categories = Categorie::with('unite')->get();
+        $categories = Categorie::where('niveau',0)->with('unite')->get();
         return view('admin.arrivage.create', compact('pageTitle','fermes','categories'));
+    }
+
+    public function createDecoupe($id)
+    {
+        
+        $categoriePoulets = Produit::where([['niveau',0],['arrivage_id',$id]])->get();
+        
+        $categories = Categorie::where('niveau',1)->get();
+        $arrivage = Arrivage::where('id', $id)->first();
+        $pageTitle = "Ajouter des découpes pour Arrivage N° ".$arrivage->bande->numero_bande;
+        return view('admin.arrivage.create-decoupe', compact('pageTitle','categoriePoulets','categories','id'));
     }
 
     public function getBande()
@@ -76,7 +95,15 @@ class ArrivageController extends Controller
             $contents = '<option value=""></option>';
 
             foreach ($bandes as $data) {
-                $contents .= '<option value="' . $data->numero_bande . '" >' . $data->numero_bande . '</option>';
+                $poussins = $data->nombre_poussins;
+                $total = Arrivage::where('bande_id',$data->id)->sum('total_poulet');
+                if($total !=null){
+                    if($total>=$data->nombre_poussins){
+                        continue;
+                    }
+                    $poussins = $data->nombre_poussins - $total;
+                }
+                $contents .= '<option value="' . $data->numero_bande . '" data-qte="'.$poussins.'">' . $data->numero_bande . '</option>';
             }
         } else {
             $contents = null;
@@ -85,6 +112,19 @@ class ArrivageController extends Controller
         return $contents;
     }
 
+    public function verifyQuantity()
+    { 
+        $bande = request()->bande;
+        $bandes = Bande::where('id', $bande)->first();
+        if ($bandes !=null) {
+            $nbPoussins = $bandes->nombre_poussins; 
+        } else {
+            $contents = null;
+        }
+
+        return $contents;
+    }
+    
     /**
      * Store a newly created resource in storage.
      *
@@ -93,6 +133,7 @@ class ArrivageController extends Controller
      */
     public function store(Request $request)
     {
+       
         $validationRule = [
             'total' => 'required', 
             'bande' => 'required', 
@@ -103,6 +144,12 @@ class ArrivageController extends Controller
             'quantite' => 'required|array'   
         ];
         $request->validate($validationRule);
+        $total_dispatch = array_sum($request->quantite);
+ 
+        if ($total_dispatch != $request->total) {
+            $notify[] = ['error', 'Le total de poulets arrivé doit être égale au total de poulets reparti selon leur catégorie. Veuillez apporter des modification avant de soumettre le formatulaire.'];
+            return back()->withNotify($notify)->withInput();
+        }
 
         if($request->id) {
             $arrivage = Arrivage::findOrFail($request->id); 
@@ -153,6 +200,74 @@ class ArrivageController extends Controller
                     $produit->name = $unit->name.'-'.$categ->name;
                     $produit->save();
                     $i++;  
+                } 
+                
+            }
+        }
+        $notify[] = ['success', isset($message) ? $message : "$i nouveau(x) produits ont été ajoutés."];
+         
+        return back()->withNotify($notify);
+    }
+
+    public function storeDecoupe(Request $request)
+    {
+        $validationRule = [
+            'arrivage' => 'required',  
+            'quantitePrev' => 'required|array',
+            'categorie' => 'required|array',
+            'price' => 'required|array',  
+            'quantite' => 'required|array'   
+        ];
+        $request->validate($validationRule);
+  
+         
+        if($request->arrivage !=null){
+            $id = $request->arrivage;
+            if($request->quantite !=null) { 
+                $quantitePrev = $request->quantitePrev;  
+                $quantiteInit = $request->quantiteInit;  
+                $quantite = $request->quantite;
+                $unite = $request->unite;
+                $categorie = $request->categorie;
+                $price = $request->price;
+                $i=0;
+                
+                foreach($quantitePrev as $key => $data){
+
+                    if($data==null){
+                        continue;
+                    }
+                    $produit_Id = $key; 
+                    $qte_prelevee = $data;
+                    $qte_initiale = $quantiteInit[$key]; 
+                    $product = Produit::where('id',$produit_Id)->first();
+                    
+                    $product->quantity_prelevee = $qte_prelevee;
+                    $product->quantity_restante = $product->quantity_restante - $qte_prelevee;
+                    $product->save();
+
+                    foreach($quantite[$key] as $key2 => $data2)
+                    {
+                      
+                    if($data2 ==null){
+                        continue;
+                    }
+                    $categorie_id = $key2;
+                    $qte = $data2; 
+
+                    $categ = Categorie::where('id',$categorie_id)->first();
+                    $produit = new Produit();
+                    $produit->arrivage_id = $id;
+                    $produit->parent_preleve = $produit_Id;
+                    $produit->niveau = 1;
+                    $produit->quantity = $qte;
+                    $produit->quantity_restante = $qte;
+                    $produit->categorie_id = $categorie_id;
+                    $produit->price = $categ->price;
+                    $produit->name = $categ->unite->name.'-'.$categ->name;
+                    $produit->save();
+                    $i++;  
+                    }
                 } 
                 
             }
