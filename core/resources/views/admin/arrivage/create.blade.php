@@ -62,7 +62,7 @@
                     <div class="form-group row">
                         {{ Form::label(__('Date d\'arrivage'), null, ['class' => 'col-sm-4 control-label']) }}
                         <div class="col-xs-12 col-sm-8">
-                            <?php echo Form::text('date_arrivage', null, ['class' => 'form-control date', 'id' => 'date_arrivage', 'required']); ?>
+                            <?php echo Form::date('date_arrivage', null, ['class' => 'form-control', 'id' => 'date_arrivage', 'required','max'=>gmdate('Y-m-d')]); ?>
                         </div>
                     </div>
                     

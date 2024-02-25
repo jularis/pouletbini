@@ -12,6 +12,7 @@ use App\Models\Categorie;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\ArrivageProduit;
 
 class ArrivageController extends Controller
 {
@@ -22,7 +23,7 @@ class ArrivageController extends Controller
      */
     public function index()
     {
-        $pageTitle      = "Gestion des arrivages";
+        $pageTitle      = "Gestion des arrivages abattoirs";
         $fermes = Ferme::get();
         $bandes = Bande::latest('id')
                                 ->when(request()->ferme, function ($query, $ferme) {
@@ -58,7 +59,7 @@ class ArrivageController extends Controller
     public function decoupe($id)
     {
  
-        $decoupes = Produit::where([['niveau',1],['arrivage_id',$id]])->paginate(getPaginate());
+        $decoupes = ArrivageProduit::where([['niveau',1],['arrivage_id',$id]])->paginate(getPaginate());
         $arrivage = Arrivage::where('id', $id)->first();
         $pageTitle = "Gestion des découpes pour Arrivage N° ".$arrivage->bande->numero_bande;
         return view('admin.arrivage.decoupe', compact('pageTitle','decoupes','id'));
@@ -79,7 +80,7 @@ class ArrivageController extends Controller
     public function createDecoupe($id)
     {
         
-        $categoriePoulets = Produit::where([['niveau',0],['arrivage_id',$id]])->get();
+        $categoriePoulets = ArrivageProduit::where([['niveau',0],['arrivage_id',$id]])->get();
         
         $categories = Categorie::where('niveau',1)->get();
         $arrivage = Arrivage::where('id', $id)->first();
@@ -177,7 +178,7 @@ class ArrivageController extends Controller
         if($arrivage->id !=null){
             $id = $arrivage->id;
             if($request->quantite !=null) {  
-                Produit::where('arrivage_id',$id)->delete();
+                ArrivageProduit::where('arrivage_id',$id)->delete();
                 $quantite = $request->quantite;
                 $unite = $request->unite;
                 $categorie = $request->categorie;
@@ -191,7 +192,7 @@ class ArrivageController extends Controller
                     }
                     $unit = Unite::where('id',$unite[$key])->first();
                     $categ = Categorie::where('id',$categorie[$key])->first();
-                    $produit = new Produit();
+                    $produit = new ArrivageProduit();
                     $produit->arrivage_id = $id;
                     $produit->quantity = $qte;
                     $produit->quantity_restante = $qte;
@@ -240,7 +241,7 @@ class ArrivageController extends Controller
                     $produit_Id = $key; 
                     $qte_prelevee = $data;
                     $qte_initiale = $quantiteInit[$key]; 
-                    $product = Produit::where('id',$produit_Id)->first();
+                    $product = ArrivageProduit::where('id',$produit_Id)->first();
                     
                     $product->quantity_prelevee = $qte_prelevee;
                     $product->quantity_restante = $product->quantity_restante - $qte_prelevee;
@@ -256,7 +257,7 @@ class ArrivageController extends Controller
                     $qte = $data2; 
 
                     $categ = Categorie::where('id',$categorie_id)->first();
-                    $produit = new Produit();
+                    $produit = new ArrivageProduit();
                     $produit->arrivage_id = $id;
                     $produit->parent_preleve = $produit_Id;
                     $produit->niveau = 1;
@@ -285,7 +286,10 @@ class ArrivageController extends Controller
      */
     public function show($id)
     {
-        //
+        $arrivage = Arrivage::find($id);
+        $fermes = Ferme::get();
+        $pageTitle ='Détail de l\'arrivage abattoir';
+        return view('admin.arrivage.show', compact('pageTitle','arrivage'));
     }
 
     /**
@@ -300,6 +304,46 @@ class ArrivageController extends Controller
         $fermes = Ferme::get();
         $pageTitle ='Modification de l\'arrivage';
         return view('admin.arrivage.edit', compact('pageTitle','arrivage'));
+    }
+
+    public function send($id)
+    {
+       
+        $produitNiv = ArrivageProduit::find($id);
+        if($produitNiv !=null){
+            $produit = new Produit();
+            $produit->arrivage_id = $produitNiv->arrivage_id;
+            $produit->categorie_id = $produitNiv->categorie_id;
+            $produit->name = $produitNiv->name;
+            $produit->price = $produitNiv->price;
+            $produit->quantity = $produitNiv->quantity_restante;
+            $produit->quantity_restante = $produitNiv->quantity_restante;
+            $produit->save();
+            $produitNiv->send = 1;
+            $produitNiv->save();
+
+            if($produitNiv->decoupeDetail->count())
+            {  
+                foreach($produitNiv->decoupeDetail as $data2){
+                    $produit2 = new Produit();
+                    $produit2->arrivage_id = $data2->arrivage_id;
+                    $produit2->categorie_id = $data2->categorie_id;
+                    $produit2->name = $data2->name;
+                    $produit2->price = $data2->price;
+                    $produit2->quantity = $data2->quantity_restante;
+                    $produit2->quantity_restante = $data2->quantity_restante;
+                    $produit2->save();
+
+                    $data2->send = 1;
+                    $data2->save(); 
+                }
+
+            }
+        }
+        
+        $notify[] = ['success',"Le produit a été envoyé"];
+         
+        return back()->withNotify($notify);
     }
 
     /**

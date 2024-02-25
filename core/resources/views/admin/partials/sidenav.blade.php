@@ -119,7 +119,7 @@
                             <li class="sidebar-menu-item {{ menuActive('admin.arrivage.*') }} ">
                                 <a href="{{ route('admin.arrivage.index') }}" class="nav-link">
                                     <i class="menu-icon las la-dot-circle"></i>
-                                    <span class="menu-title">@lang('Gestion des Arrivages')</span>
+                                    <span class="menu-title">@lang('Arrivages Abattoirs')</span>
                                 </a>
                             </li>
                         </ul>

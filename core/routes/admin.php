@@ -76,6 +76,7 @@ Route::middleware('admin')->group(function () {
         Route::get('create', 'create')->name('create');
         Route::post('store', 'store')->name('store'); 
         Route::get('edit/{id}', 'edit')->name('edit');  
+        Route::get('show/{id}', 'show')->name('show'); 
         Route::post('status/{id}', 'status')->name('status'); 
     });
 
@@ -86,6 +87,7 @@ Route::middleware('admin')->group(function () {
         Route::get('create', 'create')->name('create');
         Route::post('store', 'store')->name('store');
         Route::get('edit/{id}', 'edit')->name('edit');  
+        Route::get('show/{id}', 'show')->name('show');  
         Route::post('status/{id}', 'status')->name('status'); 
         
     });
@@ -96,7 +98,9 @@ Route::middleware('admin')->group(function () {
         Route::post('store', 'store')->name('store');
         Route::post('get/bande', 'getBande')->name('getBande');
         Route::get('edit/{id}', 'edit')->name('edit');  
+        Route::get('show/{id}', 'show')->name('show'); 
         Route::post('status/{id}', 'status')->name('status'); 
+        Route::post('send/{id}', 'send')->name('send'); 
         Route::post('verify/quantity', 'verifyQuantity')->name('verifyQuantity');
         Route::get('decoupe/{id}', 'decoupe')->name('decoupe');
         Route::get('create/decoupe/{id}', 'createDecoupe')->name('create.decoupe');

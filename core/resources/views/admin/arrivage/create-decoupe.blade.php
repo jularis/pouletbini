@@ -27,6 +27,11 @@
         </thead>
     <tbody id="addedField">
         @foreach($categoriePoulets as $data)
+        @php
+            if($data->quantity_prelevee>0){
+                continue;
+            }
+        @endphp
  <tr class="single-item"> 
             <td> 
             {{ $data->categorie->name}}

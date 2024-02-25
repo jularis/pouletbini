@@ -12,13 +12,19 @@ class ArrivageProduit extends Model
 {
     use Searchable, GlobalStatus, PowerJoins;
 
+    public function categorie()
+    {
+        return $this->belongsTo(Categorie::class);
+    }
+
     public function arrivage()
     {
         return $this->belongsTo(Arrivage::class);
     }
 
-    public function produit()
+    public function decoupeDetail()
     {
-        return $this->belongsTo(Produit::class);
+        return $this->hasMany(ArrivageProduit::class, 'parent_preleve');
     }
+
 }

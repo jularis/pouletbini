@@ -79,13 +79,15 @@
                                         <a href="{{ route('admin.arrivage.decoupe', $arrivage->id) }}"
                                                 class="btn btn-sm btn-outline--info"><i class="las la-pen"></i>
                                                     @lang('Découpes')</a>
+                                    <a href="{{ route('admin.arrivage.show', $arrivage->id) }}"
+                                                    class="btn btn-sm btn-outline--primary"><i class="la la-pen"></i>@lang('Détail')</a>
+                                       <a href="{{ route('admin.arrivage.edit', $arrivage->id) }}"
+                                                    class="btn btn-sm btn-outline--danger"><i class="la la-pen"></i>@lang('Edit')</a>
                                             <button type="button" class="btn btn-sm btn-outline--primary"
                                                 data-bs-toggle="dropdown" aria-expanded="false"><i
                                                     class="las la-ellipsis-v"></i>@lang('Action')
                                             </button>
-                                            <div class="dropdown-menu p-0">
-                                                <a href="{{ route('admin.arrivage.edit', $arrivage->id) }}"
-                                                    class="dropdown-item"><i class="la la-pen"></i>@lang('Edit')</a>
+                                            <div class="dropdown-menu p-0"> 
                                                 @if ($arrivage->status == Status::DISABLE)
                                                     <button type="button" class="confirmationBtn  dropdown-item"
                                                         data-action="{{ route('admin.arrivage.status', $arrivage->id) }}"

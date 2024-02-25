@@ -17,9 +17,7 @@
                                     <th>@lang('Numero de Bande')</th> 
                                     <th>@lang('Découpe')</th>
                                     <th>@lang('Quantité')</th>
-                                    <th>@lang('Date arrivage')</th>
-                                    <th>@lang('Status')</th>
-                                    <th>@lang('Action')</th>
+                                    <th>@lang('Date arrivage')</th> 
                                 </tr>
                             </thead>
                             <tbody>
@@ -40,10 +38,6 @@
                                         <td>
                                             <span class="d-block">{{ showDateTime($decoupe->arrivage->date_arrivage) }}</span>
                                             <span>{{ diffForHumans($decoupe->arrivage->date_arrivage) }}</span>
-                                        </td>
-                                        <td> </td>
-                                        <td>
-                                
                                         </td>
                                     </tr>
                                 @empty
