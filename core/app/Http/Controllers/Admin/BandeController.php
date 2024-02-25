@@ -41,6 +41,15 @@ class BandeController extends Controller
         return view('admin.bande.create', compact('pageTitle','fermes','fournisseurs'));
     }
 
+    public function createBandeModal()
+    {
+        //
+        $pageTitle = "Ajouter une Bande";
+        $fermes = Ferme::get();
+        $fournisseurs = Fournisseur::get();
+        return view('admin.bande.create-modal', compact('pageTitle','fermes','fournisseurs'));
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -75,6 +84,7 @@ class BandeController extends Controller
             $fournisseur->save();
             $bande->fournisseur_id = $fournisseur->id;
         } 
+     
         $bande->nombre_poussins = $request->nombre_poussins; 
         $bande->date_arrivee = $request->date_arrivee; 
         $bande->save();

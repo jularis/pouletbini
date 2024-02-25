@@ -71,8 +71,10 @@ Route::middleware('admin')->group(function () {
      //Ferme
      Route::controller('FermeController')->name('ferme.')->prefix('ferme')->group(function () {
         Route::get('index', 'index')->name('index');
+        Route::get('modal', 'createFermeModal')->name('fermeModal.index');
+        Route::post('store/modal', 'storeModal')->name('store.modal');
         Route::get('create', 'create')->name('create');
-        Route::post('store', 'store')->name('store');
+        Route::post('store', 'store')->name('store'); 
         Route::get('edit/{id}', 'edit')->name('edit');  
         Route::post('status/{id}', 'status')->name('status'); 
     });
@@ -80,6 +82,7 @@ Route::middleware('admin')->group(function () {
      //Bande
      Route::controller('BandeController')->name('bande.')->prefix('bande')->group(function () {
         Route::get('index', 'index')->name('index');
+        Route::get('modal', 'createBandeModal')->name('bandeModal.index');
         Route::get('create', 'create')->name('create');
         Route::post('store', 'store')->name('store');
         Route::get('edit/{id}', 'edit')->name('edit');  

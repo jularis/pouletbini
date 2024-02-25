@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="{{asset('assets/viseradmin/css/vendor/bootstrap-toggle.min.css')}}">
     <link rel="stylesheet" href="{{asset('assets/global/css/all.min.css')}}">
     <link rel="stylesheet" href="{{asset('assets/global/css/line-awesome.min.css')}}">
-
+    <link href="{{ asset('assets/global/froiden-helper/helper.css') }}" rel="stylesheet">
     @stack('style-lib')
 
     <link rel="stylesheet" href="{{asset('assets/viseradmin/css/vendor/select2.min.css')}}">
@@ -27,9 +27,6 @@
 </head>
 <body>
 @yield('content')
-
-
-
 
 <script src="{{asset('assets/global/js/jquery-3.6.0.min.js')}}"></script>
 <script src="{{asset('assets/global/js/jquery.validate.js')}}"></script> 
@@ -47,11 +44,20 @@
 <script src="{{ asset('assets/viseradmin/js/jquery.chained.js') }}"></script>
 <script src="{{asset('assets/viseradmin/js/vendor/select2.min.js')}}"></script>
 <script src="{{asset('assets/viseradmin/js/app.js')}}"></script>
-
+<script src="{{ asset('assets/global/froiden-helper/helper.js') }}"></script>
 {{-- LOAD NIC EDIT --}}
+@include('admin.blocs.modals')
 <script>
     "use strict";
-   
+    document.loading = 'loading';
+        const MODAL_DEFAULT = '#myModalDefault';
+        const MODAL_LG = '#myModal';
+        const MODAL_XL = '#myModalXl';
+        const MODAL_HEADING = '#modelHeading';
+        const RIGHT_MODAL = '#task-detail-1';
+        const RIGHT_MODAL_CONTENT = '#right-modal-content';
+        const RIGHT_MODAL_TITLE = '#right-modal-title';
+
     bkLib.onDomLoaded(function() {
         $( ".nicEdit" ).each(function( index ) {
             $(this).attr("id","nicEditor"+index);

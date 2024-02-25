@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\admin;
 
-use App\Http\Controllers\Controller;
 use App\Models\Ferme;
+use App\Http\Helpers\Reply;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class FermeController extends Controller
 {
@@ -28,6 +29,13 @@ class FermeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function createFermeModal()
+    {
+        //
+        $pageTitle = "Ajouter une Ferme";
+        
+        return view('admin.ferme.create-modal', compact('pageTitle'));
+    }
     public function create()
     {
         //
@@ -61,6 +69,51 @@ class FermeController extends Controller
         $ferme->contact = $request->contact;
         $ferme->save();
         $notify[] = ['success',$message];
+
+        // if (request()->ajax) {   
+        //     $contents = array();
+        //     $fermes = Ferme::get();
+        //     if ($fermes->count()) {
+        //         $results = '<option value=""></option>';
+
+        //         foreach ($fermes as $data) { 
+        //             $results .= '<option value="' . $data->id . '>' . $data->nom . '</option>';
+        //         }
+        //     }
+        // $contents = 'success';
+        // $contents['data'] = $results;
+        // $contents['status'] = 'success'; 
+        // $content = "success";
+        // return $content; 
+        // }
+        return back()->withNotify($notify);
+    }
+
+    public function storeModal(Request $request)
+    { 
+         
+        $ferme  = new Ferme(); 
+
+        $ferme->nom = $request->nom;
+        $ferme->lieu = $request->lieu;
+        $ferme->responsable = $request->responsable;
+        $ferme->contact = $request->contact;
+        $ferme->save();
+        $message = "La Ferme a été ajouté avec succès";
+        $notify[] = ['success',$message];
+   
+            $contents = array();
+            $fermes = Ferme::get();
+            if ($fermes->count()) {
+                $results = '<option value=""></option>';
+
+                foreach ($fermes as $data) { 
+                    $results .= '<option value="' . $data->id . '>' . $data->nom . '</option>';
+                }
+            } 
+        $contents['data'] = $results;
+        $contents['status'] = 'success'; 
+        
         return back()->withNotify($notify);
     }
 

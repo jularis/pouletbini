@@ -64,6 +64,7 @@ class ComposerStaticInit36110c49f5a2a49416dc0956bd7087bd
         '320163ac6b93aebe3dc25b60a0533d56' => __DIR__ . '/..' . '/spatie/laravel-ignition/src/helpers.php',
         '4690a9e7c83fb47f18a4e2fd55ea4358' => __DIR__ . '/..' . '/textmagic/sdk/Services/TextmagicRestClient.php',
         '48a6375642125665354baf6b7954ed7f' => __DIR__ . '/../..' . '/app/Http/Helpers/helpers.php',
+        '7943f768e45adb9e27814e03a707fac0' => __DIR__ . '/../..' . '/app/Http/Helpers/Reply.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -934,6 +935,7 @@ class ComposerStaticInit36110c49f5a2a49416dc0956bd7087bd
         'App\\Http\\Controllers\\Staff\\StaffController' => __DIR__ . '/../..' . '/app/Http/Controllers/Staff/StaffController.php',
         'App\\Http\\Controllers\\Staff\\StaffTicketController' => __DIR__ . '/../..' . '/app/Http/Controllers/Staff/StaffTicketController.php',
         'App\\Http\\Controllers\\TicketController' => __DIR__ . '/../..' . '/app/Http/Controllers/TicketController.php',
+        'App\\Http\\Helpers\\Reply' => __DIR__ . '/../..' . '/app/Http/Helpers/Reply.php',
         'App\\Http\\Kernel' => __DIR__ . '/../..' . '/app/Http/Kernel.php',
         'App\\Http\\Middleware\\AllowRegistration' => __DIR__ . '/../..' . '/app/Http/Middleware/AllowRegistration.php',
         'App\\Http\\Middleware\\Authenticate' => __DIR__ . '/../..' . '/app/Http/Middleware/Authenticate.php',
@@ -972,6 +974,7 @@ class ComposerStaticInit36110c49f5a2a49416dc0956bd7087bd
         'App\\Models\\Extension' => __DIR__ . '/../..' . '/app/Models/Extension.php',
         'App\\Models\\Ferme' => __DIR__ . '/../..' . '/app/Models/Ferme.php',
         'App\\Models\\Form' => __DIR__ . '/../..' . '/app/Models/Form.php',
+        'App\\Models\\Fournisseur' => __DIR__ . '/../..' . '/app/Models/Fournisseur.php',
         'App\\Models\\Frontend' => __DIR__ . '/../..' . '/app/Models/Frontend.php',
         'App\\Models\\GeneralSetting' => __DIR__ . '/../..' . '/app/Models/GeneralSetting.php',
         'App\\Models\\Language' => __DIR__ . '/../..' . '/app/Models/Language.php',

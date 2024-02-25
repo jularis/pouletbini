@@ -15,20 +15,35 @@
                     <div class="form-group row">
                             <label class="col-sm-4 control-label">@lang('Ferme')</label>
                             <div class="col-xs-12 col-sm-8">
+                            <div class="input-group">
                             <select class="form-control" name="ferme" id="ferme" required>
                                 <option value=""></option>
                                 @foreach ($fermes as $ferme)
                                     <option value="{{ $ferme->id }}" @selected($ferme->id==old('ferme_id'))>{{ __($ferme->nom) }}</option>
                                 @endforeach
                             </select>
+                            <button type="button"
+                                                        class="btn btn-secondary add-ferme"
+                                                        data-toggle="tooltip"
+                                                        data-original-title="Ajouter une ferme"><i
+                                                            class="fa fa-plus"></i></button> 
+                    </div>
                             </div>
                         </div>
                     <div class="form-group row autosaisie">
                         {{ Form::label(__('Numero de la bande'), null, ['class' => 'col-sm-4 control-label']) }}
                         <div class="col-xs-12 col-sm-8">
-                        <select class="form-control  select2-auto-tokenize selected_type" name="bande" id="bande" required>
+                        <div class="input-group">
+                        <select class="form-control" name="bande" id="bande" required>
                                  
-                            </select> 
+                            </select>
+                            <button type="button"
+                                                        class="btn btn-secondary add-bande"
+                                                        data-toggle="tooltip"
+                                                        data-original-title="Ajouter une bande"><i
+                                                            class="fa fa-plus"></i></button> 
+                             
+                        </div>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -118,10 +133,24 @@
 @push('script')
  
     <script>
-        $('#ferme').select2({});
-         $('.select2-auto-tokenize').select2({
-            dropdownParent: $('.autosaisie'),
-            tags: true,
+        // $('#ferme').select2({});
+        //  $('.select2-auto-tokenize').select2({
+        //     dropdownParent: $('.autosaisie'),
+        //     tags: true,
+        // });
+        $('body').on('click', '.add-ferme', function() {
+            var url = "{{ route('admin.ferme.fermeModal.index') }}";
+
+            $(MODAL_XL + ' ' + MODAL_HEADING).html('...');
+            $.ajaxModal(MODAL_XL, url);
+            $(MODAL_XL).modal('show');
+        });
+        $('body').on('click', '.add-bande', function() {
+            var url = "{{ route('admin.bande.bandeModal.index') }}";
+
+            $(MODAL_XL + ' ' + MODAL_HEADING).html('...');
+            $.ajaxModal(MODAL_XL, url);
+            $(MODAL_XL).modal('show');
         });
          $('#ferme').change(function(){ 
 

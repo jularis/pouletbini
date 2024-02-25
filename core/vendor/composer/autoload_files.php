@@ -63,4 +63,5 @@ return array(
     '320163ac6b93aebe3dc25b60a0533d56' => $vendorDir . '/spatie/laravel-ignition/src/helpers.php',
     '4690a9e7c83fb47f18a4e2fd55ea4358' => $vendorDir . '/textmagic/sdk/Services/TextmagicRestClient.php',
     '48a6375642125665354baf6b7954ed7f' => $baseDir . '/app/Http/Helpers/helpers.php',
+    '7943f768e45adb9e27814e03a707fac0' => $baseDir . '/app/Http/Helpers/Reply.php',
 );
