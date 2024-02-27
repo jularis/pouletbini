@@ -72,8 +72,7 @@
                         <div class="col-xs-12 col-sm-8">
                         <table class="table table-striped table-bordered">
     <thead>
-            <tr>
-                <th>Unité</th>
+            <tr> 
                 <th>Categorie</th>
                 <th>Prix(FCFA)</th>
                 <th class="text-center">Quantité</th>
@@ -81,11 +80,8 @@
         </thead>
     <tbody id="addedField">
         @foreach($categories as $data)
- <tr class="single-item">
-            <td> 
-            {!! Form::hidden('unite[]', $data->unite_id, array()) !!} 
-            {{ $data->unite->name }}
-            </td>
+ <tr class="single-item"> 
+            {!! Form::hidden('unite[]', $data->unite_id, array()) !!}  
             <td>
             {!! Form::hidden('categorie[]', $data->id, array()) !!}
             {{ $data->name}}
