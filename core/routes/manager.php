@@ -84,7 +84,7 @@ Route::middleware('auth')->group(function () {
                 Route::get('delivery/list/total', 'delivered')->name('manage.delivered');
                 Route::get('credit/list/total', 'credit')->name('manage.credit');
                 Route::get('annule/list/total', 'annule')->name('manage.annule');
-                Route::delete('delete/{id}', 'destroy')->name('delete');
+                Route::post('delete/{id}', 'delete')->name('delete');
             });
 
             Route::controller('LivraisonSettingController')->name('livraison.')->prefix('livraison')->group(function () {

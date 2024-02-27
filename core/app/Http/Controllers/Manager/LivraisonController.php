@@ -694,9 +694,18 @@ class LivraisonController extends Controller
         return view('manager.livraison.list', compact('pageTitle', 'livraisonLists'));
     }
 
-    public function destroy($id) 
+    public function delete($id) 
     {
-        
+        $livraisonsProduits = LivraisonProduct::where('livraison_info_id',decrypt($id))->get();
+        foreach($livraisonsProduits as $data){
+            $produitId = $data->livraison_produit_id;
+            $qte = $data->qty;
+            $produit = Produit::where('id',$produitId)->first();
+            $produit->quantity_use = $produit->quantity_use - $qte;
+            $produit->quantity_restante = $produit->quantity_restante + $qte;
+            $produit->save();
+
+        }
         LivraisonInfo::find(decrypt($id))->delete();
         LivraisonPayment::where('livraison_info_id',decrypt($id))->delete();
         LivraisonProduct::where('livraison_info_id',decrypt($id))->delete();

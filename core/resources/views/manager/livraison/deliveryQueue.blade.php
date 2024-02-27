@@ -108,11 +108,7 @@
                                                 class="btn btn-sm btn-outline--primary">
                                                 <i class="las la-pen"></i>@lang('Edit')
                                             </a>
-                                            @if($livraisonInfo->paymentInfo->status == Status::UNPAID)
-                                            {!! Form::open(['method' => 'DELETE','route' => ['manager.livraison.delete', encrypt($livraisonInfo->id)],'style'=>'display:inline']) !!}
-                                            <button class="btn btn-sm btn-outline--danger" type="submit"  onclick="return confirm('Etes vous sûr de vouloir supprimer cette commande?')"><i class="las la-trash"></i>Delete</button>
-                    {!! Form::close() !!}
-                    @endif
+                                           
                                             <a href="{{ route('manager.livraison.invoice', encrypt($livraisonInfo->id)) }}"
                                                 title="" class="btn btn-sm btn-outline--info"><i
                                                     class="las la-file-invoice"></i> @lang('Facture')</a>
@@ -129,7 +125,15 @@
                                                     data-code="{{ $livraisonInfo->code }}"><i class="las la-truck"></i>
                                                     @lang('Terminer la livraison')</button>
                                             @endif
-                                            
+                                            @if($livraisonInfo->paymentInfo->status == Status::UNPAID)
+                                            <a href="javascript:void(0);"
+                                                class="btn btn-sm btn-danger confirmationBtn"
+                                                data-action="{{ route('manager.livraison.delete', encrypt($livraisonInfo->id)) }}"
+                                                data-question="@lang('Etre-vous sûr de vouloir supprimer cette commande?')"
+                                                ><i
+                                                    class="las la-trash"></i> @lang('Delete')</a> 
+                                             
+                    @endif
                                         </td>
                                     </tr>
                                 @empty
@@ -317,6 +321,8 @@
     </script>
 @endpush
     @endif
+
+    <x-confirmation-modal />
 @endsection
 @push('breadcrumb-plugins')
 <badge class="btn btn-danger">{{ showAmount(@$sommeTotal) }} FCFA</badge> 
