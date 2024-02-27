@@ -66,7 +66,7 @@ class LivraisonController extends Controller
         $staffs = User::active()->get();
         $magasins = Magasin::get(); 
         
-        $livraisonInfos = LivraisonInfo::dateFilter()->searchable(['code'])->filter(['status','receiver_magasin_id','sender_magasin_id'])->where(function ($q) { 
+        $livraisonInfos = LivraisonInfo::dateFilter()->searchable(['code'])->filter(['status','receiver_magasin_id','sender_magasin_id'])->where('estimate_date','>=',gmdate('Y-m-d'))->where(function ($q) { 
             $q->WhereHas('product', function ($myQuery) {
                  $myQuery->where('etat',0); 
             });
