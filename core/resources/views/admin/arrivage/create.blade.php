@@ -67,9 +67,8 @@
                     </div>
                     
                     <hr class="panel-wide">
-                    <div class="form-group row">
-                        {{ Form::label(__(''), null, ['class' => 'col-sm-4 control-label']) }}
-                        <div class="col-xs-12 col-sm-8">
+                    <div class="form-group row"> 
+                        <div class="col-xs-12 col-sm-12">
                         <table class="table table-striped table-bordered">
     <thead>
             <tr> 
@@ -96,7 +95,7 @@
         </tr>
         @endforeach
         <tr>
-            <td colspan="3"><div><span style="font-size: 18px;font-weight: bold;">Total</span></div></td>
+            <td colspan="2"><div><span style="font-size: 18px;font-weight: bold;">Total</span></div></td>
             <td><div><span class="total" style="font-size: 18px;font-weight: bold;text-align:center;">0</span></div></td>
         </tr>
     </tbody>
