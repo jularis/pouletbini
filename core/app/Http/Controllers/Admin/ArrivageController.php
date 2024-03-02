@@ -243,7 +243,7 @@ class ArrivageController extends Controller
                     $qte_initiale = $quantiteInit[$key]; 
                     $product = ArrivageProduit::where('id',$produit_Id)->first();
                     
-                    $product->quantity_prelevee = $qte_prelevee;
+                    $product->quantity_prelevee = $product->quantity_prelevee + $qte_prelevee;
                     $product->quantity_restante = $product->quantity_restante - $qte_prelevee;
                     $product->save();
 
@@ -257,12 +257,19 @@ class ArrivageController extends Controller
                     $qte = $data2; 
 
                     $categ = Categorie::where('id',$categorie_id)->first();
-                    $produit = new ArrivageProduit();
+                    $produit = ArrivageProduit::where([['parent_preleve',$produit_Id],['categorie_id',$categorie_id]])->first();
+                    if($produit==null){
+                        $produit = new ArrivageProduit();
+                        $produit->quantity = $qte;
+                        $produit->quantity_restante = $qte;
+                    }else{
+                        $produit->quantity = $produit->quantity + $qte;
+                        $produit->quantity_restante = $produit->quantity_restante + $qte;
+                    }
+                    
                     $produit->arrivage_id = $id;
                     $produit->parent_preleve = $produit_Id;
-                    $produit->niveau = 1;
-                    $produit->quantity = $qte;
-                    $produit->quantity_restante = $qte;
+                    $produit->niveau = 1; 
                     $produit->categorie_id = $categorie_id;
                     $produit->price = $categ->price;
                     $produit->name = $categ->unite->name.'-'.$categ->name;
@@ -316,29 +323,32 @@ class ArrivageController extends Controller
             $produit->categorie_id = $produitNiv->categorie_id;
             $produit->name = $produitNiv->name;
             $produit->price = $produitNiv->price;
-            $produit->quantity = $produitNiv->quantity_restante;
-            $produit->quantity_restante = $produitNiv->quantity_restante;
+            $produit->quantity = $produitNiv->quantity_restante - request()->qte;
+            $produit->quantity_restante = $produitNiv->quantity_restante - request()->qte;
             $produit->save();
+
             $produitNiv->send = 1;
+            $produitNiv->quantity_use = $produitNiv->quantity_use + request()->qte;
+            $produitNiv->quantity_restante = $produitNiv->quantity_restante - request()->qte;
             $produitNiv->save();
 
-            if($produitNiv->decoupeDetail->count())
-            {  
-                foreach($produitNiv->decoupeDetail as $data2){
-                    $produit2 = new Produit();
-                    $produit2->arrivage_id = $data2->arrivage_id;
-                    $produit2->categorie_id = $data2->categorie_id;
-                    $produit2->name = $data2->name;
-                    $produit2->price = $data2->price;
-                    $produit2->quantity = $data2->quantity_restante;
-                    $produit2->quantity_restante = $data2->quantity_restante;
-                    $produit2->save();
+            // if($produitNiv->decoupeDetail->count())
+            // {  
+            //     foreach($produitNiv->decoupeDetail as $data2){
+            //         $produit2 = new Produit();
+            //         $produit2->arrivage_id = $data2->arrivage_id;
+            //         $produit2->categorie_id = $data2->categorie_id;
+            //         $produit2->name = $data2->name;
+            //         $produit2->price = $data2->price;
+            //         $produit2->quantity = $data2->quantity_restante;
+            //         $produit2->quantity_restante = $data2->quantity_restante;
+            //         $produit2->save();
 
-                    $data2->send = 1;
-                    $data2->save(); 
-                }
+            //         $data2->send = 1;
+            //         $data2->save(); 
+            //     }
 
-            }
+            // }
         }
         
         $notify[] = ['success',"Le produit a été envoyé"];

@@ -28,7 +28,7 @@
     <tbody id="addedField">
         @foreach($categoriePoulets as $data)
         @php
-            if($data->quantity_prelevee>0){
+            if($data->quantity_restante==0){
                 continue;
             }
         @endphp
