@@ -238,6 +238,10 @@ class ArrivageController extends Controller
                     if($data==null){
                         continue;
                     }
+                     
+                    if(array_values($quantite[$key])[0]==null){
+                        continue;
+                    }
                     $produit_Id = $key; 
                     $qte_prelevee = $data;
                     $qte_initiale = $quantiteInit[$key]; 
