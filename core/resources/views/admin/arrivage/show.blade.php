@@ -88,6 +88,7 @@
                                                 <body>
                                                 @php 
                                                     $total = 0;
+                                                    $montant = 0;
                                                 @endphp
                                                 @foreach($data->decoupeDetail as $data2)
                                                        
@@ -118,12 +119,14 @@
                                                         </td>
                                                         </tr>
                                                         @php 
-                                                            $total = $total + $data2->quantity
+                                                            $total = $total + $data2->quantity;
+                                                            $montant = $montant + $data2->price*$data2->quantity;
                                                         @endphp
                                                         @endforeach
                                                         <tr class="bg bg-info">
-                                                            <td colspan="2">TOTAL</td>
-                                                            <td>{{ $total }}</td>
+                                                            <td>TOTAL</td>
+                                                            <td><?php echo number_format($montant,0,""," "); ?></td>
+                                                            <td><?php echo number_format($total,0,""," "); ?></td>
                                                             <td colspan="3"></td>
                                                         </tr>
                                                 </body>

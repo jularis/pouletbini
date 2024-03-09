@@ -29,10 +29,10 @@ class AdminController extends Controller
         $pageTitle        = 'Dashboard';
         $magasinCount      = Magasin::count();
         $magasins         = Magasin::orderBy('name', 'ASC')->take(5)->get();
-        $livraisonInfoCount = LivraisonInfo::where('status', 3)->count();
-        $livraisonInfoCountCancel = LivraisonInfo::where('status', 1)->count();
+        $livraisonInfoCount = LivraisonInfo::where('status', 3)->whereBetween('estimate_date',[date('Y-m-01'),date('Y-m-t')])->count();
+        $livraisonInfoCountCancel = LivraisonInfo::where('status', 1)->whereBetween('estimate_date',[date('Y-m-01'),date('Y-m-t')])->count();
         $managerCount     = User::manager()->count();
-        $totalIncome      = LivraisonPayment::where('status', Status::PAID)->sum('final_amount');
+        $totalIncome      = LivraisonPayment::where('status', Status::PAID)->whereBetween('date',[date('Y-m-01'),date('Y-m-t')])->sum('final_amount');
 
         $totalIncomeDays      = LivraisonPayment::where('status', Status::PAID)->whereDate('date',gmdate('Y-m-d'))->sum('final_amount');
 
@@ -43,11 +43,11 @@ class AdminController extends Controller
         $deliveryInQueue  = LivraisonInfo::where('status', 2)->count();
         $delivered        = LivraisonInfo::where('status', Status::COURIER_DELIVERED)->count();
         
-        $arrivageByFerme = Arrivage::joinRelationship('bande.ferme')->select('fermes.nom', DB::RAW('count(arrivages.id) as total'))->groupby('ferme_id')->get();
+        $arrivageByFerme = Arrivage::joinRelationship('bande.ferme')->whereBetween('date_arrivage',[date('Y-m-01'),date('Y-m-t')])->select('fermes.nom', DB::RAW('count(arrivages.id) as total'))->groupby('ferme_id')->get();
 
-        $livraisonByCategorie = LivraisonProduct::joinRelationship('info')->joinRelationship('produit')->joinRelationship('produit.categorie')->where('livraison_infos.status',3)->select('categories.name', DB::RAW('count(livraison_products.id) as total'))->groupby('categorie_id')->get();
+        $livraisonByCategorie = LivraisonProduct::joinRelationship('info')->joinRelationship('produit')->joinRelationship('produit.categorie')->where('livraison_infos.status',3)->whereBetween('estimate_date',[date('Y-m-01'),date('Y-m-t')])->select('categories.name', DB::RAW('count(livraison_products.id) as total'))->groupby('categorie_id')->get();
           
-        $livraisonByLivreur = LivraisonInfo::joinRelationship('senderStaff')->where('livraison_infos.status',3)->select(DB::RAW('concat(lastname," ", firstname) as name'), DB::RAW('count(livraison_infos.id) as total'))->groupby('sender_staff_id')->get();
+        $livraisonByLivreur = LivraisonInfo::joinRelationship('senderStaff')->where('livraison_infos.status',3)->whereBetween('estimate_date',[date('Y-m-01'),date('Y-m-t')])->select(DB::RAW('concat(lastname," ", firstname) as name'), DB::RAW('count(livraison_infos.id) as total'))->groupby('sender_staff_id')->get();
     
         
         return view('admin.dashboard', compact('pageTitle', 'livraisonByLivreur', 'sentInQueue', 'shippingLivraison', 'deliveryInQueue', 'delivered', 'magasinCount', 'totalIncome', 'magasins', 'managerCount', 'livraisonInfoCount','livraisonInfoCountCancel','totalIncomeDays','arrivageByFerme','livraisonByCategorie','totalLivraisonDays'));

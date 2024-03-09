@@ -2,7 +2,26 @@
 @section('panel')
  
     <div class="row gy-4">
-        
+        <div class="col-md-12">
+        <div class="card b-radius--10 mb-3">
+                <div class="card-body">
+                    <form action="">
+                        <div class="d-flex flex-wrap gap-4">
+                             
+                            <div class="flex-grow-1">
+                                <label>@lang('Date')</label>
+                                <input name="date" type="text" class="dates form-control"
+                                    placeholder="@lang('Date de début - Date de fin')" autocomplete="off" value="{{ request()->date }}">
+                            </div>
+                            <div class="flex-grow-1 align-self-end">
+                                <button class="btn btn--primary w-100 h-45"><i class="fas fa-filter"></i>
+                                    @lang('Filtrer')</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
      <!-- dashboard-w1 end -->
         <div class="col-xxl-3 col-sm-6">
             <div class="card bg--deep-purple has-link box--shadow2">
@@ -152,7 +171,34 @@
     </div>
      
 @endsection
+@push('style-lib')
+    <link rel="stylesheet" href="{{ asset('assets/viseradmin/css/vendor/datepicker.min.css') }}">
+@endpush
+@push('script-lib')
+    <script src="{{ asset('assets/viseradmin/js/vendor/datepicker.min.js') }}"></script>
+    <script src="{{asset('assets/viseradmin/js/vendor/datepicker.fr.js')}}"></script>
+    <script src="{{ asset('assets/viseradmin/js/vendor/datepicker.en.js') }}"></script>
+@endpush
+@push('script')
+    <script> 
+        (function($) {
+            "use strict";
+ 
+            $('.dates').datepicker({
+                maxDate: new Date(),
+                range: true,
+                multipleDatesSeparator: "-",
+                language: 'fr'
+            });
+ 
 
+        })(jQuery)
+
+        $('form select').on('change', function(){
+    $(this).closest('form').submit();
+});
+    </script>
+@endpush
 @push('script')
     <script src="{{ asset('assets/viseradmin/js/vendor/chart.js.2.8.0.js') }}"></script>
     <script>
