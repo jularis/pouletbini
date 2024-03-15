@@ -154,9 +154,10 @@
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     @lang('Reduction')
                                     <span>
-                                        {{ showAmount($livraisonInfo->paymentInfo->discount) }}
-                                        {{ __($general->cur_text) }}
-                                        <small class="text--danger">({{ getAmount($livraisonInfo->payment->percentage)}}%)</small>
+                                        
+                                        <small class="text--danger">{{ showAmount($livraisonInfo->paymentInfo->discount) }} {{ __($general->cur_text) }}</small>
+                                        
+                                        
                                     </span>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between align-items-center">

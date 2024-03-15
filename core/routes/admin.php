@@ -145,6 +145,7 @@ Route::middleware('admin')->group(function () {
         Route::get('details/{id}', 'livraisonDetail')->name('info.details');
         Route::get('invoice/{id}', 'invoice')->name('invoice');
         Route::get('brouillon', 'brouillon')->name('brouillon');
+        Route::get('check/brouillon', 'checkbrouillon')->name('check.brouillon');
         Route::get('brouillon/details/{id}', 'livraisonBrouillonDetail')->name('brouillon.details');
         Route::get('brouillon/edit/{id}', 'editBrouillon')->name('brouillon.edit');
         Route::post('brouillon/update/{id}', 'updateBrouillon')->name('brouillon.update');

@@ -168,6 +168,7 @@ class LivraisonController extends Controller
          }
          if($qtebrouillon>0){
             $livraisonProduit = Produit::where('categorie_id', $item['produit'])->first();
+            
             $price = $livraisonProduit->price * $qtebrouillon; 
             
             LivraisonProduct::insert([

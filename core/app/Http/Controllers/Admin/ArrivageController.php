@@ -327,10 +327,11 @@ class ArrivageController extends Controller
             $produit->categorie_id = $produitNiv->categorie_id;
             $produit->name = $produitNiv->name;
             $produit->price = $produitNiv->price;
-            $produit->quantity = $produitNiv->quantity_restante - request()->qte;
-            $produit->quantity_restante = $produitNiv->quantity_restante - request()->qte;
+            
+            $produit->quantity = request()->qte;
+            $produit->quantity_restante = request()->qte;
             $produit->save();
-
+            
             $produitNiv->send = 1;
             $produitNiv->quantity_use = $produitNiv->quantity_use + request()->qte;
             $produitNiv->quantity_restante = $produitNiv->quantity_restante - request()->qte;

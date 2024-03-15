@@ -5,19 +5,19 @@
         <div class="card">
             <form action="{{route('admin.livraison.brouillon.update',encrypt($livraisonInfo->id))}}" method="POST" id="flocal">
                 <div class="card-body">
-                    @csrf
+                    @csrf 
                     <div class="row">
                         <div class="col-6 form-group">
                             <label for="">@lang("Date estimée d'envoi")</label>
                             <div class="input-group">
-                                <input name="estimate_date" value="{{ showDateTime($livraisonInfo->estimate_date,'Y-m-d')}}" type="text" autocomplete="off"  class="form-control date" placeholder="Date estimée d'envoi" required>
+                                <input name="estimate_date" value="{{ showDateTime($livraisonInfo->estimate_date,'Y-m-d')}}" type="text" autocomplete="off"  class="form-control date" placeholder="Date estimée d'envoi" required readonly>
                                 <span class="input-group-text"><i class="las la-calendar"></i></span>
                             </div>
                         </div>
                         <div class="col-6 form-group">
                             <label for="">@lang('Status de paiement')</label>
                             <div class="input-group">
-                                <select class="form-control" required name="payment_status">
+                                <select class="form-control" required name="payment_status" >
                                     <option value="0" @selected($livraisonInfo->payment->status==0)>@lang('IMPAYE')</option>
                                     <option value="1" @selected($livraisonInfo->payment->status==1)>@lang('PAYE')</option>
                                 </select>
@@ -136,12 +136,15 @@
                                 </h5>
                                 <div class="card-body">
                                     <div class="row" id="addedField">
+                                        @php
+                                            $somme = 0;
+                                        @endphp
                                          @foreach ($livraisonInfo->products->where('etat',0) as $item)
                                           
                                          <div class="row single-item gy-2">
                                              <div class="col-md-4">
-                                                    <select class="form-control selected_type" name="items[{{ $loop->index}}][produit]" readonly>
-                                                        <option disabled selected value="">@lang('Selectionner produit')</option>
+                                              <input type="hidden" name="items[{{ $loop->index}}][produit]" value="{{ $item->produit->id }}" />
+                                                    <select class="form-control selected_type" name="product" disabled> 
                                                         @foreach($produits as $produit)
                                                             <option value="{{$produit->id}}"
                                                             @if($produit->quantity==0) disabled @endif
@@ -171,12 +174,15 @@
                                                     </button> -->
                                                 </div>
                                             </div>
+                                            @php
+                                            $somme = $somme + $item->fee;
+                                        @endphp
  						                @endforeach
                                     </div>
                                     <div class="border-line-area">
                                         <h6 class="border-line-title">@lang('Resume')</h6>
                                     </div>
-                                    <div class="d-flex justify-content-end">
+                                    <!-- <div class="d-flex justify-content-end">
                                         <div class="col-md-4">
                                             <div class="input-group">
                                                 <span class="input-group-text">@lang('Reduction')</span>
@@ -184,17 +190,12 @@
                                                 <span class="input-group-text">FCFA</span>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class=" d-flex justify-content-end mt-2">
-                                        <div class="col-md-4  d-flex justify-content-between">
-                                            <span class="fw-bold">@lang('Sous-total'):</span>
-                                            <div><span class="subtotal">{{ showAmount(@$livraisonInfo->payment->amount) }}</span> {{$general->cur_sym}}</div>
-                                        </div>
-                                    </div>
+                                    </div> -->
+                                    
                                     <div class=" d-flex justify-content-end mt-2">
                                         <div class="col-md-4  d-flex justify-content-between">
                                             <span class="fw-bold">@lang('Total'):</span>
-                                            <div><span class="total">{{ showAmount(@$livraisonInfo->payment->final_amount - @$livraisonInfo->payment->frais_livraison) }}</span> {{$general->cur_sym}}</div>
+                                            <div><span class="total">{{ showAmount(@$somme) }}</span> {{$general->cur_sym}}</div>
                                         </div>
                                     </div>
 
@@ -202,24 +203,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row mb-30">
-                        <div class="col-lg-12">
-                            <div class="card border--primary mt-3">
-                                <h5 class="card-header bg--primary text-white">@lang('Frais de Livraison') 
-                                </h5>
-                                <div class="card-body">
-                                    <div class="row">
-									<div class="col-md-12">
-                                                    <div class="input-group">
-                                                        <input type="number"  class="form-control" name="frais_livraison" value="{{ @$livraisonInfo->payment->frais_livraison }}" required>
-                                                        <span class="input-group-text">{{__($general->cur_text)}}</span>
-                                                    </div>
-                                                </div>
-									</div>
-								</div>
-                            </div>
-                        </div>
-                    </div>
+             
                     <button type="submit" class="btn btn--primary h-45 w-100 Submitbtn"> @lang("Envoyer")</button>
                 </div>
             </form>
