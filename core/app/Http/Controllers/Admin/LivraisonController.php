@@ -339,7 +339,6 @@ class LivraisonController extends Controller
             
             $livraisonProduit = Produit::where('categorie_id', $item->produit->ic)->first();
             $price = $livraisonProduit->price * $qtebrouillon; 
-            
             LivraisonProduct::insert([
                 'livraison_info_id' => $id,
                 'livraison_produit_id' => $livraisonProduit->id,
