@@ -260,7 +260,7 @@ class LivraisonController extends Controller
             $q->WhereHas('product', function ($myQuery) {
                  $myQuery->where('etat',0); 
             });
-        })->orderBy('id', 'DESC')->with('senderMagasin', 'receiverMagasin', 'senderStaff', 'receiverStaff', 'paymentInfo')->get();
+        })->get();
 
          
         $data = [];
@@ -271,7 +271,7 @@ class LivraisonController extends Controller
             
         foreach ($products as $item) {
             
-            $productArray = Produit::where([['categorie_id',$item->produit->categorie_id],['quantity_restante','>',0]])
+            $productArray = Produit::where([['categorie_id',$item->produit->id],['quantity_restante','>',0]])
                                     ->orderby('id','asc');
             $total = $productArray->sum('quantity_restante'); 
 
@@ -337,7 +337,7 @@ class LivraisonController extends Controller
          
          if($qtebrouillon>0){
             
-            $livraisonProduit = Produit::where('categorie_id', $item->produit->categorie_id)->first();
+            $livraisonProduit = Produit::where('categorie_id', $item->produit->ic)->first();
             $price = $livraisonProduit->price * $qtebrouillon; 
             
             LivraisonProduct::insert([
