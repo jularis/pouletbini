@@ -16,12 +16,14 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         //
         Commands\CheckBrouillon::class,
+        Commands\DeleteDraft::class,
     ];
 
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
        $schedule->command('check:draft');
+       $schedule->command('delete:draft')->dailyAt('00:30');
     }
 
     /**
