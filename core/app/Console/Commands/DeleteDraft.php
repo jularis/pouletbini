@@ -35,7 +35,7 @@ class DeleteDraft extends Command
             });
         })->get();
         foreach($livraisonInfos as $item){
-            LivraisonProduct::where([['livraison_info_id',$item->id],['etat',0]])->delete();
+            LivraisonProduct::where([['livraison_info_id',$item->id],['etat',0]])->delete(); 
         }
 
         return $this->info('Les brouillons ont été supprimés!');;

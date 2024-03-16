@@ -23,7 +23,8 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
        $schedule->command('check:draft');
-       $schedule->command('delete:draft')->dailyAt('00:30');
+      // $schedule->command('delete:draft')->dailyAt('00:30');
+      $schedule->command('delete:draft');
     }
 
     /**
