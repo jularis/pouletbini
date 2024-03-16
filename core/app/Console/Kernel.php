@@ -13,10 +13,15 @@ class Kernel extends ConsoleKernel
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
      * @return void
      */ 
+    protected $commands = [
+        //
+        Commands\CheckBrouillon::class,
+    ];
+
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
-       $schedule->command('check:draft')->cron('*/5 * * * *');
+       $schedule->command('check:draft');
     }
 
     /**
