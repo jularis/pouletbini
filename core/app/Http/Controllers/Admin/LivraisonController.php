@@ -147,8 +147,8 @@ class LivraisonController extends Controller
         
         $data = [];
         foreach ($request->items as $item) {
-             
-            $productArray = Produit::where([['categorie_id',$item['produit']],['quantity_restante','>',0]])
+             $getproduct = Produit::where('id',$item['produit'])->first();
+            $productArray = Produit::where([['categorie_id',$getproduct->categorie_id],['quantity_restante','>',0]])
                                     ->orderby('id','asc');
             $total = $productArray->sum('quantity_restante');
             
@@ -211,7 +211,8 @@ class LivraisonController extends Controller
             
          }
          if($qtebrouillon>0){
-            $livraisonProduit = Produit::where('categorie_id', $item['produit'])->first();
+            $livraisonProduit = Produit::where('id',$item['produit'])->first();
+            //$livraisonProduit = Produit::where('categorie_id', $item['produit'])->first();
             $price = $livraisonProduit->price * $qtebrouillon; 
             
             LivraisonProduct::insert([
@@ -271,15 +272,16 @@ class LivraisonController extends Controller
             
         foreach ($products as $item) {
             
-            $productArray = Produit::where([['categorie_id',$item->produit->id],['quantity_restante','>',0]])
+            $productArray = Produit::where([['categorie_id',$item->produit->categorie_id],['quantity_restante','>',0]])
                                     ->orderby('id','asc');
             $total = $productArray->sum('quantity_restante'); 
-
+             
             $productArray = $productArray->get(); 
             $qterestante = $quantityAcceptee = 0;
 
             if($productArray !=null)
             {
+                 
                 if($total>$item->qty){
                     $qtebrouillon = 0;
                     $item->qty = $item->qty;
@@ -331,13 +333,12 @@ class LivraisonController extends Controller
             $livraisonProduit->quantity_restante = $livraisonProduit->quantity_restante - $quantityAcceptee;
             $livraisonProduit->quantity_use = $livraisonProduit->quantity_use + $quantityAcceptee; 
             $livraisonProduit->save();
-            $item->qty = $qterestante;
-            LivraisonProduct::where([['livraison_info_id', $item->id],['livraison_produit_id', $item->livraison_produit_id],['etat',0]])->delete();
+            $item->qty = $qterestante; 
          }
          
          if($qtebrouillon>0){
             
-            $livraisonProduit = Produit::where('categorie_id', $item->produit->ic)->first();
+            $livraisonProduit = Produit::where('categorie_id', $item->produit->categorie_id)->first();
             $price = $livraisonProduit->price * $qtebrouillon; 
             LivraisonProduct::insert([
                 'livraison_info_id' => $id,
@@ -349,6 +350,7 @@ class LivraisonController extends Controller
                 'created_at'      => now(),
             ]);        
          }
+         LivraisonProduct::where([['id', $item->id],['etat',0]])->delete();
          
         }
 
