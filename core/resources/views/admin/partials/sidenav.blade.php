@@ -1,3 +1,6 @@
+<?php
+$array_users = array('admin','eddy','ableman');
+?>
 <div class="sidebar bg--dark">
     <button class="res-sidebar-close-btn"><i class="las la-times"></i></button>
     <div class="sidebar__inner">
@@ -14,13 +17,14 @@
                         <span class="menu-title">@lang('Tableau de Bord')</span>
                     </a>
                 </li>
-@if(!in_array(auth()->user()->username, $array_users)
+                
+@if(!in_array(auth()->guard('admin')->user()->username, $array_users))
                 <li class="sidebar-menu-item sidebar-dropdown">
-                    <a href="javascript:void(0)" class="{{ menuActive(['admin.ferme.*','admin.bande.*','admin.arrivage.*'], 3) }}">
+                    <a href="javascript:void(0)" class="side-menu--open {{ menuActive(['admin.ferme.*','admin.bande.*','admin.arrivage.*'], 3) }}">
                         <i class="menu-icon las la-tasks"></i>
                         <span class="menu-title">@lang('Approvisionnement')</span>
                     </a>
-                    <div class="sidebar-submenu {{ menuActive(['admin.ferme.*','admin.bande.*','admin.arrivage.*'], 2) }} ">
+                    <div class="sidebar-submenu sidebar-submenu__open {{ menuActive(['admin.ferme.*','admin.bande.*','admin.arrivage.*'], 2) }} " style="display: block;">
                         <ul>
                            
                             <li class="sidebar-menu-item {{ menuActive('admin.arrivage.*') }} ">
@@ -33,7 +37,7 @@
                     </div>
                 </li>
                 @endif
-                @if(in_array(auth()->user()->username, $array_users)
+                @if(in_array(auth()->guard('admin')->user()->username, $array_users))
                 <li class="sidebar-menu-item {{ menuActive('admin.all') }}">
                     <a href="{{ route('admin.all') }}" class="nav-link ">
                         <i class="menu-icon las la-users"></i>
