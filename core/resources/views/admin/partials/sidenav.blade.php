@@ -1,8 +1,5 @@
 <div class="sidebar bg--dark">
-<?php 
-    $array_users = ['admin','eddy','abenan'];
-?>
-<button class="res-sidebar-close-btn"><i class="las la-times"></i></button>
+    <button class="res-sidebar-close-btn"><i class="las la-times"></i></button>
     <div class="sidebar__inner">
         <div class="sidebar__logo">
             <a href="{{ route('admin.dashboard') }}" class="sidebar__main-logo"><img
@@ -17,8 +14,7 @@
                         <span class="menu-title">@lang('Tableau de Bord')</span>
                     </a>
                 </li>
-                
-                @if(!in_array(auth()->user()->username, $array_users)
+@if(!in_array(auth()->user()->username, $array_users)
                 <li class="sidebar-menu-item sidebar-dropdown">
                     <a href="javascript:void(0)" class="{{ menuActive(['admin.ferme.*','admin.bande.*','admin.arrivage.*'], 3) }}">
                         <i class="menu-icon las la-tasks"></i>
@@ -118,7 +114,7 @@
                             </li>
                         </ul>
                     </div>
-                </li> 
+                </li>
                 <li class="sidebar-menu-item sidebar-dropdown">
                     <a href="javascript:void(0)" class="{{ menuActive(['admin.ferme.*','admin.bande.*','admin.arrivage.*'], 3) }}">
                         <i class="menu-icon las la-tasks"></i>
