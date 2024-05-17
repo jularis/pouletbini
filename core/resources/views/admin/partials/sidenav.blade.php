@@ -1,5 +1,8 @@
 <div class="sidebar bg--dark">
-    <button class="res-sidebar-close-btn"><i class="las la-times"></i></button>
+<?php 
+    $array_users = ['admin','eddy','abenan'];
+?>
+<button class="res-sidebar-close-btn"><i class="las la-times"></i></button>
     <div class="sidebar__inner">
         <div class="sidebar__logo">
             <a href="{{ route('admin.dashboard') }}" class="sidebar__main-logo"><img
@@ -14,7 +17,27 @@
                         <span class="menu-title">@lang('Tableau de Bord')</span>
                     </a>
                 </li>
-
+                
+                @if(!in_array(auth()->user()->username, $array_users)
+                <li class="sidebar-menu-item sidebar-dropdown">
+                    <a href="javascript:void(0)" class="{{ menuActive(['admin.ferme.*','admin.bande.*','admin.arrivage.*'], 3) }}">
+                        <i class="menu-icon las la-tasks"></i>
+                        <span class="menu-title">@lang('Approvisionnement')</span>
+                    </a>
+                    <div class="sidebar-submenu {{ menuActive(['admin.ferme.*','admin.bande.*','admin.arrivage.*'], 2) }} ">
+                        <ul>
+                           
+                            <li class="sidebar-menu-item {{ menuActive('admin.arrivage.*') }} ">
+                                <a href="{{ route('admin.arrivage.index') }}" class="nav-link">
+                                    <i class="menu-icon las la-dot-circle"></i>
+                                    <span class="menu-title">@lang('Arrivages Abattoirs')</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                @endif
+                @if(in_array(auth()->user()->username, $array_users)
                 <li class="sidebar-menu-item {{ menuActive('admin.all') }}">
                     <a href="{{ route('admin.all') }}" class="nav-link ">
                         <i class="menu-icon las la-users"></i>
@@ -95,7 +118,7 @@
                             </li>
                         </ul>
                     </div>
-                </li>
+                </li> 
                 <li class="sidebar-menu-item sidebar-dropdown">
                     <a href="javascript:void(0)" class="{{ menuActive(['admin.ferme.*','admin.bande.*','admin.arrivage.*'], 3) }}">
                         <i class="menu-icon las la-tasks"></i>
@@ -394,6 +417,7 @@
                         <span class="menu-title">@lang('Report & Request') </span>
                     </a>
                 </li>
+                @endif
             </ul>
             <div class="text-center mb-3 text-uppercase">
                 <span class="text--primary">{{ __(systemDetails()['name']) }}</span>
