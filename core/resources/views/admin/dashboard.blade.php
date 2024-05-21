@@ -23,7 +23,7 @@
             </div>
         </div>
      <!-- dashboard-w1 end -->
-        <div class="col-xxl-3 col-sm-6">
+        <div class="col-xxl-4 col-sm-6">
             <div class="card bg--deep-purple has-link box--shadow2">
                 <a href="{{ route('admin.livraison.info.index') . '?status=2' }}" class="item-link"></a>
                 <div class="card-body">
@@ -32,61 +32,13 @@
                             <i class="lab la-accessible-icon f-size--56"></i>
                         </div>
                         <div class="col-8 text-end">
-                            <span class="text-white text--small">@lang("En attente de Livraison")</span>
+                            <span class="text-white text--small">@lang("En attente de Livraison du mois")</span>
                             <h2 class="text-white">{{ $deliveryInQueue }}</h2>
                         </div>
                     </div>
                 </div>
             </div>
-        </div><!-- dashboard-w1 end -->
-        <div class="col-xxl-3 col-sm-6">
-            <div class="card bg--pink has-link box--shadow2">
-                <a href="#" class="item-link"></a>
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-4">
-                            <i class="las la-dolly-flatbed f-size--56"></i>
-                        </div>
-                        <div class="col-8 text-end">
-                            <span class="text-white text--small">@lang('Total Livraison')</span>
-                            <h2 class="text-white">{{ $livraisonInfoCount }}</h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div><!-- dashboard-w1 end -->
-        <div class="col-xxl-3 col-sm-6">
-            <div class="card bg--pink has-link box--shadow2">
-                <a href="#" class="item-link"></a>
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-4">
-                            <i class="las la-dolly-flatbed f-size--56"></i>
-                        </div>
-                        <div class="col-8 text-end">
-                            <span class="text-white text--small">@lang('Total Annulé')</span>
-                            <h2 class="text-white">{{ $livraisonInfoCountCancel }}</h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div><!-- dashboard-w1 end -->
-        <div class="col-xxl-3 col-sm-6">
-            <div class="card bg--primary has-link overflow-hidden box--shadow2">
-                <a href="{{ route('admin.magasin.index') }}" class="item-link"></a>
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-4">
-                            <i class="las la-university f-size--56"></i>
-                        </div>
-                        <div class="col-8 text-end">
-                            <span class="text-white text--small">@lang('Total Magasin')</span>
-                            <h2 class="text-white">{{ $magasinCount }}</h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div><!-- dashboard-w1 end -->
+        </div><!-- dashboard-w1 end --> 
  
         <div class="col-xxl-4 col-sm-6">
             <div class="card bg--orange has-link box--shadow2">
@@ -121,6 +73,39 @@
             </div>
         </div><!-- dashboard-w1 end -->
         <div class="col-xxl-4 col-sm-6">
+            <div class="card bg--pink has-link box--shadow2">
+                <a href="#" class="item-link"></a>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-4">
+                            <i class="las la-dolly-flatbed f-size--56"></i>
+                        </div>
+                        <div class="col-8 text-end">
+                            <span class="text-white text--small">@lang('Total Livraison du mois')</span>
+                            <h2 class="text-white">{{ $livraisonInfoCount }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- dashboard-w1 end -->
+        <div class="col-xxl-4 col-sm-6">
+            <div class="card bg--pink has-link box--shadow2">
+                <a href="#" class="item-link"></a>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-4">
+                            <i class="las la-dolly-flatbed f-size--56"></i>
+                        </div>
+                        <div class="col-8 text-end">
+                            <span class="text-white text--small">@lang('Total Annulé du mois')</span>
+                            <h2 class="text-white">{{ $livraisonInfoCountCancel }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- dashboard-w1 end -->
+      
+        <div class="col-xxl-4 col-sm-6">
             <div class="card bg--orange has-link box--shadow2">
                 <a href="#" class="item-link"></a>
                 <div class="card-body">
@@ -129,14 +114,29 @@
                             <i class="las la-money-bill-wave f-size--56"></i>
                         </div>
                         <div class="col-10 text-end">
-                            <span class="text-white text--small">@lang("Total Revenus")</span>
+                            <span class="text-white text--small">@lang("Total Revenus du mois")</span>
                             <h2 class="text-white">{{ showAmount($totalIncome) }} {{ $general->cur_sym }}</h2>
                         </div>
                     </div>
                 </div>
             </div>
         </div><!-- dashboard-w1 end -->
-      
+        <div class="col-xxl-4 col-sm-6">
+            <div class="card bg--primary has-link overflow-hidden box--shadow2">
+                <a href="{{ route('admin.magasin.index') }}" class="item-link"></a>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-4">
+                            <i class="las la-university f-size--56"></i>
+                        </div>
+                        <div class="col-8 text-end">
+                            <span class="text-white text--small">@lang('Total Magasin')</span>
+                            <h2 class="text-white">{{ $magasinCount }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- dashboard-w1 end -->
       
 
     </div><!-- row end-->
