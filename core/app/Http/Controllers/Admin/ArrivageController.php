@@ -198,7 +198,8 @@ class ArrivageController extends Controller
                     $produit->quantity_restante = $qte;
                     $produit->categorie_id = $categorie[$key];
                     $produit->price = $price[$key];
-                    $produit->name = $unit->name.'-'.$categ->name;
+                    $produit->name = $categ->name;
+                    //$produit->name = $unit->name.'-'.$categ->name;
                     $produit->save();
                     $i++;  
                 } 
@@ -276,7 +277,8 @@ class ArrivageController extends Controller
                     $produit->niveau = 1; 
                     $produit->categorie_id = $categorie_id;
                     $produit->price = $categ->price;
-                    $produit->name = $categ->unite->name.'-'.$categ->name;
+                    $produit->name = $categ->name;
+                    //$produit->name = $categ->unite->name.'-'.$categ->name;
                     $produit->save();
                     $i++;  
                     }
