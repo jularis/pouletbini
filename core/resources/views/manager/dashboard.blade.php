@@ -25,7 +25,7 @@
      <!-- dashboard-w1 end -->
         <div class="col-xxl-4 col-sm-6">
             <div class="card bg--deep-purple has-link box--shadow2">
-                <a href="{{ route('admin.livraison.info.index') . '?status=2' }}" class="item-link"></a>
+                <a href="#" class="item-link"></a>
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-4">
