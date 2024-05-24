@@ -66,6 +66,6 @@ class UsersCommandesExport implements FromView, WithTitle
     
     public function title(): string
     {
-        Return "Commandes par Livreur ".$this->fullname;
+        Return "Livreur ".$this->fullname;
     }
 }

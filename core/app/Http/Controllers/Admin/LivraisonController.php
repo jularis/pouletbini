@@ -16,6 +16,7 @@ use App\Models\AdminNotification;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class LivraisonController extends Controller
 {
@@ -26,9 +27,7 @@ class LivraisonController extends Controller
         $staffs = User::active()->get();
         $magasins = Magasin::get(); 
 
-        $livraisonInfos = LivraisonInfo::dateFilter()->searchable(['code'])->filter(['status','receiver_magasin_id','sender_magasin_id'])->where(function ($q) {
-           
-           
+        $livraisonInfos = LivraisonInfo::searchable(['code'])->filter(['status','receiver_magasin_id','sender_magasin_id'])->where(function ($q) {
             $q->WhereHas('product', function ($myQuery) {
                 if(request()->etat != null){
                     $etat=1;
@@ -46,6 +45,20 @@ class LivraisonController extends Controller
                 }
             });
         })
+        ->when(request()->date==null, function ($query) {
+            $query->whereBetween('estimate_date',[date('Y-m-01'),date('Y-m-t')]);
+        })
+        ->when(request()->date, function ($query, $date) {
+                $date      = explode('-', request()->date); 
+                $startDate = Carbon::parse(trim($date[0]))->format('Y-m-d'); 
+                $endDate = @$date[1] ? Carbon::parse(trim(@$date[1]))->format('Y-m-d') : $startDate;
+                request()->merge(['start_date' => $startDate, 'end_date' => $endDate]); 
+                request()->validate([
+                    'start_date' => 'required|date_format:Y-m-d',
+                    'end_date'   => 'nullable|date_format:Y-m-d',
+                ]);
+                $query->whereDate('estimate_date', '>=', $startDate)->whereDate('estimate_date', '<=', $endDate);
+            })
         ->when(request()->staff, function ($query, $staff) {
             $query->where('receiver_staff_id',$staff); 
         })
