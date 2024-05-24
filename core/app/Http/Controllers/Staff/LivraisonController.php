@@ -34,7 +34,22 @@ class LivraisonController extends Controller
     {
         $pageTitle    = 'En attente';
         $user         = auth()->user();
-        $livraisonLists = LivraisonInfo::dateFilter()->searchable(['code', 'receiverMagasin:name'])->where([['receiver_staff_id', $user->id]])->where('status', Status::COURIER_QUEUE)->orderBy('id', 'DESC')
+        $livraisonLists = LivraisonInfo::searchable(['code', 'receiverMagasin:name'])->where([['receiver_staff_id', $user->id]])
+        ->when(request()->date==null, function ($query) {
+            $query->whereBetween('estimate_date',[date('Y-m-01'),date('Y-m-t')]);
+        })
+        ->when(request()->date, function ($query, $date) {
+                $date      = explode('-', request()->date); 
+                $startDate = Carbon::parse(trim($date[0]))->format('Y-m-d'); 
+                $endDate = @$date[1] ? Carbon::parse(trim(@$date[1]))->format('Y-m-d') : $startDate;
+                request()->merge(['start_date' => $startDate, 'end_date' => $endDate]); 
+                request()->validate([
+                    'start_date' => 'required|date_format:Y-m-d',
+                    'end_date'   => 'nullable|date_format:Y-m-d',
+                ]);
+                $query->whereDate('estimate_date', '>=', $startDate)->whereDate('estimate_date', '<=', $endDate);
+            })
+        ->where('status', Status::COURIER_QUEUE)->orderBy('id', 'DESC')
             ->with('senderMagasin', 'receiverMagasin', 'senderStaff', 'receiverStaff', 'paymentInfo')->paginate(getPaginate());
         return view('staff.livraison.sentQueue', compact('pageTitle', 'livraisonLists'));
     }
@@ -43,7 +58,22 @@ class LivraisonController extends Controller
     {
         $pageTitle    = 'Livraison Expédiée';
         $user         = auth()->user();
-        $livraisonLists = LivraisonInfo::dateFilter()->searchable(['code', 'receiverMagasin:name'])->where([['receiver_staff_id', $user->id]])->where('status', Status::COURIER_DISPATCH)->orderBy('id', 'DESC')
+        $livraisonLists = LivraisonInfo::searchable(['code', 'receiverMagasin:name'])->where([['receiver_staff_id', $user->id]])
+        ->when(request()->date==null, function ($query) {
+            $query->whereBetween('estimate_date',[date('Y-m-01'),date('Y-m-t')]);
+        })
+        ->when(request()->date, function ($query, $date) {
+                $date      = explode('-', request()->date); 
+                $startDate = Carbon::parse(trim($date[0]))->format('Y-m-d'); 
+                $endDate = @$date[1] ? Carbon::parse(trim(@$date[1]))->format('Y-m-d') : $startDate;
+                request()->merge(['start_date' => $startDate, 'end_date' => $endDate]); 
+                request()->validate([
+                    'start_date' => 'required|date_format:Y-m-d',
+                    'end_date'   => 'nullable|date_format:Y-m-d',
+                ]);
+                $query->whereDate('estimate_date', '>=', $startDate)->whereDate('estimate_date', '<=', $endDate);
+            })
+        ->where('status', Status::COURIER_DISPATCH)->orderBy('id', 'DESC')
             ->with('senderMagasin', 'receiverMagasin', 'senderStaff', 'receiverStaff', 'paymentInfo')->paginate(getPaginate());
         return view('staff.livraison.dispatch', compact('pageTitle', 'livraisonLists'));
     }
@@ -52,7 +82,21 @@ class LivraisonController extends Controller
     {
         $pageTitle    = 'Livraison Encours';
         $user         = auth()->user();
-        $livraisonLists = LivraisonInfo::dateFilter()->searchable(['code'])->where('receiver_magasin_id', $user->magasin_id)->where('status', Status::COURIER_UPCOMING)->orderBy('id', 'DESC')
+        $livraisonLists = LivraisonInfo::searchable(['code'])->where('receiver_magasin_id', $user->magasin_id)->where('status', Status::COURIER_UPCOMING)->orderBy('id', 'DESC')
+        ->when(request()->date==null, function ($query) {
+            $query->whereBetween('estimate_date',[date('Y-m-01'),date('Y-m-t')]);
+        })
+        ->when(request()->date, function ($query, $date) {
+                $date      = explode('-', request()->date); 
+                $startDate = Carbon::parse(trim($date[0]))->format('Y-m-d'); 
+                $endDate = @$date[1] ? Carbon::parse(trim(@$date[1]))->format('Y-m-d') : $startDate;
+                request()->merge(['start_date' => $startDate, 'end_date' => $endDate]); 
+                request()->validate([
+                    'start_date' => 'required|date_format:Y-m-d',
+                    'end_date'   => 'nullable|date_format:Y-m-d',
+                ]);
+                $query->whereDate('estimate_date', '>=', $startDate)->whereDate('estimate_date', '<=', $endDate);
+            })
             ->with('senderMagasin', 'receiverMagasin', 'senderStaff', 'receiverStaff', 'paymentInfo')->paginate(getPaginate());
         return view('staff.livraison.upcoming', compact('pageTitle', 'livraisonLists'));
     }
@@ -83,7 +127,22 @@ class LivraisonController extends Controller
         $pageTitle    = 'En attente de Reception';
         $user = auth()->user();
 
-        $livraisonLists = LivraisonInfo::dateFilter()->searchable(['code'])->with('senderMagasin', 'receiverMagasin', 'senderStaff', 'receiverStaff', 'paymentInfo')->where([['receiver_staff_id', $user->id],['status', Status::COURIER_DELIVERYQUEUE]])->orderBy('livraison_infos.id','DESC')->paginate(getPaginate());
+        $livraisonLists = LivraisonInfo::searchable(['code'])->with('senderMagasin', 'receiverMagasin', 'senderStaff', 'receiverStaff', 'paymentInfo')->where([['receiver_staff_id', $user->id],['status', Status::COURIER_DELIVERYQUEUE]])
+        ->when(request()->date==null, function ($query) {
+            $query->whereBetween('estimate_date',[date('Y-m-01'),date('Y-m-t')]);
+        })
+        ->when(request()->date, function ($query, $date) {
+                $date      = explode('-', request()->date); 
+                $startDate = Carbon::parse(trim($date[0]))->format('Y-m-d'); 
+                $endDate = @$date[1] ? Carbon::parse(trim(@$date[1]))->format('Y-m-d') : $startDate;
+                request()->merge(['start_date' => $startDate, 'end_date' => $endDate]); 
+                request()->validate([
+                    'start_date' => 'required|date_format:Y-m-d',
+                    'end_date'   => 'nullable|date_format:Y-m-d',
+                ]);
+                $query->whereDate('estimate_date', '>=', $startDate)->whereDate('estimate_date', '<=', $endDate);
+            })
+        ->orderBy('livraison_infos.id','DESC')->paginate(getPaginate());
       
         return view('staff.livraison.deliveryQueue', compact('pageTitle', 'livraisonLists'));
     }
@@ -126,7 +185,22 @@ class LivraisonController extends Controller
             $livraisons = $livraisons->$scope();
         }
         $livraisons = $livraisons->where('receiver_staff_id', $user->id);
-        $livraisons = $livraisons->dateFilter()->searchable(['code'])->with('senderMagasin', 'receiverMagasin', 'senderStaff', 'receiverStaff', 'paymentInfo')->orderBy('livraison_infos.id','DESC')->paginate(getPaginate());
+        $livraisons = $livraisons->searchable(['code'])
+        ->when(request()->date==null, function ($query) {
+            $query->whereBetween('estimate_date',[date('Y-m-01'),date('Y-m-t')]);
+        })
+        ->when(request()->date, function ($query, $date) {
+                $date      = explode('-', request()->date); 
+                $startDate = Carbon::parse(trim($date[0]))->format('Y-m-d'); 
+                $endDate = @$date[1] ? Carbon::parse(trim(@$date[1]))->format('Y-m-d') : $startDate;
+                request()->merge(['start_date' => $startDate, 'end_date' => $endDate]); 
+                request()->validate([
+                    'start_date' => 'required|date_format:Y-m-d',
+                    'end_date'   => 'nullable|date_format:Y-m-d',
+                ]);
+                $query->whereDate('estimate_date', '>=', $startDate)->whereDate('estimate_date', '<=', $endDate);
+            })
+        ->with('senderMagasin', 'receiverMagasin', 'senderStaff', 'receiverStaff', 'paymentInfo')->orderBy('livraison_infos.id','DESC')->paginate(getPaginate());
         
         return $livraisons;
     }
@@ -144,7 +218,21 @@ class LivraisonController extends Controller
     {
         $user         = auth()->user();
         $pageTitle    = 'Liste des Livraisons';
-        $livraisonLists = LivraisonInfo::dateFilter()->searchable(['code', 'receiverMagasin:name'])->with('senderMagasin', 'receiverMagasin', 'senderStaff', 'receiverStaff', 'paymentInfo')
+        $livraisonLists = LivraisonInfo::searchable(['code', 'receiverMagasin:name'])->with('senderMagasin', 'receiverMagasin', 'senderStaff', 'receiverStaff', 'paymentInfo')
+        ->when(request()->date==null, function ($query) {
+            $query->whereBetween('estimate_date',[date('Y-m-01'),date('Y-m-t')]);
+        })
+        ->when(request()->date, function ($query, $date) {
+                $date      = explode('-', request()->date); 
+                $startDate = Carbon::parse(trim($date[0]))->format('Y-m-d'); 
+                $endDate = @$date[1] ? Carbon::parse(trim(@$date[1]))->format('Y-m-d') : $startDate;
+                request()->merge(['start_date' => $startDate, 'end_date' => $endDate]); 
+                request()->validate([
+                    'start_date' => 'required|date_format:Y-m-d',
+                    'end_date'   => 'nullable|date_format:Y-m-d',
+                ]);
+                $query->whereDate('estimate_date', '>=', $startDate)->whereDate('estimate_date', '<=', $endDate);
+            })
             ->where([['receiver_staff_id', $user->id]])->orderBy('id', 'DESC')->paginate(getPaginate());
         
             return view('staff.livraison.list', compact('pageTitle', 'livraisonLists'));
@@ -265,8 +353,22 @@ $currentUserInfo = Location::get($ip);
     {
         $user = auth()->user();
         $pageTitle = 'Total Livraison Expédiée';
-        $livraisonInfo = LivraisonInfo::dateFilter()->searchable(['code']);
+        $livraisonInfo = LivraisonInfo::searchable(['code']);
         $livraisonLists = $livraisonInfo->where('sender_staff_id', $user->id)->whereIn('status', [Status::COURIER_DISPATCH, Status::COURIER_DELIVERYQUEUE, Status::COURIER_DELIVERED])->orderBy('id', 'DESC')
+        ->when(request()->date==null, function ($query) {
+            $query->whereBetween('estimate_date',[date('Y-m-01'),date('Y-m-t')]);
+        })
+        ->when(request()->date, function ($query, $date) {
+                $date      = explode('-', request()->date); 
+                $startDate = Carbon::parse(trim($date[0]))->format('Y-m-d'); 
+                $endDate = @$date[1] ? Carbon::parse(trim(@$date[1]))->format('Y-m-d') : $startDate;
+                request()->merge(['start_date' => $startDate, 'end_date' => $endDate]); 
+                request()->validate([
+                    'start_date' => 'required|date_format:Y-m-d',
+                    'end_date'   => 'nullable|date_format:Y-m-d',
+                ]);
+                $query->whereDate('estimate_date', '>=', $startDate)->whereDate('estimate_date', '<=', $endDate);
+            })
             ->with('senderMagasin', 'receiverMagasin', 'senderStaff', 'receiverStaff', 'paymentInfo')->paginate(getPaginate());
         return view('staff.livraison.list', compact('pageTitle', 'livraisonLists'));
     }
@@ -276,6 +378,20 @@ $currentUserInfo = Location::get($ip);
         $user = auth()->user();
         $pageTitle = 'Liste des Livraisons reçues';
         $livraisonLists = LivraisonInfo::where('receiver_staff_id', $user->id)->orderBy('id', 'DESC')->with('senderMagasin', 'receiverMagasin', 'senderStaff', 'receiverStaff', 'paymentInfo')
+        ->when(request()->date==null, function ($query) {
+            $query->whereBetween('estimate_date',[date('Y-m-01'),date('Y-m-t')]);
+        })
+        ->when(request()->date, function ($query, $date) {
+                $date      = explode('-', request()->date); 
+                $startDate = Carbon::parse(trim($date[0]))->format('Y-m-d'); 
+                $endDate = @$date[1] ? Carbon::parse(trim(@$date[1]))->format('Y-m-d') : $startDate;
+                request()->merge(['start_date' => $startDate, 'end_date' => $endDate]); 
+                request()->validate([
+                    'start_date' => 'required|date_format:Y-m-d',
+                    'end_date'   => 'nullable|date_format:Y-m-d',
+                ]);
+                $query->whereDate('estimate_date', '>=', $startDate)->whereDate('estimate_date', '<=', $endDate);
+            })
             ->paginate(getPaginate());
         return view('staff.livraison.list', compact('pageTitle', 'livraisonLists'));
     }

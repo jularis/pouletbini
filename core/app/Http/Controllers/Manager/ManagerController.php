@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Manager;
 
-use App\Constants\Status;
-use App\Http\Controllers\Controller;
-use App\Models\Magasin;
-use App\Models\LivraisonInfo;
-use App\Models\LivraisonPayment;
-use App\Models\SupportMessage;
+use Carbon\Carbon;
 use App\Models\User;
-use App\Rules\FileTypeValidate;
+use App\Models\Magasin;
+use App\Constants\Status;
 use Illuminate\Http\Request;
+use App\Models\LivraisonInfo;
+use App\Models\SupportMessage;
+use App\Rules\FileTypeValidate;
+use App\Models\LivraisonPayment;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 
 class ManagerController extends Controller
@@ -20,20 +21,107 @@ class ManagerController extends Controller
     public function dashboard()
     {
         $manager            = auth()->user();
-        $pageTitle          = "Manager Dashboard";
-        $magasinCount        = Magasin::active()->count();
-        $livraisonShipCount   = LivraisonInfo::dispatched()->count();
-        $upcomingCount      = LivraisonInfo::upcoming()->count();
-        $livraisonInfoCount   = $this->livraisons()->count();
-        $livraisonQueueCount  = LivraisonInfo::queue()->count();
-        $deliveryQueueCount = LivraisonInfo::deliveryQueue()->count();
-        $totalSentCount     = LivraisonInfo::where('sender_magasin_id', $manager->magasin_id)->where('status', '!=', Status::COURIER_QUEUE)->count();
+        $pageTitle          = "Manager Dashboard"; 
+        //$totalSentCount     = LivraisonInfo::where('sender_magasin_id', $manager->magasin_id)->where('status', '!=', Status::COURIER_QUEUE)->count();
 
-        $livraisonDelivered = LivraisonInfo::delivered()->count();
-        $totalStaffCount  = User::staff()->where('magasin_id', $manager->magasin_id)->count();
-        $magasinIncome     = LivraisonPayment::where('magasin_id', $manager->magasin_id)->where('status', Status::PAID)->sum('final_amount');
-        $livraisonInfos     = $this->livraisons('queue');
-        return view('manager.dashboard', compact('pageTitle', 'magasinCount', 'livraisonShipCount', 'livraisonQueueCount', 'upcomingCount', 'deliveryQueueCount', 'totalStaffCount', 'totalSentCount', 'magasinIncome', 'livraisonInfoCount', 'livraisonDelivered', 'livraisonInfos'));
+        $magasinCount      = Magasin::count();
+        $magasins         = Magasin::orderBy('name', 'ASC')->take(5)->get();
+
+        $livraisonInfoCount = LivraisonInfo::where('status', 3)->when(request()->date==null, function ($query) {
+                            $query->whereBetween('estimate_date',[date('Y-m-01'),date('Y-m-t')]);
+                        })
+                        ->when(request()->date, function ($query, $date) {
+                                $date      = explode('-', request()->date); 
+                                $startDate = Carbon::parse(trim($date[0]))->format('Y-m-d'); 
+                                $endDate = @$date[1] ? Carbon::parse(trim(@$date[1]))->format('Y-m-d') : $startDate;
+                                request()->merge(['start_date' => $startDate, 'end_date' => $endDate]); 
+                                request()->validate([
+                                    'start_date' => 'required|date_format:Y-m-d',
+                                    'end_date'   => 'nullable|date_format:Y-m-d',
+                                ]);
+                                $query->whereDate('estimate_date', '>=', $startDate)->whereDate('estimate_date', '<=', $endDate);
+                            })->count();
+        $livraisonInfoCountCancel = LivraisonInfo::where('status', 1)->when(request()->date==null, function ($query) {
+                            $query->whereBetween('estimate_date',[date('Y-m-01'),date('Y-m-t')]);
+                        })
+                        ->when(request()->date, function ($query, $date) {
+                                $date      = explode('-', request()->date); 
+                                $startDate = Carbon::parse(trim($date[0]))->format('Y-m-d'); 
+                                $endDate = @$date[1] ? Carbon::parse(trim(@$date[1]))->format('Y-m-d') : $startDate;
+                                request()->merge(['start_date' => $startDate, 'end_date' => $endDate]); 
+                                request()->validate([
+                                    'start_date' => 'required|date_format:Y-m-d',
+                                    'end_date'   => 'nullable|date_format:Y-m-d',
+                                ]);
+                                $query->whereDate('estimate_date', '>=', $startDate)->whereDate('estimate_date', '<=', $endDate);
+                            })->count();
+        $managerCount     = User::manager()->count();
+
+        /////////////////////////////////////////
+        $totalIncome      = LivraisonPayment::joinRelationship('info')->where('livraison_payments.status', Status::PAID)->when(request()->date==null, function ($query) {
+            $query->whereBetween('estimate_date',[date('Y-m-01'),date('Y-m-t')]);
+        })
+        ->when(request()->date, function ($query, $date) {
+                $date      = explode('-', request()->date); 
+                $startDate = Carbon::parse(trim($date[0]))->format('Y-m-d'); 
+                $endDate = @$date[1] ? Carbon::parse(trim(@$date[1]))->format('Y-m-d') : $startDate;
+                request()->merge(['start_date' => $startDate, 'end_date' => $endDate]); 
+                request()->validate([
+                    'start_date' => 'required|date_format:Y-m-d',
+                    'end_date'   => 'nullable|date_format:Y-m-d',
+                ]);
+                $query->whereDate('estimate_date', '>=', $startDate)->whereDate('estimate_date', '<=', $endDate);
+            })->sum('final_amount');
+
+
+        ///////////////////////////////////////////////////////
+        $totalIncomeDays      = LivraisonPayment::joinRelationship('info')->where('livraison_payments.status', Status::PAID)->when(request()->date==null, function ($query) {
+            $query->whereDate('estimate_date',gmdate('Y-m-d'));
+        })
+        ->when(request()->date, function ($query, $date) {
+                $date      = explode('-', request()->date); 
+                $startDate = Carbon::parse(trim($date[0]))->format('Y-m-d'); 
+                $endDate = @$date[1] ? Carbon::parse(trim(@$date[1]))->format('Y-m-d') : $startDate;
+                request()->merge(['start_date' => $startDate, 'end_date' => $endDate]); 
+                request()->validate([
+                    'start_date' => 'required|date_format:Y-m-d',
+                    'end_date'   => 'nullable|date_format:Y-m-d',
+                ]);
+                $query->whereDate('estimate_date', '>=', $startDate)->whereDate('estimate_date', '<=', $endDate);
+            })->sum('final_amount');
+
+        $totalLivraisonDays      = LivraisonInfo::where('status', 3)->when(request()->date==null, function ($query) {
+            $query->whereDate('estimate_date',gmdate('Y-m-d'));
+        })
+        ->when(request()->date, function ($query, $date) {
+                $date      = explode('-', request()->date); 
+                $startDate = Carbon::parse(trim($date[0]))->format('Y-m-d'); 
+                $endDate = @$date[1] ? Carbon::parse(trim(@$date[1]))->format('Y-m-d') : $startDate;
+                request()->merge(['start_date' => $startDate, 'end_date' => $endDate]); 
+                request()->validate([
+                    'start_date' => 'required|date_format:Y-m-d',
+                    'end_date'   => 'nullable|date_format:Y-m-d',
+                ]);
+                $query->whereDate('estimate_date', '>=', $startDate)->whereDate('estimate_date', '<=', $endDate);
+            })->count();
+
+  
+        $deliveryInQueue  = LivraisonInfo::where('status', 2)
+                        ->when(request()->date==null, function ($query) {
+                            $query->whereBetween('estimate_date',[date('Y-m-01'),date('Y-m-t')]);
+                        })
+                        ->when(request()->date, function ($query, $date) {
+                                $date      = explode('-', request()->date); 
+                                $startDate = Carbon::parse(trim($date[0]))->format('Y-m-d'); 
+                                $endDate = @$date[1] ? Carbon::parse(trim(@$date[1]))->format('Y-m-d') : $startDate;
+                                request()->merge(['start_date' => $startDate, 'end_date' => $endDate]); 
+                                request()->validate([
+                                    'start_date' => 'required|date_format:Y-m-d',
+                                    'end_date'   => 'nullable|date_format:Y-m-d',
+                                ]);
+                                $query->whereDate('estimate_date', '>=', $startDate)->whereDate('estimate_date', '<=', $endDate);
+                            })->count(); 
+        return view('manager.dashboard', compact('pageTitle', 'deliveryInQueue', 'magasinCount', 'totalIncome', 'magasins', 'managerCount', 'livraisonInfoCount','livraisonInfoCountCancel','totalIncomeDays','totalLivraisonDays'));
     }
 
     protected function livraisons($scope = null)
