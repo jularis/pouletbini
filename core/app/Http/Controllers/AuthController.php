@@ -71,12 +71,9 @@ class AuthController extends Controller
             ->with('paymentInfo') 
             ->with('receiverMagasin')
             ->with('receiverClient')
-            ->with('livraisonDetail')  
-            ->where(function ($q) { 
-                $q->WhereHas('livraisonDetail', function ($myQuery) {
-                     $myQuery->where('etat',1); 
-                });
-            })
+            ->with(['livraisonDetail' => function ($query) {
+                $query->where('etat',1);
+            }])  
            ->orderBy('estimate_date', 'DESC')
            ->get();
 
