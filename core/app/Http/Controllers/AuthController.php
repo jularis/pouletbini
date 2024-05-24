@@ -75,8 +75,7 @@ class AuthController extends Controller
             })
             ->with('paymentInfo') 
             ->with('receiverMagasin')
-            ->with('receiverClient')
-            ->with('livraisonDetail')  
+            ->with('receiverClient')  
            ->orderBy('estimate_date', 'DESC')
            ->get();
 
