@@ -69,7 +69,7 @@ class AuthController extends Controller
         if($request->user_id){
             $livraisonLists = LivraisonInfo::where('receiver_staff_id', $request->user_id)
             ->where(function ($q) { 
-                $q->WhereHas('product', function ($myQuery) {
+                $q->WhereHas('livraisonDetail', function ($myQuery) {
                      $myQuery->where('etat',1); 
                 });
             })
