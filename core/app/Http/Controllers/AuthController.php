@@ -67,15 +67,16 @@ class AuthController extends Controller
     public function getCommandes(Request $request){
 
         if($request->user_id){
-            $livraisonLists = LivraisonInfo::where('receiver_staff_id', $request->user_id)
+            $livraisonLists = LivraisonInfo::where('receiver_staff_id', $request->user_id) 
+            ->with('paymentInfo') 
+            ->with('receiverMagasin')
+            ->with('receiverClient')
+            ->with('livraisonDetail')  
             ->where(function ($q) { 
                 $q->WhereHas('livraisonDetail', function ($myQuery) {
                      $myQuery->where('etat',1); 
                 });
             })
-            ->with('paymentInfo') 
-            ->with('receiverMagasin')
-            ->with('receiverClient')  
            ->orderBy('estimate_date', 'DESC')
            ->get();
 
