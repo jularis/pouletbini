@@ -103,7 +103,9 @@ class AuthController extends Controller
             ->with('paymentInfo')
             ->with('receiverMagasin')
             ->with('receiverClient')
-            ->with('livraisonDetail')  
+            ->with(['livraisonDetail' => function ($query) {
+                $query->where('etat',1);
+            }])   
             ->where('status',3)
             ->where(function ($q) {
                 $q->OrWhereHas('payment', function ($myQuery) {
@@ -141,7 +143,9 @@ class AuthController extends Controller
             ->with('paymentInfo')
             ->with('receiverMagasin')
             ->with('receiverClient')
-            ->with('livraisonDetail')  
+            ->with(['livraisonDetail' => function ($query) {
+                $query->where('etat',1);
+            }])   
             ->where('status',3)
             ->where(function ($q) {
                 $q->OrWhereHas('payment', function ($myQuery) {
@@ -179,7 +183,9 @@ class AuthController extends Controller
             ->with('paymentInfo')
             ->with('receiverMagasin')
             ->with('receiverClient')
-            ->with('livraisonDetail')
+            ->with(['livraisonDetail' => function ($query) {
+                $query->where('etat',1);
+            }]) 
             ->where('status',1) 
            ->orderBy('id', 'DESC')
            ->get();
