@@ -79,11 +79,11 @@ $array_users = array('admin','eddy','ableman');
                     </div>
                 </li>
                 <li class="sidebar-menu-item sidebar-dropdown">
-                    <a href="javascript:void(0)" class="{{ menuActive(['admin.livraison.categorie.*'], 3) }}">
+                    <a href="javascript:void(0)" class="{{ menuActive(['admin.livraison.categorie.unite.index','admin.livraison.categorie.index'], 3) }}">
                         <i class="menu-icon las la-tasks"></i>
                         <span class="menu-title">@lang('Paramètres')</span>
                     </a>
-                    <div class="sidebar-submenu {{ menuActive(['admin.livraison.categorie.*'], 2) }} ">
+                    <div class="sidebar-submenu {{ menuActive(['admin.livraison.categorie.unite.index','admin.livraison.categorie.index'], 2) }} ">
                         <ul>
                         <li class="sidebar-menu-item {{ menuActive('admin.livraison.categorie.unite.index') }} ">
                                 <a href="{{ route('admin.livraison.categorie.unite.index') }}" class="nav-link">
@@ -102,11 +102,11 @@ $array_users = array('admin','eddy','ableman');
                     </div>
                 </li>
                 <li class="sidebar-menu-item sidebar-dropdown">
-                    <a href="javascript:void(0)" class="{{ menuActive(['admin.ferme.*','admin.bande.*','admin.arrivage.*'], 3) }}">
+                    <a href="javascript:void(0)" class="{{ menuActive(['admin.ferme.*','admin.bande.*','admin.arrivage.*','admin.livraison.categorie.produit.*','admin.livraison.categorie.client.*','admin.livraison.categorie.fournisseur.*'], 3) }}">
                         <i class="menu-icon las la-tasks"></i>
                         <span class="menu-title">@lang('Approvisionnement')</span>
                     </a>
-                    <div class="sidebar-submenu {{ menuActive(['admin.ferme.*','admin.bande.*','admin.arrivage.*'], 2) }} ">
+                    <div class="sidebar-submenu {{ menuActive(['admin.ferme.*','admin.bande.*','admin.arrivage.*','admin.livraison.categorie.produit.*','admin.livraison.categorie.client.*','admin.livraison.categorie.fournisseur.*'], 2) }} ">
                         <ul>
                             
                         <li class="sidebar-menu-item {{ menuActive('admin.livraison.categorie.produit.index') }} ">
