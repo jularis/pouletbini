@@ -98,7 +98,18 @@ $array_users = array('admin','eddy','ableman');
                                 </a>
                             </li>
 
-                            <li class="sidebar-menu-item {{ menuActive('admin.livraison.categorie.produit.index') }} ">
+                        </ul>
+                    </div>
+                </li>
+                <li class="sidebar-menu-item sidebar-dropdown">
+                    <a href="javascript:void(0)" class="{{ menuActive(['admin.ferme.*','admin.bande.*','admin.arrivage.*'], 3) }}">
+                        <i class="menu-icon las la-tasks"></i>
+                        <span class="menu-title">@lang('Approvisionnement')</span>
+                    </a>
+                    <div class="sidebar-submenu {{ menuActive(['admin.ferme.*','admin.bande.*','admin.arrivage.*'], 2) }} ">
+                        <ul>
+                            
+                        <li class="sidebar-menu-item {{ menuActive('admin.livraison.categorie.produit.index') }} ">
                                 <a href="{{ route('admin.livraison.categorie.produit.index') }}" class="nav-link">
                                     <i class="menu-icon las la-dot-circle"></i>
                                     <span class="menu-title">@lang('Gestion Produits')</span>
@@ -116,16 +127,6 @@ $array_users = array('admin','eddy','ableman');
                                     <span class="menu-title">@lang('Gestion Fournisseurs')</span>
                                 </a>
                             </li>
-                        </ul>
-                    </div>
-                </li>
-                <li class="sidebar-menu-item sidebar-dropdown">
-                    <a href="javascript:void(0)" class="{{ menuActive(['admin.ferme.*','admin.bande.*','admin.arrivage.*'], 3) }}">
-                        <i class="menu-icon las la-tasks"></i>
-                        <span class="menu-title">@lang('Approvisionnement')</span>
-                    </a>
-                    <div class="sidebar-submenu {{ menuActive(['admin.ferme.*','admin.bande.*','admin.arrivage.*'], 2) }} ">
-                        <ul>
                             <li class="sidebar-menu-item {{ menuActive('admin.ferme.*') }} ">
                                 <a href="{{ route('admin.ferme.index') }}" class="nav-link">
                                     <i class="menu-icon las la-dot-circle"></i>
