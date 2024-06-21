@@ -153,7 +153,7 @@
 
                         <div class="form-group">
                             <label>@lang('Téléphone')</label>
-                            <input type="number" class="form-control" name="phone" required>
+                            <input type="text" class="form-control" name="phone" required>
                         </div>
                         <div class="form-group">
                             <label>@lang('Email')</label>
