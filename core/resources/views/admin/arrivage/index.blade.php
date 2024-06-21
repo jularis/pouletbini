@@ -80,7 +80,7 @@
                                                 class="btn btn-sm btn-outline--info"><i class="las la-pen"></i>
                                                     @lang('Découpes')</a>
                                     <a href="{{ route('admin.arrivage.show', $arrivage->id) }}"
-                                                    class="btn btn-sm btn-outline--primary"><i class="la la-pen"></i>@lang('Détail')</a>
+                                                    class="btn btn-sm btn-outline--primary"><i class="la la-pen"></i>@lang('Stock')</a>
                                        <a href="{{ route('admin.arrivage.edit', $arrivage->id) }}"
                                                     class="btn btn-sm btn-outline--danger"><i class="la la-pen"></i>@lang('Edit')</a>
                                             <button type="button" class="btn btn-sm btn-outline--primary"
