@@ -30,7 +30,8 @@
                                                 data-unite="{{ $categorie->unite_id }}" 
                                                 data-price="{{ $categorie->price }}" 
                                                 data-niveau="{{ $categorie->niveau }}"
-                                                data-name="{{ $categorie->name }}"><i
+                                                data-name="{{ $categorie->name }}"
+                                                data-multiplicateur="{{ $categorie->multiplicateur }}"><i
                                                     class="las la-pen"></i>@lang('Edit')</button>
 
                                             @if ($categorie->status == Status::DISABLE)
