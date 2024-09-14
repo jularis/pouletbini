@@ -30,6 +30,7 @@ Route::controller('SiteController')->group(function () {
     Route::get('/order/tracking', 'orderTracking')->name('orders.tracking');
     Route::post('/order/tracking', 'findOrder')->name('order.tracking');
     Route::get('/{slug}', 'pages')->name('pages');
-    Route::get('/', 'index')->name('home');
     Route::get('/privacy-policy', 'politique')->name('politique');
+    Route::get('/', 'index')->name('home');
+    
 });
