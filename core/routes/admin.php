@@ -99,6 +99,7 @@ Route::middleware('admin')->group(function () {
         Route::post('get/bande', 'getBande')->name('getBande');
         Route::get('edit/{id}', 'edit')->name('edit');  
         Route::get('show/{id}', 'show')->name('show'); 
+        Route::post('delete/{id}', 'delete')->name('delete');
         Route::post('status/{id}', 'status')->name('status'); 
         Route::post('send/{id}', 'send')->name('send'); 
         Route::post('verify/quantity', 'verifyQuantity')->name('verifyQuantity');

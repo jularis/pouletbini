@@ -362,7 +362,12 @@ class ArrivageController extends Controller
          
         return back()->withNotify($notify);
     }
-
+    public function delete($id)
+    { 
+        Arrivage::where('id', decrypt($id))->delete();
+        $notify[] = ['success', 'L\'arrivage a été supprimé avec succès'];
+        return back()->withNotify($notify);
+    }
     /**
      * Update the specified resource in storage.
      *

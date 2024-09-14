@@ -83,24 +83,13 @@
                                                     class="btn btn-sm btn-outline--primary"><i class="la la-pen"></i>@lang('Stock')</a>
                                        <a href="{{ route('admin.arrivage.edit', $arrivage->id) }}"
                                                     class="btn btn-sm btn-outline--danger"><i class="la la-pen"></i>@lang('Edit')</a>
-                                            <button type="button" class="btn btn-sm btn-outline--primary"
-                                                data-bs-toggle="dropdown" aria-expanded="false"><i
-                                                    class="las la-ellipsis-v"></i>@lang('Action')
-                                            </button>
-                                            <div class="dropdown-menu p-0"> 
-                                                @if ($arrivage->status == Status::DISABLE)
-                                                    <button type="button" class="confirmationBtn  dropdown-item"
-                                                        data-action="{{ route('admin.arrivage.status', $arrivage->id) }}"
-                                                        data-question="@lang('Are you sure to enable this parcelle?')">
-                                                        <i class="la la-eye"></i> @lang('Activé')
-                                                    </button>
-                                                @else
-                                                    <button type="button" class="confirmationBtn dropdown-item"
-                                                        data-action="{{ route('admin.arrivage.status', $arrivage->id) }}"
-                                                        data-question="@lang('Are you sure to disable this parcelle?')">
-                                                        <i class="la la-eye-slash"></i> @lang('Désactivé')
-                                                    </button>
-                                                @endif
+                                <a href="javascript:void();"
+                                                class="btn btn-sm btn-outline--danger confirmationBtn"
+                                                data-action="{{ route('admin.arrivage.delete', encrypt($arrivage->id)) }}"
+                                                data-question="@lang('Êtes-vous sûr de supprimer cet arrivage?')"
+                                                ><i
+                                                    class="las la-trash"></i>@lang('Supprimer')</a>
+                                            
 
                                             </div>
                                         </td>
