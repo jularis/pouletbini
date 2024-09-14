@@ -1,5 +1,5 @@
 <?php
-$array_users = array('admin','eddy','ableman');
+$array_users = array('admin','eddy','abenan');
 ?>
 <div class="sidebar bg--dark">
     <button class="res-sidebar-close-btn"><i class="las la-times"></i></button>
@@ -26,7 +26,19 @@ $array_users = array('admin','eddy','ableman');
                     </a>
                     <div class="sidebar-submenu sidebar-submenu__open {{ menuActive(['admin.ferme.*','admin.bande.*','admin.arrivage.*'], 2) }} " style="display: block;">
                         <ul>
-                           
+                        <li class="sidebar-menu-item {{ menuActive('admin.ferme.*') }} ">
+                                <a href="{{ route('admin.ferme.index') }}" class="nav-link">
+                                    <i class="menu-icon las la-dot-circle"></i>
+                                    <span class="menu-title">@lang('Gestion des Fermes')</span>
+                                </a>
+                            </li>
+
+                            <li class="sidebar-menu-item {{ menuActive('admin.bande.*') }} ">
+                                <a href="{{ route('admin.bande.index') }}" class="nav-link">
+                                    <i class="menu-icon las la-dot-circle"></i>
+                                    <span class="menu-title">@lang('Gestion des Bandes')</span>
+                                </a>
+                            </li>
                             <li class="sidebar-menu-item {{ menuActive('admin.arrivage.*') }} ">
                                 <a href="{{ route('admin.arrivage.index') }}" class="nav-link">
                                     <i class="menu-icon las la-dot-circle"></i>
