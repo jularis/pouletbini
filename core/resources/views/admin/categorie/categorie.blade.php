@@ -12,6 +12,7 @@
                                     <th>@lang('Nom')</th>
                                     <th>@lang('Prix')</th>
                                     <th>@lang('Niveau')</th>
+                                    <th>@lang('Multiplicateur')</th>
                                     <th>@lang('Status')</th>
                                     <th>@lang('Action')</th>
                                 </tr>
@@ -23,6 +24,7 @@
                                         <td>{{ __($categorie->name) }}</td>
                                         <td>{{ __($categorie->price) }}</td>
                                         <td>{{ __($categorie->niveau) }}</td>
+                                        <td>{{ __($categorie->multiplicateur) }}</td>
                                         <td> @php  echo $categorie->statusBadge; @endphp </td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-outline--primary updateCategorie"
