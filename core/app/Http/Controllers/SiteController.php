@@ -24,6 +24,10 @@ class SiteController extends Controller
         //return redirect('/order/tracking');
         return redirect('/staff');
     }
+    public function politique()
+    { 
+        return view('politique');
+    }
 
     public function pages($slug)
     {
