@@ -18,6 +18,7 @@ Route::controller('TicketController')->prefix('ticket')->group(function () {
 });
 
 Route::controller('SiteController')->group(function () {
+    Route::get('/privacy-policy', 'politique')->name('politique');
     Route::get('/contact', 'contact')->name('contact');
     Route::post('/contact', 'contactSubmit');
     Route::get('/change/{lang?}', 'changeLanguage')->name('lang');
@@ -29,8 +30,7 @@ Route::controller('SiteController')->group(function () {
     Route::get('placeholder-image/{size}', 'placeholderImage')->name('placeholder.image');
     Route::get('/order/tracking', 'orderTracking')->name('orders.tracking');
     Route::post('/order/tracking', 'findOrder')->name('order.tracking');
-    Route::get('/{slug}', 'pages')->name('pages');
-    Route::get('/privacy-policy', 'politique')->name('politique');
+    Route::get('/{slug}', 'pages')->name('pages'); 
     Route::get('/', 'index')->name('home');
     
 });
