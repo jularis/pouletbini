@@ -118,7 +118,7 @@ $('.quantityPrev').on('input', function (e) {
            let idInit = $(this).data('id');
           
            if (quantity>0) {
-            console.log(quantity)
+             
             $(parent).find('.quantity').attr({     
              'min' : 0,
              'max':quantity,

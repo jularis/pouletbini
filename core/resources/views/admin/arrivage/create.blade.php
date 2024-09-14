@@ -55,7 +55,7 @@
                             <div class="input-group-append">
                                 <span class="input-group-text qte_init" style="height: 45px;border-radius: 0;">00</span>
                             </div>
-                    </div>
+                        </div>
                             
                         </div>
                     </div>

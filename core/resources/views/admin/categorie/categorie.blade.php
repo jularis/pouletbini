@@ -111,6 +111,17 @@
                                 <option value="1">1</option> 
                             </select>
                         </div>
+                        <div class="form-group">
+                            <label>@lang('Multiplicateur')</label>
+                            <select class="form-control" name="multiplicateur" required>
+                                <option value="">@lang('Selectionner une Option')</option>
+                                <option value="1">1</option> 
+                                <option value="2">2</option> 
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
                     </div>
                     
                     <div class="modal-footer">
@@ -147,6 +158,7 @@
                 modal.find('input[name=price]').val($(this).data('price'));
                 modal.find('select[name=unite]').val($(this).data('unite'));
                 modal.find('select[name=niveau]').val($(this).data('niveau'));
+                modal.find('select[name=multiplicateur]').val($(this).data('multiplicateur'));
                 modal.modal('show');
             });
         })(jQuery);
