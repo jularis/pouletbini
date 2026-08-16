@@ -122,9 +122,7 @@ class LoginController extends Controller
             return redirect()->route('staff.login')->withNotify($notify);
         }
         if (auth()->user()->user_type == "manager") {
-            $this->guard()->logout();
-            $notify[] = ['error', 'Vous ne pouvez pas vous connecter au Tableau de Bord Staff.'];
-            return redirect()->route('staff.login')->withNotify($notify);
+            return redirect()->route('manager.dashboard');
         }
         $user     = auth()->user();
         $user->save();
