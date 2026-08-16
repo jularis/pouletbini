@@ -1,0 +1,25 @@
+{
+  "name": "Poulet Bini",
+  "short_name": "Poulet Bini",
+  "description": "Application Poulet Bini disponible en ligne et avec un mode hors connexion.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#f15b2a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/images/logoIcon/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/images/logoIcon/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

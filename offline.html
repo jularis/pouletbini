@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f15b2a">
+  <title>Poulet Bini - Hors connexion</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --brand: #f15b2a;
+      --ink: #1f2933;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --surface: #ffffff;
+      --page: #f8fafc;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      align-items: center;
+      background: var(--page);
+      color: var(--ink);
+      display: flex;
+      font-family: Arial, Helvetica, sans-serif;
+      justify-content: center;
+      margin: 0;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    main {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      max-width: 440px;
+      padding: 28px;
+      text-align: center;
+      width: 100%;
+    }
+
+    img {
+      height: 64px;
+      margin-bottom: 18px;
+      object-fit: contain;
+      width: 64px;
+    }
+
+    h1 {
+      font-size: 24px;
+      line-height: 1.2;
+      margin: 0 0 12px;
+    }
+
+    p {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+      margin: 0 0 22px;
+    }
+
+    button {
+      background: var(--brand);
+      border: 0;
+      border-radius: 6px;
+      color: #ffffff;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 12px 18px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <img src="/assets/images/logoIcon/favicon.png" alt="Poulet Bini">
+    <h1>Vous etes hors connexion</h1>
+    <p>Cette page n'est pas encore disponible hors ligne. Reconnectez-vous ou revenez sur une page deja consultee.</p>
+    <button type="button" onclick="window.location.reload()">Reessayer</button>
+  </main>
+</body>
+</html>
