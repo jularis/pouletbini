@@ -2,8 +2,11 @@
     "use strict";
 
     var STORAGE_KEY = "pouletbini.offline.requests";
+    var LOCK_KEY = "pouletbini.offline.sync.lock";
     var FORM_SELECTOR = "form[data-offline-sync]";
     var PANEL_ID = "offline-sync-panel";
+    var LOCK_TTL = 30000;
+    var TAB_ID = Date.now().toString(36) + Math.random().toString(36).slice(2);
     var syncing = false;
 
     function readQueue() {
@@ -202,23 +205,73 @@
     function serializeForm(form) {
         var formData = new FormData(form);
         var fields = [];
+        var requestId = Date.now().toString(36) + Math.random().toString(36).slice(2);
+        var hasOfflineSyncId = false;
 
         formData.forEach(function (value, key) {
             if (value instanceof File) {
                 return;
             }
 
+            if (key === "offline_sync_id") {
+                hasOfflineSyncId = true;
+            }
+
             fields.push([key, value]);
         });
 
+        if (!hasOfflineSyncId) {
+            fields.push(["offline_sync_id", requestId]);
+        }
+
         return {
-            id: Date.now().toString(36) + Math.random().toString(36).slice(2),
+            id: requestId,
             action: form.action,
             method: (form.method || "POST").toUpperCase(),
             fields: fields,
             createdAt: new Date().toISOString(),
             label: form.getAttribute("data-offline-label") || "commande"
         };
+    }
+
+    function acquireSyncLock() {
+        var now = Date.now();
+
+        try {
+            var currentLock = JSON.parse(localStorage.getItem(LOCK_KEY) || "null");
+
+            if (currentLock && currentLock.expiresAt > now && currentLock.owner !== TAB_ID) {
+                return false;
+            }
+
+            localStorage.setItem(LOCK_KEY, JSON.stringify({
+                owner: TAB_ID,
+                expiresAt: now + LOCK_TTL
+            }));
+
+            return true;
+        } catch (error) {
+            return true;
+        }
+    }
+
+    function refreshSyncLock() {
+        try {
+            localStorage.setItem(LOCK_KEY, JSON.stringify({
+                owner: TAB_ID,
+                expiresAt: Date.now() + LOCK_TTL
+            }));
+        } catch (error) {}
+    }
+
+    function releaseSyncLock() {
+        try {
+            var currentLock = JSON.parse(localStorage.getItem(LOCK_KEY) || "null");
+
+            if (currentLock && currentLock.owner === TAB_ID) {
+                localStorage.removeItem(LOCK_KEY);
+            }
+        } catch (error) {}
     }
 
     function isAuthRedirect(response) {
@@ -300,10 +353,15 @@
             return;
         }
 
+        if (!acquireSyncLock()) {
+            return;
+        }
+
         var queue = readQueue();
 
         if (!queue.length) {
             updateQueuedCount(0);
+            releaseSyncLock();
             return;
         }
 
@@ -315,6 +373,7 @@
 
             for (var i = 0; i < queue.length; i++) {
                 try {
+                    refreshSyncLock();
                     await postQueuedRequest(queue[i]);
                 } catch (error) {
                     remaining = queue.slice(i);
@@ -335,6 +394,7 @@
             }
         } finally {
             syncing = false;
+            releaseSyncLock();
             renderQueuePanel(readQueue());
         }
     }
@@ -348,18 +408,27 @@
 
         event.preventDefault();
 
+        if (form.dataset.offlineSyncSubmitting === "1") {
+            return;
+        }
+
+        form.dataset.offlineSyncSubmitting = "1";
+
         if (!navigator.onLine) {
             queueForm(form);
+            delete form.dataset.offlineSyncSubmitting;
             return;
         }
 
         submitFormOnline(form).catch(function (error) {
             if (error.message === "AUTH_REQUIRED") {
                 showMessage("warning", "Connexion requise pour enregistrer cette commande.");
+                delete form.dataset.offlineSyncSubmitting;
                 return;
             }
 
             queueForm(form);
+            delete form.dataset.offlineSyncSubmitting;
         });
     }, true);
 
@@ -373,6 +442,12 @@
         renderQueuePanel(readQueue());
         updateQueuedCount(readQueue().length);
         syncQueue();
+    });
+    window.addEventListener("storage", function (event) {
+        if (event.key === STORAGE_KEY) {
+            renderQueuePanel(readQueue());
+            updateQueuedCount(readQueue().length);
+        }
     });
 
     window.PouletBiniOfflineSync = {

@@ -14,6 +14,7 @@ use App\Models\Produit;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Excel;
 use App\Exports\ManagerDeliveryQueueExport;
 
@@ -50,12 +51,27 @@ class LivraisonController extends Controller
             'items.*.name'     => 'nullable|string',
             'estimate_date'    => 'required|date|date_format:Y-m-d|after_or_equal:today',
             'payment_status'   => 'required|integer|in:0,1',
+            'offline_sync_id'   => 'nullable|string|max:100',
         ]);
 
         $sender                      = auth()->user();
+        $hasOfflineSyncColumn        = Schema::hasColumn('livraison_infos', 'offline_sync_id');
+
+        if ($hasOfflineSyncColumn && $request->filled('offline_sync_id')) {
+            $existingLivraison = LivraisonInfo::where('offline_sync_id', $request->offline_sync_id)->first();
+
+            if ($existingLivraison) {
+                $notify[] = ['success', 'La livraison a deja ete synchronisee'];
+                return to_route('manager.livraison.invoice', encrypt($existingLivraison->id))->withNotify($notify);
+            }
+        }
+
         $livraison                     = new LivraisonInfo();
         $livraison->invoice_id         = getTrx();
         $livraison->code               = getTrx();
+        if ($hasOfflineSyncColumn) {
+            $livraison->offline_sync_id = $request->offline_sync_id;
+        }
         $livraison->sender_magasin_id   = $sender->magasin_id;
         $livraison->sender_staff_id    = $sender->id;
         if($sender->user_type !='Staff'){

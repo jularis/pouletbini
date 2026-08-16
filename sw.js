@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'poulet-bini-v3';
+const CACHE_VERSION = 'poulet-bini-v4';
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const STATIC_ASSETS = [
   '/',
