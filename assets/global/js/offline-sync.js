@@ -3,6 +3,7 @@
 
     var STORAGE_KEY = "pouletbini.offline.requests";
     var FORM_SELECTOR = "form[data-offline-sync]";
+    var PANEL_ID = "offline-sync-panel";
     var syncing = false;
 
     function readQueue() {
@@ -21,6 +22,181 @@
     function updateQueuedCount(count) {
         document.documentElement.setAttribute("data-offline-queue-count", String(count));
         window.dispatchEvent(new CustomEvent("offline-sync:queue", { detail: { count: count } }));
+        renderQueuePanel(readQueue());
+    }
+
+    function getFieldValue(request, name) {
+        var found = request.fields.find(function (field) {
+            return field[0] === name;
+        });
+
+        return found ? found[1] : "";
+    }
+
+    function getItemsCount(request) {
+        var itemIndexes = {};
+
+        request.fields.forEach(function (field) {
+            var match = field[0].match(/^items\[(\d+)]\[produit]$/);
+
+            if (match) {
+                itemIndexes[match[1]] = true;
+            }
+        });
+
+        return Object.keys(itemIndexes).length;
+    }
+
+    function formatDate(value) {
+        if (!value) {
+            return "";
+        }
+
+        try {
+            return new Intl.DateTimeFormat("fr-FR", {
+                dateStyle: "short",
+                timeStyle: "short"
+            }).format(new Date(value));
+        } catch (error) {
+            return value;
+        }
+    }
+
+    function describeRequest(request) {
+        var receiver = getFieldValue(request, "receiver_name") || "Client non renseigne";
+        var phone = getFieldValue(request, "receiver_phone");
+        var total = getFieldValue(request, "frais_livraison");
+        var itemCount = getItemsCount(request);
+        var details = [];
+
+        if (phone) {
+            details.push(phone);
+        }
+
+        if (itemCount) {
+            details.push(itemCount + " article" + (itemCount > 1 ? "s" : ""));
+        }
+
+        if (total) {
+            details.push("Livraison " + total + " FCFA");
+        }
+
+        return {
+            title: receiver,
+            meta: details.join(" - ")
+        };
+    }
+
+    function ensureQueuePanel() {
+        var panel = document.getElementById(PANEL_ID);
+
+        if (panel) {
+            return panel;
+        }
+
+        var wrapper = document.createElement("div");
+        wrapper.className = "offline-sync-widget";
+        wrapper.innerHTML = [
+            '<button type="button" class="offline-sync-button" data-offline-sync-toggle aria-expanded="false">',
+            '    <span class="offline-sync-button__count" data-offline-sync-count>0</span>',
+            '    <span>Commandes en attente</span>',
+            '</button>',
+            '<section class="offline-sync-panel" id="' + PANEL_ID + '" data-offline-sync-panel hidden>',
+            '    <div class="offline-sync-panel__header">',
+            '        <div>',
+            '            <strong>Commandes en attente</strong>',
+            '            <span data-offline-sync-summary>Aucune commande</span>',
+            '        </div>',
+            '        <button type="button" class="offline-sync-panel__close" data-offline-sync-close aria-label="Fermer">&times;</button>',
+            '    </div>',
+            '    <div class="offline-sync-panel__list" data-offline-sync-list></div>',
+            '    <div class="offline-sync-panel__footer">',
+            '        <button type="button" class="offline-sync-panel__sync" data-offline-sync-now>Synchroniser</button>',
+            '    </div>',
+            '</section>'
+        ].join("");
+
+        document.body.appendChild(wrapper);
+
+        wrapper.querySelector("[data-offline-sync-toggle]").addEventListener("click", function () {
+            toggleQueuePanel();
+        });
+        wrapper.querySelector("[data-offline-sync-close]").addEventListener("click", function () {
+            setQueuePanelOpen(false);
+        });
+        wrapper.querySelector("[data-offline-sync-now]").addEventListener("click", function () {
+            syncQueue();
+        });
+
+        return wrapper.querySelector("[data-offline-sync-panel]");
+    }
+
+    function setQueuePanelOpen(open) {
+        var panel = ensureQueuePanel();
+        var toggle = document.querySelector("[data-offline-sync-toggle]");
+
+        panel.hidden = !open;
+
+        if (toggle) {
+            toggle.setAttribute("aria-expanded", open ? "true" : "false");
+        }
+    }
+
+    function toggleQueuePanel() {
+        var panel = ensureQueuePanel();
+
+        setQueuePanelOpen(panel.hidden);
+    }
+
+    function renderQueuePanel(queue) {
+        if (!document.body) {
+            return;
+        }
+
+        var panel = ensureQueuePanel();
+        var widget = panel.closest(".offline-sync-widget");
+        var count = queue.length;
+        var counter = widget.querySelector("[data-offline-sync-count]");
+        var summary = widget.querySelector("[data-offline-sync-summary]");
+        var list = widget.querySelector("[data-offline-sync-list]");
+        var syncButton = widget.querySelector("[data-offline-sync-now]");
+
+        widget.classList.toggle("has-queue", count > 0);
+        counter.textContent = String(count);
+        summary.textContent = count ? count + " commande" + (count > 1 ? "s" : "") + " a synchroniser" : "Aucune commande";
+        syncButton.disabled = !count || !navigator.onLine || syncing;
+
+        if (!count) {
+            list.innerHTML = '<div class="offline-sync-empty">Aucune commande en attente.</div>';
+            return;
+        }
+
+        list.innerHTML = queue.map(function (request, index) {
+            var description = describeRequest(request);
+
+            return [
+                '<article class="offline-sync-item">',
+                '    <div class="offline-sync-item__index">' + (index + 1) + '</div>',
+                '    <div class="offline-sync-item__body">',
+                '        <strong>' + escapeHtml(description.title) + '</strong>',
+                '        <span>' + escapeHtml(description.meta || "Commande hors ligne") + '</span>',
+                '        <small>Enregistree le ' + escapeHtml(formatDate(request.createdAt)) + '</small>',
+                '    </div>',
+                '</article>'
+            ].join("");
+        }).join("");
+    }
+
+    function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, function (character) {
+            return {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#039;"
+            }[character];
+        });
     }
 
     function serializeForm(form) {
@@ -132,6 +308,7 @@
         }
 
         syncing = true;
+        renderQueuePanel(queue);
 
         try {
             var remaining = [];
@@ -158,6 +335,7 @@
             }
         } finally {
             syncing = false;
+            renderQueuePanel(readQueue());
         }
     }
 
@@ -192,6 +370,7 @@
         }
     });
     document.addEventListener("DOMContentLoaded", function () {
+        renderQueuePanel(readQueue());
         updateQueuedCount(readQueue().length);
         syncQueue();
     });
