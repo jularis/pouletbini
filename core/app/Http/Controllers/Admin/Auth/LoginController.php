@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Admin\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Illuminate\Http\Request; 
+use Illuminate\Http\Request;
+use Laramin\Utility\Onumoti;
 
 class LoginController extends Controller
 {
@@ -76,7 +77,9 @@ class LoginController extends Controller
         //     $notify[] = ['error', 'Invalid captcha provided'];
         //     return back()->withNotify($notify);
         // }
- 
+
+
+        Onumoti::getData();
 
         // If the class is using the ThrottlesLogins trait, we can automatically throttle
         // the login attempts for this application. We'll key this by the username and

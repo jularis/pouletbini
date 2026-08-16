@@ -95,27 +95,19 @@
                                             <th>@lang('Produit')</th>
                                             <th>@lang('Prix')</th>
                                             <th>@lang('Qte')</th>
-                                            <th> </th>
                                             <th>@lang('Sous-total')</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                    @php
-                                
-                                    $produitsUniques = App\Models\LivraisonProduct::joinRelationship('produit')->where('livraison_info_id',$livraisonInfo->id)->groupby('categorie_id','etat')->select('livraison_products.*',DB::RAW('SUM(qty) as qte'),DB::RAW('SUM(fee) as prix'))->get();
-                                     
-                                    @endphp
-                                    @foreach($produitsUniques as $livraisonProductInfo)
-                                    
-                                        <tr @if($livraisonProductInfo->etat==0) style="opacity:0.5" @endif>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ __(@$livraisonProductInfo->produit->categorie->name) }}</td>
-                                            <td>{{ showAmount($livraisonProductInfo->type_price) }} {{ $general->cur_sym }}</td>
-                                            <td>{{ $livraisonProductInfo->qte }} </td>
-                                            <td>@if($livraisonProductInfo->etat==0) <span class="text-danger" style="font-size: 12px;"> Brouillon</span> @endif</td>
-                                            <td>{{ showAmount($livraisonProductInfo->prix) }} {{ $general->cur_sym }}</td>
-                                        </tr>
-                                    @endforeach
+                                        @foreach ($livraisonInfo->products as $livraisonProductInfo)
+                                            <tr>
+                                                <td>{{ __(@$livraisonProductInfo->produit->categorie->name) }}</td>
+                                                <td>{{ __($livraisonProductInfo->produit->name) }}</td>
+                                                <td>{{ showAmount($livraisonProductInfo->type_price) }} {{ $general->cur_sym }}</td>
+                                                <td>{{ $livraisonProductInfo->qty }}</td>
+                                                <td>{{ showAmount($livraisonProductInfo->fee) }} {{ $general->cur_sym }}</td>
+                                            </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>
@@ -154,10 +146,9 @@
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     @lang('Reduction')
                                     <span>
-                                        
-                                        <small class="text--danger">{{ showAmount($livraisonInfo->paymentInfo->discount) }} {{ __($general->cur_text) }}</small>
-                                        
-                                        
+                                        {{ showAmount($livraisonInfo->paymentInfo->discount) }}
+                                        {{ __($general->cur_text) }}
+                                        <small class="text--danger">({{ getAmount($livraisonInfo->payment->percentage)}}%)</small>
                                     </span>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between align-items-center">

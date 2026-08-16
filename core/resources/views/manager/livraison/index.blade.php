@@ -21,7 +21,7 @@
                                 @forelse($livraisonInfos as $livraisonInfo)
                                     <tr>
                                         <td>
-                                            <span>{{ __($livraisonInfo->senderMagasin->name) }}</span><br>
+                                            <span>{{ __($livraisonInfo->senderMagasin->name ?? null) }}</span><br>
                                             <a class="text--primary" href="{{ route('manager.livraison.edit', encrypt($livraisonInfo->senderStaff->id)) }}">
                                                 <span class="text--primary">@</span>{{ __($livraisonInfo->senderStaff->username) }}
                                             </a>

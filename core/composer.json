@@ -12,6 +12,7 @@
         "guzzlehttp/guzzle": "^7.2",
         "intervention/image": "^2.5",
         "kirschbaum-development/eloquent-power-joins": "3.*",
+        "laramin/utility": "dev-main",
         "laravel/framework": "^9.2",
         "laravel/sanctum": "^2.14.1",
         "laravel/tinker": "^2.7",
@@ -51,8 +52,7 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Http/Helpers/helpers.php",
-            "app/Http/Helpers/Reply.php"
+            "app/Http/Helpers/helpers.php"
         ]
     },
     "autoload-dev": {

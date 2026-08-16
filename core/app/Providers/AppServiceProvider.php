@@ -66,7 +66,7 @@ class AppServiceProvider extends ServiceProvider
         if ($general->force_ssl) {
             \URL::forceScheme('https');
         }
-        // Model::preventLazyLoading(!app()->isProduction());
+        Model::preventLazyLoading(!app()->isProduction());
 
         Paginator::useBootstrapFour();
     }

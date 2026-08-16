@@ -8,11 +8,7 @@
                         <table class="table table--light style--two">
                             <thead>
                                 <tr>
-                                <th>@lang('Unite')</th>
                                     <th>@lang('Nom')</th>
-                                    <th>@lang('Prix')</th>
-                                    <th>@lang('Niveau')</th>
-                                    <th>@lang('Multiplicateur')</th>
                                     <th>@lang('Status')</th>
                                     <th>@lang('Action')</th>
                                 </tr>
@@ -20,20 +16,11 @@
                             <tbody>
                                 @forelse($categories as $categorie)
                                     <tr>
-                                    <td>{{ __($categorie->unite->name) }}</td>
                                         <td>{{ __($categorie->name) }}</td>
-                                        <td>{{ __($categorie->price) }}</td>
-                                        <td>{{ __($categorie->niveau) }}</td>
-                                        <td>{{ __($categorie->multiplicateur) }}</td>
                                         <td> @php  echo $categorie->statusBadge; @endphp </td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-outline--primary updateCategorie"
-                                                data-id="{{ $categorie->id }}"
-                                                data-unite="{{ $categorie->unite_id }}" 
-                                                data-price="{{ $categorie->price }}" 
-                                                data-niveau="{{ $categorie->niveau }}"
-                                                data-name="{{ $categorie->name }}"
-                                                data-multiplicateur="{{ $categorie->multiplicateur }}"><i
+                                                data-id="{{ $categorie->id }}" data-name="{{ $categorie->name }}"><i
                                                     class="las la-pen"></i>@lang('Edit')</button>
 
                                             @if ($categorie->status == Status::DISABLE)
@@ -82,51 +69,13 @@
                 </div>
                 <form action="{{ route('admin.livraison.categorie.store') }}" class="resetForm" method="POST">
                     @csrf
-
                     <input type="hidden" name='id'>
-                   
                     <div class="modal-body">
-                    <div class="form-group">
-                            <label>@lang('Unite')</label>
-                            <select class="form-control" name="unite" required>
-                                <option value="">@lang('Selectionner une Option')</option>
-                                @foreach ($unites as $unite)
-                                    <option value="{{ $unite->id }}">{{ __($unite->name) }}</option>
-                                @endforeach
-                            </select>
-                        </div>
                         <div class="form-group">
-                            <label>@lang('Nom de la Categorie')</label>
+                            <label>@lang('Nom')</label>
                             <input type="text" class="form-control" name="name" required>
                         </div>
-                        <div class="form-group">
-                            <label>@lang('Prix')</label>
-                            <div class="input-group mb-3">
-                                <input type="text" class="form-control" name="price" required>
-                                <span class="input-group-text">{{ __($general->cur_text) }}</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>@lang('Niveau')</label>
-                            <select class="form-control" name="niveau" required>
-                                <option value="">@lang('Selectionner une Option')</option>
-                                <option value="0">0</option> 
-                                <option value="1">1</option> 
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>@lang('Multiplicateur')</label>
-                            <select class="form-control" name="multiplicateur" required>
-                                <option value="">@lang('Selectionner une Option')</option>
-                                <option value="1">1</option> 
-                                <option value="2">2</option> 
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                            </select>
-                        </div>
                     </div>
-                    
                     <div class="modal-footer">
                         <button type="submit" class="btn btn--primary h-45 w-100">@lang("Envoyer")</button>
                     </div>
@@ -158,10 +107,6 @@
                 modal.find('.modal-title').text(title);
                 modal.find('input[name=id]').val(id);
                 modal.find('input[name=name]').val(name);
-                modal.find('input[name=price]').val($(this).data('price'));
-                modal.find('select[name=unite]').val($(this).data('unite'));
-                modal.find('select[name=niveau]').val($(this).data('niveau'));
-                modal.find('select[name=multiplicateur]').val($(this).data('multiplicateur'));
                 modal.modal('show');
             });
         })(jQuery);

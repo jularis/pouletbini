@@ -13,7 +13,7 @@
                             <div class="flex-grow-1">
                                 <label>@lang('Magasin')</label>
                                 <select name="magasin" class="form-control" id="magasin">
-                                    <option value="">@lang("Tous")</option>  
+                                    <option value="">@lang("Tous")</option>
                                     @foreach($magasins as $magasin)
                                         <option value="{{ $magasin->id }}" {{ request()->magasin == $magasin->id ? 'selected' : '' }} >
                                         {{ $magasin->name }}</option>
@@ -23,7 +23,7 @@
                             <div class="flex-grow-1">
                                 <label>@lang('Staff')</label>
                                 <select name="staff" class="form-control" id="staff">
-                                    <option value="">@lang("Tous")</option>  
+                                    <option value="">@lang("Tous")</option>
                                     @foreach($staffs as $staff)
                                         <option value="{{ $staff->id }}"  data-chained="{{ $staff->magasin_id }}"  {{ request()->staff == $staff->id ? 'selected' : '' }} >
                                         {{ $staff->lastname }} {{ $staff->firstname }}</option>
@@ -33,25 +33,17 @@
                             <div class="flex-grow-1">
                                 <label>@lang('Status de livraison')</label>
                                 <select name="status" class="form-control">
-                                    <option value="">@lang("Tous")</option> 
-                                    <option value="2" {{ request()->status == '2' ? 'selected' : '' }}>@lang('En attente')</option>
-                                    <option value="3" {{ request()->status == '3' ? 'selected' : '' }}>@lang('Livré')</option>
-                                </select>
-                            </div>
-                            <div class="flex-grow-1">
-                                <label>@lang('Status de commande')</label>
-                                <select name="etat" class="form-control">
-                                    <option value="">@lang("Tous")</option> 
-                                    <option value="1" {{ request()->etat == '1' ? 'selected' : '' }}>@lang('Validé')</option>
-                                    <option value="2"{{ request()->etat == '2' ? 'selected' : '' }}>@lang('En brouillon')</option>
+                                    <option value="">@lang("Tous")</option>
+                                    <option value="2">@lang('En attente')</option>
+                                    <option value="3">@lang('Livré')</option>
                                 </select>
                             </div>
                             <div class="flex-grow-1">
                                 <label>@lang('Status de paiement')</label>
                                 <select name="payment_status" class="form-control">
                                     <option value="" selected>@lang("Tous")</option>
-                                    <option value="1" {{ request()->payment_status == '1' ? 'selected' : '' }}>@lang('Payé')</option>
-                                    <option value="0" {{ request()->payment_status == '0' ? 'selected' : '' }}>@lang('Impayé')</option>
+                                    <option value="1">@lang('Payé')</option>
+                                    <option value="0">@lang('Impayé')</option>
                                 </select>
                             </div>
                             <div class="flex-grow-1">
@@ -74,24 +66,24 @@
                                     <th>@lang('Magasin Expéditeur - Staff')</th>
                                     <th>@lang('Destinataire - Client')</th>
                                     <th>@lang('Montant - Numéro Commande')</th>
-                                    <th>@lang("Date estimée d'envoi")</th> 
+                                    <th>@lang("Date estimée d'envoi")</th>
                                     <th>@lang('Status de paiement')</th>
                                     <th>@lang('Status')</th>
                                     <th>@lang('Date de création')</th>
                                     <th>@lang('Action')</th>
                                 </tr>
                             </thead>
-                            <tbody> 
+                            <tbody>
                                 @forelse($livraisonInfos as $livraisonInfo)
-                               
+
                                     <tr>
                                         <td>
-                                            <span class="fw-bold">{{ __($livraisonInfo->senderMagasin->name) }}</span><br>
-                                            {{ __(@$livraisonInfo->senderStaff->fullname) }}
+                                            <span class="fw-bold">{{ __($livraisonInfo->senderMagasin->name ?? null) }}</span><br>
+                                            {{ __(@$livraisonInfo->senderStaff->fullname ?? null) }}
                                         </td>
                                         <td>
                                         <span class="fw-bold">
-                                            {{ __($livraisonInfo->receiverClient->address) }}
+                                            {{ $livraisonInfo->receiverClient->address ?? "Aucune " }}
                                             </span>
                                             <br>
                                             @if ($livraisonInfo->receiver_client_id)
@@ -120,7 +112,7 @@
                                             @endif
                                         </td>
 
-                                        <td> 
+                                        <td>
                                             @if($livraisonInfo->status == Status::COURIER_DELIVERYQUEUE)
                                                 <span class="badge badge--dark">@lang('En attente de reception')</span>
                                             @else($livraisonInfo->status == Status::COURIER_DELIVERED)
@@ -172,14 +164,14 @@
 @push('script')
     <script>
         var magasin = '{{ request()->magasin }}';
-         
-        if(magasin){ 
+
+        if(magasin){
 
                 $("#staff").chained("#magasin");
             }
         (function($) {
             "use strict";
-            
+
             $('.date').datepicker({
                 //maxDate:new Date(),
                 range:true,
@@ -196,7 +188,7 @@
             }
 
         })(jQuery)
-        
+
 $('form select').on('change', function(){
     $(this).closest('form').submit();
 });

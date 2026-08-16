@@ -22,8 +22,8 @@
                                     <tr>
                                     <tr>
                                         <td>
-                                            <span>{{ __($livraisonInfo->senderMagasin->name) }}</span><br>
-                                            {{ __($livraisonInfo->senderStaff->fullname) }}
+                                            <span>{{ __($livraisonInfo->senderMagasin->name ?? null) }}</span><br>
+                                            {{ __($livraisonInfo->senderStaff->fullname ?? null) }}
                                         </td>
 
                                         <td>

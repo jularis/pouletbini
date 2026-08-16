@@ -40,9 +40,6 @@
      
     foreach($commandes as $c)
     {
-        if($c->etat=0){
-            continue;
-        }
     ?>
         <tbody>
         <tr>

@@ -57,12 +57,11 @@ Route::middleware('auth')->group(function () {
             Route::controller('LivraisonController')->name('livraison.')->prefix('livraison')->group(function () {
                 Route::get('send', 'create')->name('create');
                 Route::post('store', 'store')->name('store');
-                Route::get('get/produit', 'getProduit')->name('get.produit');
                 Route::post('update/{id}', 'update')->name('update');
                 Route::get('edit/{id}', 'edit')->name('edit');
                 Route::get('details/{id}', 'details')->name('details');
 
-                // Route::get('list', 'livraisonInfo')->name('index'); 
+                // Route::get('list', 'livraisonInfo')->name('index');
                 Route::get('invoice/{id}', 'invoice')->name('invoice');
                 Route::get('delivery/list', 'delivery')->name('delivery.list');
                 Route::get('details/{id}', 'details')->name('details');
@@ -81,10 +80,12 @@ Route::middleware('auth')->group(function () {
                 Route::get('upcoming', 'upcoming')->name('upcoming');
                 Route::post('receive/{id}', 'receive')->name('receive');
                 Route::get('delivery/queue', 'deliveryQueue')->name('delivery.queue');
+                Route::get('delivery/queue/export/excel', 'deliveryQueueExportExcel')->name('delivery.queue.export.excel');
+                Route::get('commande/queue', 'commandeQueue')->name('commande.queue');
                 Route::get('delivery/list/total', 'delivered')->name('manage.delivered');
                 Route::get('credit/list/total', 'credit')->name('manage.credit');
                 Route::get('annule/list/total', 'annule')->name('manage.annule');
-                Route::post('delete/{id}', 'delete')->name('delete');
+                Route::delete('delete/{id}', 'destroy')->name('delete');
             });
 
             Route::controller('LivraisonSettingController')->name('livraison.')->prefix('livraison')->group(function () {
@@ -93,18 +94,17 @@ Route::middleware('auth')->group(function () {
                     Route::get('categorie', 'categorieIndex')->name('index');
                     Route::post('categorie/store', 'categorieStore')->name('store');
                     Route::post('status/{id}', 'status')->name('status');
-        
+
                     Route::get('produit/', 'produitIndex')->name('produit.index');
                     Route::post('produit/store', 'produitStore')->name('produit.store');
                     Route::post('produit/status/{id}', 'produitStatus')->name('produit.status');
-        
+
                     Route::get('client/', 'clientIndex')->name('client.index');
                     Route::post('client/store', 'clientStore')->name('client.store');
                     Route::post('client/status/{id}', 'clientStatus')->name('client.status');
-                    Route::post('client/delete/{id}', 'clientDelete')->name('client.delete');
                     Route::get('/exportClientsExcel', 'exportExcel')->name('client.exportExcel.clientAll');
                     Route::post('/client/uploadcontent', 'uploadContent')->name('client.uploadcontent');
-                }); 
+                });
             });
 
             Route::controller('ManagerTicketController')->prefix('ticket')->name('ticket.')->group(function () {

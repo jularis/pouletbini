@@ -15,6 +15,7 @@ use App\Models\LivraisonPayment;
 use App\Models\LivraisonProduct;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\File;
 
 class LivraisonSettingController extends Controller
 {
@@ -22,7 +23,7 @@ class LivraisonSettingController extends Controller
     public function categorieIndex()
     {
         $pageTitle = "Gestion Categorie";
-        $categories     = Categorie::with('unite')->orderBy('name')->paginate(getPaginate());
+        $categories     = Categorie::orderBy('name')->paginate(getPaginate());
         return view('manager.categorie.categorie', compact('pageTitle', 'categories'));
     }
 
@@ -37,6 +38,10 @@ class LivraisonSettingController extends Controller
         } else {
             $categorie = new Categorie();
         }
+        if ($request->hasFile('picture')) {
+            //File::makeDirectory(storage_path() . "/app/public/produits", 0777, true);
+            $categorie->image = $request->file('picture')->store('public/categories');
+        }
         $categorie->name   = $request->name;
         $categorie->save();
         $notify[] = ['success', isset($message) ? $message : 'Categorie a été ajouté avec succès'];
@@ -47,13 +52,7 @@ class LivraisonSettingController extends Controller
     {
         $pageTitle = "Gestion des Produits";
         $categories     = Categorie::active()->orderBy('name')->get();
-        $produits     = Produit::orderBy('name')->where('quantity_restante','>',0)
-                                ->with('categorie')
-                                ->groupby('categorie_id')
-                                ->select('id','produits.arrivage_id','produits.categorie_id','produits.name','produits.price','produits.status','produits.created_at','produits.updated_at'
-                                ,DB::RAW('SUM(quantity) as quantity'),DB::RAW('SUM(quantity_use) as quantity_use'),DB::RAW('SUM(quantity_restante) as quantity_restante'))
-                                ->paginate(getPaginate());
-      
+        $produits     = Produit::orderBy('name')->with('categorie')->paginate(getPaginate());
         return view('manager.categorie.produit', compact('pageTitle', 'produits', 'categories'));
     }
 
@@ -72,10 +71,16 @@ class LivraisonSettingController extends Controller
         } else {
             $categorie = new Produit();
         }
+        if ($request->hasFile('picture')) {
+            //File::makeDirectory(storage_path() . "/app/public/produits", 0777, true);
+            $categorie->image = $request->file('picture')->store('public/produits');
+        }
         $categorie->name    = $request->name;
         $categorie->categorie_id = $request->categorie;
         $categorie->price   = $request->price;
         $categorie->quantity   = $request->quantity;
+        $categorie->description   = $request->description;
+
         $categorie->save();
         $notify[] = ['success', isset($message) ? $message  : 'Produit a été ajouté avec succès'];
         return back()->withNotify($notify);
@@ -83,7 +88,7 @@ class LivraisonSettingController extends Controller
 
     public function clientIndex()
     {
-        $pageTitle = "Gestion des Clients"; 
+        $pageTitle = "Gestion des Clients";
         $clients     = Client::searchable(['name', 'genre','email','phone','address'])->orderBy('id','desc')->paginate(getPaginate());
         return view('manager.categorie.client', compact('pageTitle', 'clients'));
     }
@@ -110,19 +115,12 @@ class LivraisonSettingController extends Controller
         $notify[] = ['success', isset($message) ? $message  : 'Client a été ajouté avec succès'];
         return back()->withNotify($notify);
     }
-    public function clientDelete($id)
-    { 
-        Client::where('id', decrypt($id))->delete();
-        $notify[] = ['success', 'Le client supprimé avec succès'];
-        return back()->withNotify($notify);
-    }
-
     public function exportExcel()
-    { 
+    {
         $filename = 'clients-' . gmdate('dmYhms') . '.xlsx';
         return Excel::download(new ExportClients, $filename);
     }
-     
+
 
     public function  uploadContent(Request $request)
     {

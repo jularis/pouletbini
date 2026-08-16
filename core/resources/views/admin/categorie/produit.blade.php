@@ -9,14 +9,10 @@
                         <table class="table table--light style--two">
                             <thead>
                                 <tr>
+                                    <th>@lang('Nom')</th>
                                     <th>@lang('Categorie')</th>
-                                    <th>@lang('Nom')</th>  
-                                    <th>@lang('Numero de bande')</th>  
-                                    <th>@lang('Prix Unitaire')</th> 
-                                    <th>@lang('Quantite')</th>
-                                    <th>@lang('Quantite Utilisée')</th>
-                                    <th>@lang('Quantite Restante')</th>
-                                    <th>@lang('Status')</th> 
+                                    <th>@lang('Prix')</th>
+                                    <th>@lang('Status')</th>
                                     <th>@lang('Last Update')</th>
                                     <th>@lang('Action')</th>
                                 </tr>
@@ -24,27 +20,18 @@
                             <tbody>
                                 @forelse($produits as $produit)
                                     <tr>
-                                    <td>
-                                            <span>{{ __($produit->categorie->name) }}</span>
-                                        </td>
                                         <td>
                                             <span class="fw-bold">{{ __($produit->name) }}</span>
                                         </td>
+
                                         <td>
-                                            <span class="fw-bold">{{ __($produit->arrivage->bande->numero_bande) }}</span>
+                                            <span>{{ __($produit->categorie->name) }}</span>
                                         </td>
+
                                         <td>
                                             <span>{{ showAmount($produit->price) }} {{ __($general->cur_text) }}</span>
                                         </td>
-                                        <td>
-                                            <span class="fw-bold">{{ showAmount($produit->quantity) }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="fw-bold">{{ showAmount($produit->quantity_use) }}</span>
-                                        </td> 
-                                        <td>
-                                            <span class="fw-bold">{{ showAmount($produit->quantity_restante) }}</span>
-                                        </td> 
+
                                         <td>
                                             @php
                                                 echo $produit->statusBadge;
@@ -109,20 +96,21 @@
                 <form action="{{ route('admin.livraison.categorie.produit.store') }}" method="POST">
                     @csrf
                     <div class="modal-body">
-                    <div class="form-group">
+                        <div class="form-group">
+                            <label>@lang('Nom')</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+
+                        <div class="form-group">
                             <label>@lang('Select Categorie')</label>
-                            <select class="form-control" name="categorie" onchange="getProductNameAdd()" required id="categorieAdd">
+                            <select class="form-control" name="categorie" required>
                                 <option value="">@lang('Selectionner une Option')</option>
                                 @foreach ($categories as $categorie)
-                                    <option value="{{ $categorie->id }}" data-categ="{{ __($categorie->name) }}" data-price="{{ __($categorie->price) }}" data-unit="{{ __($categorie->unite->name) }}">{{ __($categorie->name) }}</option>
+                                    <option value="{{ $categorie->id }}">{{ __($categorie->name) }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>@lang('Nom')</label>
-                            <input type="text" class="form-control" name="name" required readonly>
-                        </div>
- 
+
                         <div class="form-group">
                             <label>@lang('Prix')</label>
                             <div class="input-group mb-3">
@@ -153,22 +141,20 @@
                     @csrf
                     <input type="hidden" name="id">
                     <div class="modal-body">
-                        
-
                         <div class="form-group">
-                            <label>@lang('Select Categorie')</label>
-                            <select class="form-control" name="categorie" onchange="getProductName()" required id="categorieUpdate">
-                                <option value="">@lang('Selectionner une Option')</option>
-                                @foreach ($categories as $categorie)
-                                    <option value="{{ $categorie->id }}" data-categ="{{ __($categorie->name) }}" data-price="{{ __($categorie->price) }}" data-unit="{{ __($categorie->unite->name) }}" >{{ __($categorie->name) }}</option>
-                                @endforeach
-                            </select>
+                            <label>@lang('Nom')</label>
+                            <input type="text" class="form-control" name="name" placeholder="@lang('Enter Name')"
+                                required>
                         </div>
 
                         <div class="form-group">
-                            <label>@lang('Nom')</label>
-                            <input type="text" class="form-control" name="name"  placeholder="@lang('Enter Name')"
-                                required readonly>
+                            <label>@lang('Select Categorie')</label>
+                            <select class="form-control" name="categorie" required>
+                                <option value="">@lang('Selectionner une Option')</option>
+                                @foreach ($categories as $categorie)
+                                    <option value="{{ $categorie->id }}">{{ __($categorie->name) }}</option>
+                                @endforeach
+                            </select>
                         </div>
 
                         <div class="form-group">
@@ -185,7 +171,6 @@
                         <button type="submit" class="btn btn--primary w-100 h-45">@lang("Envoyer")</button>
                     </div>
                 </form>
-                
             </div>
         </div>
     </div>
@@ -200,32 +185,8 @@
 
 @push('script')
     <script>
-      
-        function getProductName() { 
-    
-        let categorie = $('#categorieUpdate').find(':selected').data('categ');
-        let unite = $('#categorieUpdate').find(':selected').data('unit'); 
-        let price = $('#categorieUpdate').find(':selected').data('price');
-       
-        product = unite+'-'+categorie;
-        $('input[name=name]').val(product).attr("readonly",'readonly'); 
-        $('input[name=price]').val(price).attr("readonly",'readonly'); 
-        
-    }
-    function getProductNameAdd() { 
-    
-    let categorie = $('#categorieAdd').find(':selected').data('categ');
-    let unite = $('#categorieAdd').find(':selected').data('unit'); 
-    let price = $('#categorieUpdate').find(':selected').data('price');
-     
-    product = unite+'-'+categorie;
-    $('input[name=name]').val(product).attr("readonly",'readonly'); 
-    $('input[name=price]').val(price).attr("readonly",'readonly'); 
-}
         (function($) {
             "use strict";
-
-
             $('.addCategorie').on('click', function() {
                 $('#categorieModel').modal('show');
             });

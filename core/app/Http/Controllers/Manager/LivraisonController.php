@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers\Manager;
 
-use Carbon\Carbon;
-use App\Models\User;
-use App\Models\Client;
-use App\Models\Magasin;
-use App\Models\Produit;
 use App\Constants\Status;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Models\AdminNotification;
+use App\Models\Client;
 use App\Models\LivraisonInfo;
 use App\Models\LivraisonPayment;
 use App\Models\LivraisonProduct;
-use App\Models\AdminNotification;
-use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
+use App\Models\Magasin;
+use App\Models\Produit;
+use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Excel;
+use App\Exports\ManagerDeliveryQueueExport;
 
 class LivraisonController extends Controller
 {
@@ -24,14 +25,7 @@ class LivraisonController extends Controller
         $pageTitle = 'Enregistrer une Livraison';
         $staff = auth()->user();
         $magasins = Magasin::active()->orderBy('name')->get();
-        $produits = Produit::active()
-                            ->with('categorie')
-                            ->groupby('categorie_id')
-                            ->orderBy('name')
-                            ->select('produits.*',DB::RAW('SUM(quantity_restante) as quantite'))
-                            ->get();
-       
- 
+        $produits = Produit::active()->with('categorie')->orderBy('name')->get();
         $clients = Client::active()->orderBy('name')->get();
         $staffs = User::active()->where('user_type','staff')->with('magasin')->orderBy('lastname')->get();
         return view('manager.livraison.create', compact('pageTitle', 'magasins', 'produits','clients','staffs'));
@@ -39,17 +33,18 @@ class LivraisonController extends Controller
 
     public function store(Request $request)
     {
-        
+
         $request->validate([
             'magasin'           => 'required|exists:magasins,id',
-            'staff'           => 'required|exists:users,id', 
+            'staff'           => 'required|exists:users,id',
             'sender_name'      => 'required|max:255',
             'sender_email'     => 'required|email|max:255',
-            'sender_phone'     => 'required|string|max:255', 
-            'receiver_name'    => 'required|max:255', 
+            'sender_phone'     => 'required|string|max:255',
+            'receiver_name'    => 'required|max:255',
             'receiver_phone'   => 'required|string|max:255',
             'receiver_address' => 'required|max:255',
-            'items'            => 'required|array', 
+            'items'            => 'required|array',
+            'items.*.produit'     => 'required|integer|exists:produits,id',
             'items.*.quantity' => 'required|numeric|gt:0',
             'items.*.amount'   => 'required|numeric|gt:0',
             'items.*.name'     => 'nullable|string',
@@ -62,7 +57,7 @@ class LivraisonController extends Controller
         $livraison->invoice_id         = getTrx();
         $livraison->code               = getTrx();
         $livraison->sender_magasin_id   = $sender->magasin_id;
-        $livraison->sender_staff_id    = $sender->id; 
+        $livraison->sender_staff_id    = $sender->id;
         if($sender->user_type !='Staff'){
             $livraison->sender_staff_id    = $request->staff;
         }
@@ -82,7 +77,7 @@ class LivraisonController extends Controller
             $client->phone     = $request->receiver_phone;
             $client->address   = $request->receiver_address;
             $client->save();
-            $livraison->receiver_client_id    = $client->id; 
+            $livraison->receiver_client_id    = $client->id;
         }else{
             $client = Client::find($request->client);
             $client->name      = $request->receiver_name;
@@ -96,109 +91,36 @@ class LivraisonController extends Controller
         $livraison->receiver_email     = $request->receiver_email;
         $livraison->receiver_phone     = $request->receiver_phone;
         $livraison->receiver_address   = $request->receiver_address;
- 
+
         $livraison->estimate_date      = $request->estimate_date;
         $livraison->save();
 
-        $subTotal = $qtebrouillon = $qterestante = $quantityAcceptee = 0;
-        
+        $subTotal = 0;
+
         $data = [];
         foreach ($request->items as $item) {
-            $productArray = Produit::where([['categorie_id',$item['produit']],['quantity_restante','>',0]])
-                                    ->orderby('id','asc');
-            $total = $productArray->sum('quantity_restante');
-            
-            $productArray = $productArray->get();
-            $qterestante = $quantityAcceptee = 0;
-
-            if($productArray !=null)
-            {
-                if($total>$item['quantity']){
-                    $qtebrouillon = 0;
-                    $item['quantity'] = $item['quantity'];
-                }elseif($total ==$item['quantity']){
-                    $qtebrouillon=0;
-                    $item['quantity'] = $item['quantity'];
-                }else{
-                    $qtebrouillon = $item['quantity'] - $total; 
-                    $item['quantity'] = $total;
-                }
-                
-            foreach($productArray as $data){
-
-                if($item['quantity']==0){
-                    continue;
-                }
-                 $qteInitial = $data->quantity_restante;
-                 $qtecommandee =  $item['quantity'];
-                 if($qterestante >0){
-                    $qtecommandee = $qterestante;
-                 }
-                  
-                 if($qtecommandee>$qteInitial){
-                    $qterestante = $qtecommandee-$qteInitial;
-                    $quantityAcceptee = $qteInitial;
-                 }elseif($qtecommandee<$qteInitial){
-                    $qterestante = ($qtecommandee-$qteInitial)* -1;
-                    $quantityAcceptee = $qtecommandee;
-                 }else{
-                    $qterestante = 0;
-                    $quantityAcceptee = $qtecommandee;
-                 }
-                 
-            
-            $livraisonProduit = Produit::where('id', $data->id)->first();
-            $price = $livraisonProduit->price * $quantityAcceptee;
+            $livraisonProduit = Produit::where('id', $item['produit'])->first();
+            if (!$livraisonProduit) {
+                continue;
+            }
+            $price = $livraisonProduit->price * $item['quantity'];
             $subTotal += $price;
 
-            
-            LivraisonProduct::insert([
+            $data[] = [
                 'livraison_info_id' => $livraison->id,
                 'livraison_produit_id' => $livraisonProduit->id,
-                'qty'             => $quantityAcceptee, 
+                'qty'             => $item['quantity'],
                 'fee'             => $price,
                 'type_price'      => $livraisonProduit->price,
                 'created_at'      => now(),
-            ]);    
-            $livraisonProduit->quantity_restante = $livraisonProduit->quantity_restante - $quantityAcceptee;
-            $livraisonProduit->quantity_use = $livraisonProduit->quantity_use + $quantityAcceptee; 
+            ];
+
+            $livraisonProduit->quantity = $livraisonProduit->quantity - $item['quantity'];
+            $livraisonProduit->quantity_use = $livraisonProduit->quantity_use + $item['quantity'];
             $livraisonProduit->save();
-            $item['quantity'] = $qterestante;
-           // dd('Quantite restante:'.$qterestante.' Quantite acceptee'.$quantityAcceptee);
-         }
-         if($qtebrouillon>0){
-            $livraisonProduit = Produit::where('categorie_id', $item['produit'])->first();
-            
-            $price = $livraisonProduit->price * $qtebrouillon; 
-            
-            LivraisonProduct::insert([
-                'livraison_info_id' => $livraison->id,
-                'livraison_produit_id' => $livraisonProduit->id,
-                'qty'             => $qtebrouillon, 
-                'fee'             => $price,
-                'type_price'      => $livraisonProduit->price,
-                'etat' => 0,
-                'created_at'      => now(),
-            ]);         
-         }
-        }else{
-            $livraisonProduit = Produit::where('categorie_id', $item['produit'])->first();
-            $price = $livraisonProduit->price * $item['quantity']; 
-            
-            LivraisonProduct::insert([
-                'livraison_info_id' => $livraison->id,
-                'livraison_produit_id' => $livraisonProduit->id,
-                'qty'             => $item['quantity'], 
-                'fee'             => $price,
-                'type_price'      => $livraisonProduit->price,
-                'etat' => 0,
-                'created_at'      => now(),
-            ]);                      
         }
 
-        }
-
-        
+        LivraisonProduct::insert($data);
 
         $discount                        = $request->discount ?? 0;
         // $discountAmount                  = ($subTotal / 100) * $discount;
@@ -240,11 +162,11 @@ class LivraisonController extends Controller
 
         $request->validate([
             'magasin'           => 'required|exists:magasins,id',
-            'staff'           => 'required|exists:users,id', 
+            'staff'           => 'required|exists:users,id',
             'sender_name'      => 'required|max:255',
             'sender_email'     => 'required|email|max:255',
-            'sender_phone'     => 'required|string|max:255', 
-            'receiver_name'    => 'required|max:255', 
+            'sender_phone'     => 'required|string|max:255',
+            'receiver_name'    => 'required|max:255',
             'receiver_phone'   => 'required|string|max:255',
             'receiver_address' => 'required|max:255',
             'items'            => 'required|array',
@@ -260,8 +182,8 @@ class LivraisonController extends Controller
         $livraison                     = LivraisonInfo::findOrFail($id);
         $livraison->invoice_id         = getTrx();
         $livraison->code               = getTrx();
-        $livraison->sender_magasin_id   = $sender->magasin_id; 
-        $livraison->sender_staff_id    = $sender->id; 
+        $livraison->sender_magasin_id   = $sender->magasin_id;
+        $livraison->sender_staff_id    = $sender->id;
         if($sender->user_type !='Staff'){
             $livraison->sender_staff_id    = $request->staff;
         }
@@ -282,7 +204,7 @@ class LivraisonController extends Controller
         $livraison->estimate_date      = $request->estimate_date;
         $livraison->save();
 
-        //LivraisonProduct::where('livraison_info_id', $id)->delete();
+        LivraisonProduct::where('livraison_info_id', $id)->delete();
 
         $subTotal = 0;
         $data = [];
@@ -294,19 +216,19 @@ class LivraisonController extends Controller
             $price     = $livraisonProduit->price * $item['quantity'];
             $subTotal += $price;
 
-            // $data[] = [
-            //     'livraison_info_id' => $livraison->id,
-            //     'livraison_produit_id' => $livraisonProduit->id,
-            //     'qty'             => $item['quantity'], 
-            //     'fee'             => $price,
-            //     'type_price'      => $livraisonProduit->price,
-            //     'created_at'      => now(),
-            // ];
-            // $livraisonProduit->quantity = $livraisonProduit->quantity - $item['quantity'];
-            // $livraisonProduit->quantity_use = $livraisonProduit->quantity_use + $item['quantity'];
-            // $livraisonProduit->save();
+            $data[] = [
+                'livraison_info_id' => $livraison->id,
+                'livraison_produit_id' => $livraisonProduit->id,
+                'qty'             => $item['quantity'],
+                'fee'             => $price,
+                'type_price'      => $livraisonProduit->price,
+                'created_at'      => now(),
+            ];
+            $livraisonProduit->quantity = $livraisonProduit->quantity - $item['quantity'];
+            $livraisonProduit->quantity_use = $livraisonProduit->quantity_use + $item['quantity'];
+            $livraisonProduit->save();
         }
-        // LivraisonProduct::insert($data);
+        LivraisonProduct::insert($data);
 
         $discount = $request->discount ?? 0;
         // $discountAmount = ($subTotal / 100) * $discount;
@@ -343,17 +265,18 @@ class LivraisonController extends Controller
     }
     public function edit($id)
     {
-        
+
         $pageTitle   = 'Modifier de Livraison';
         $id = decrypt($id);
+
         $user = auth()->user();
         $magasins = Magasin::active()->orderBy('name')->get();
         $produits = Produit::active()->with('categorie')->orderBy('name')->get();
         $clients = Client::active()->orderBy('name')->get();
         $staffs = User::active()->where('user_type','staff')->with('magasin')->orderBy('lastname')->get();
-        
+
         $livraisonInfo = LivraisonInfo::with('products.produit', 'payment')->where('sender_magasin_id', $user->magasin_id)->where('id', $id)->firstOrFail();
-       
+
         // if ($livraisonInfo->status != Status::COURIER_DELIVERED) {
         //     $notify[] = ['error', "Vous ne pouvez pas modifier une commande déjà livrée."];
         //     return back()->with($notify);
@@ -367,10 +290,10 @@ class LivraisonController extends Controller
         $user = auth()->user();
         $livraisonInfos = $this->livraisons();
         $staffs = User::active()->where([['user_type','staff'],['magasin_id',$user->magasin_id]])->orderBy('lastname')->get();
-         
+
         return view('manager.livraison.index', compact('pageTitle', 'livraisonInfos','staffs'));
     }
- 
+
     public function invoice($id)
     {
         $pageTitle = 'Facture';
@@ -378,7 +301,7 @@ class LivraisonController extends Controller
         return view('manager.livraison.invoice', compact('pageTitle', 'livraisonInfo'));
     }
 
- 
+
     public function sentQueue()
     {
         $pageTitle    = 'En attente';
@@ -438,6 +361,57 @@ class LivraisonController extends Controller
         return view('manager.livraison.deliveryQueue', compact('pageTitle', 'livraisonLists','staffs','sommeTotal'));
     }
 
+    public function deliveryQueueExportExcel()
+    {
+        $user = auth()->user();
+        $livraisonLists = $this->livraisonsComm('deliveryQueue')->get();
+
+        $rows = $livraisonLists->map(function ($l) {
+            return [
+                'code' => $l->code,
+                'sender_magasin' => $l->senderMagasin->name ?? '',
+                'sender_staff' => $l->senderStaff->fullname ?? '',
+                'destinataire' => $l->receiverMagasin->name ?? $l->receiver_name,
+                'client_phone' => ($l->receiverClient->name ?? '') . ' / ' . ($l->receiver_phone ?? ''),
+                'montant' => $l->paymentInfo->final_amount ?? 0,
+                'date_estimee' => $l->estimate_date,
+                'status_paiement' => $l->paymentInfo->status ?? '',
+                'status_livraison' => $l->status ?? '',
+            ];
+        });
+
+        $filename = 'delivery-queue-' . gmdate('dmYhms') . '.xlsx';
+        return Excel::download(new ManagerDeliveryQueueExport($rows->toArray()), $filename);
+    }
+
+
+    public function commandeQueue()
+    {
+        $pageTitle    = 'Commande En attente';
+        $user = auth()->user();
+        $livraisonLists = LivraisonInfo::where('sender_staff_id',0)->dateFilter()->searchable(['code'])->with('senderMagasin', 'receiverMagasin', 'senderStaff', 'receiverStaff', 'paymentInfo','paymentList')
+        ->when(request()->staff, function ($query, $staff) {
+            $query->where('receiver_staff_id',$staff);
+        })
+        ->when(request()->status, function ($query, $status) {
+             $query->where('status',$status);
+        })
+        ->where(function ($q) {
+            $q->OrWhereHas('payment', function ($myQuery) {
+                if(request()->payment_status != null){
+                    $myQuery->where('status',request()->payment_status);
+                }
+            });
+        })
+        ->orderBy('livraison_infos.id','DESC')
+        ->paginate(getPaginate());
+
+        $sommeTotal = $livraisonLists->pluck('paymentList')->collapse()->sum('final_amount');
+
+        $staffs = User::active()->where([['user_type','staff'],['magasin_id',$user->magasin_id]])->orderBy('lastname')->get();
+        return view('manager.livraison.commandeQueue', compact('pageTitle', 'livraisonLists','staffs','sommeTotal'));
+    }
+
     public function delivered()
     {
 
@@ -445,30 +419,30 @@ class LivraisonController extends Controller
         $user = auth()->user();
         $livraisonLists = $this->livraisons('delivered');
 
-         
+
         $sommeTotal = $livraisonLists->pluck('paymentList')->collapse()->sum('final_amount');
-        
+
         $staffs = User::active()->where([['user_type','staff'],['magasin_id',$user->magasin_id]])->orderBy('lastname')->get();
         return view('manager.livraison.list', compact('pageTitle', 'livraisonLists','staffs','sommeTotal'));
     }
 
     public function credit()
     {
-        $pageTitle    = 'Livraison à Crédit'; 
+        $pageTitle    = 'Livraison à Crédit';
         $user = auth()->user();
         $livraisonLists = LivraisonPayment::dateFilter()->joinRelationship('info')
         ->where([['livraison_infos.status', Status::COURIER_DELIVERED]])
         ->where('livraison_payments.status', '!=',1)
         ->when(request()->staff, function ($query, $staff) {
-            $query->where('receiver_staff_id',$staff); 
+            $query->where('receiver_staff_id',$staff);
         })
         ->when(request()->magasin, function ($query, $magasin) {
-             $query->where('livraison_infos.status',$magasin); 
+             $query->where('livraison_infos.status',$magasin);
         })
         ->when(request()->payment_status, function ($query, $payment_status) {
-            $query->where('livraison_infos.status',$payment_status); 
+            $query->where('livraison_infos.status',$payment_status);
        });
-        $sommeTotal = $livraisonLists->sum('final_amount');  
+        $sommeTotal = $livraisonLists->sum('final_amount');
         $sommePartiel = $livraisonLists->sum('partial_amount');
         $sommeTotal = $sommeTotal - $sommePartiel;
         $livraisonLists = $livraisonLists->orderby('id','desc')->paginate(getPaginate());
@@ -479,21 +453,21 @@ class LivraisonController extends Controller
 
     public function annule()
     {
-        $pageTitle    = 'Livraison Annulée'; 
+        $pageTitle    = 'Livraison Annulée';
         $user = auth()->user();
         $livraisonLists = LivraisonPayment::dateFilter()->joinRelationship('info')
         ->where([['livraison_infos.status', Status::COURIER_CANCEL]])
         ->when(request()->staff, function ($query, $staff) {
-            $query->where('receiver_staff_id',$staff); 
+            $query->where('receiver_staff_id',$staff);
         })
         ->when(request()->magasin, function ($query, $magasin) {
-             $query->where('livraison_infos.status',$magasin); 
+             $query->where('livraison_infos.status',$magasin);
         })
         ->when(request()->payment_status, function ($query, $payment_status) {
-            $query->where('livraison_infos.status',$payment_status); 
+            $query->where('livraison_infos.status',$payment_status);
        });
-        $sommeTotal = $livraisonLists->sum('final_amount');  
-         
+        $sommeTotal = $livraisonLists->sum('final_amount');
+
         $livraisonLists = $livraisonLists->paginate(getPaginate());
         $staffs = User::active()->where([['user_type','staff'],['magasin_id',$user->magasin_id]])->orderBy('lastname')->get();
 
@@ -509,27 +483,13 @@ class LivraisonController extends Controller
         if ($scope) {
             $livraisons = $livraisons->$scope();
         }
-        
-        $livraisons = $livraisons->searchable(['code'])->with('senderMagasin', 'receiverMagasin', 'senderStaff', 'receiverStaff', 'paymentInfo','paymentList')
-        ->when(request()->date==null, function ($query) {
-            $query->whereBetween('estimate_date',[date('Y-m-01'),date('Y-m-t')]);
-        })
-        ->when(request()->date, function ($query, $date) {
-                $date      = explode('-', request()->date); 
-                $startDate = Carbon::parse(trim($date[0]))->format('Y-m-d'); 
-                $endDate = @$date[1] ? Carbon::parse(trim(@$date[1]))->format('Y-m-d') : $startDate;
-                request()->merge(['start_date' => $startDate, 'end_date' => $endDate]); 
-                request()->validate([
-                    'start_date' => 'required|date_format:Y-m-d',
-                    'end_date'   => 'nullable|date_format:Y-m-d',
-                ]);
-                $query->whereDate('estimate_date', '>=', $startDate)->whereDate('estimate_date', '<=', $endDate);
-            })
+
+        $livraisons = $livraisons->dateFilter()->searchable(['code'])->with('senderMagasin', 'receiverMagasin', 'senderStaff', 'receiverStaff', 'paymentInfo','paymentList')
         ->when(request()->staff, function ($query, $staff) {
-            $query->where('receiver_staff_id',$staff); 
+            $query->where('receiver_staff_id',$staff);
         })
         ->when(request()->status, function ($query, $status) {
-             $query->where('status',$status); 
+             $query->where('status',$status);
         })
         ->where(function ($q) {
             $q->OrWhereHas('payment', function ($myQuery) {
@@ -540,6 +500,34 @@ class LivraisonController extends Controller
         })
         ->orderBy('livraison_infos.id','DESC')
         ->paginate(getPaginate());
+        return $livraisons;
+    }
+
+    protected function livraisonsComm($scope = null)
+    {
+        $user = auth()->user();
+        $livraisons = LivraisonInfo::where(function ($query) use ($user) {
+            $query->Where('receiver_magasin_id', $user->magasin_id);
+        });
+        if ($scope) {
+            $livraisons = $livraisons->$scope();
+        }
+
+        $livraisons = $livraisons->dateFilter()->searchable(['code'])->with('senderMagasin', 'receiverMagasin', 'senderStaff', 'receiverStaff', 'paymentInfo','paymentList')
+        ->when(request()->staff, function ($query, $staff) {
+            $query->where('receiver_staff_id',$staff);
+        })
+        ->when(request()->status, function ($query, $status) {
+             $query->where('status',$status);
+        })
+        ->where(function ($q) {
+            $q->OrWhereHas('payment', function ($myQuery) {
+                if(request()->payment_status != null){
+                    $myQuery->where('status',request()->payment_status);
+                }
+            });
+        })
+        ->orderBy('livraison_infos.id','DESC');
         return $livraisons;
     }
 
@@ -556,27 +544,13 @@ class LivraisonController extends Controller
     {
         $user         = auth()->user();
         $pageTitle    = 'Liste des Livraisons';
-     
-        $livraisonLists = LivraisonInfo::dateFilter()->searchable(['code', 'receiverMagasin:name'])->with('senderMagasin', 'receiverMagasin', 'senderStaff', 'receiverStaff', 'paymentInfo','paymentList') 
-            ->when(request()->date==null, function ($query) {
-                $query->whereBetween('estimate_date',[date('Y-m-01'),date('Y-m-t')]);
-            })
-            ->when(request()->date, function ($query, $date) {
-                    $date      = explode('-', request()->date); 
-                    $startDate = Carbon::parse(trim($date[0]))->format('Y-m-d'); 
-                    $endDate = @$date[1] ? Carbon::parse(trim(@$date[1]))->format('Y-m-d') : $startDate;
-                    request()->merge(['start_date' => $startDate, 'end_date' => $endDate]); 
-                    request()->validate([
-                        'start_date' => 'required|date_format:Y-m-d',
-                        'end_date'   => 'nullable|date_format:Y-m-d',
-                    ]);
-                    $query->whereDate('estimate_date', '>=', $startDate)->whereDate('estimate_date', '<=', $endDate);
-                })
+
+        $livraisonLists = LivraisonInfo::dateFilter()->searchable(['code', 'receiverMagasin:name'])->with('senderMagasin', 'receiverMagasin', 'senderStaff', 'receiverStaff', 'paymentInfo','paymentList')
             ->when(request()->staff, function ($query, $staff) {
-                $query->where('receiver_staff_id',$staff); 
+                $query->where('receiver_staff_id',$staff);
             })
             ->when(request()->status, function ($query, $status) {
-                 $query->where('status',$status); 
+                 $query->where('status',$status);
             })
             ->where(function ($q) {
                 $q->OrWhereHas('payment', function ($myQuery) {
@@ -587,7 +561,7 @@ class LivraisonController extends Controller
             })
            ->where('receiver_magasin_id', $user->magasin_id);
 
-        $sommeTotal = $livraisonLists->get(); 
+        $sommeTotal = $livraisonLists->get();
         $sommeTotal = $sommeTotal->pluck('paymentList')->collapse()->sum('final_amount');
 
         $livraisonLists = $livraisonLists->orderBy('id', 'DESC')->paginate(getPaginate());
@@ -605,23 +579,23 @@ class LivraisonController extends Controller
 
     public function payment(Request $request)
     {
-        
-        
+
+
         $request->validate([
             'code' => 'required'
         ]);
-        
+
         $user = auth()->user();
-        
+
         // $livraison = LivraisonInfo::where('code', $request->code)
         //     ->where(function ($query) use ($user) {
         //         $query->where('sender_magasin_id', $user->magasin_id)->orWhere('receiver_magasin_id', $user->magasin_id);
         //     })
         //     ->whereIn('status', [Status::COURIER_QUEUE, Status::COURIER_DELIVERYQUEUE])
         //     ->firstOrFail();
-        
+
         $livraison = LivraisonInfo::where('code', $request->code)->first();
-        
+
         $livraisonPayment = LivraisonPayment::where('livraison_info_id', $livraison->id)->first();
 
         $livraisonPayment->receiver_id = $user->id;
@@ -710,7 +684,7 @@ class LivraisonController extends Controller
         $livraisonInfo = LivraisonInfo::dateFilter()->searchable(['code']);
         $livraisonLists = $livraisonInfo->where('sender_magasin_id', $user->magasin_id)->whereIn('status', [Status::COURIER_DISPATCH, Status::COURIER_DELIVERYQUEUE, Status::COURIER_DELIVERED])->orderBy('id', 'DESC')
             ->with('senderMagasin', 'receiverMagasin', 'senderStaff', 'receiverStaff', 'paymentInfo')->paginate(getPaginate());
-        
+
         return view('manager.livraison.list', compact('pageTitle', 'livraisonLists'));
     }
 
@@ -723,22 +697,13 @@ class LivraisonController extends Controller
         return view('manager.livraison.list', compact('pageTitle', 'livraisonLists'));
     }
 
-    public function delete($id) 
+    public function destroy($id)
     {
-        $livraisonsProduits = LivraisonProduct::where('livraison_info_id',decrypt($id))->get();
-        foreach($livraisonsProduits as $data){
-            $produitId = $data->livraison_produit_id;
-            $qte = $data->qty;
-            $produit = Produit::where('id',$produitId)->first();
-            $produit->quantity_use = $produit->quantity_use - $qte;
-            $produit->quantity_restante = $produit->quantity_restante + $qte;
-            $produit->save();
 
-        }
         LivraisonInfo::find(decrypt($id))->delete();
         LivraisonPayment::where('livraison_info_id',decrypt($id))->delete();
         LivraisonProduct::where('livraison_info_id',decrypt($id))->delete();
-        
+
         $notify[] = ['success', 'La commande a été supprimé avec succès.'];
         return back()->withNotify($notify);
     }

@@ -39,9 +39,6 @@ class UsersCommandesExport implements FromView, WithTitle
                 ->when(request()->search, function ($query, $search) {
                     $query->where('code',$search); 
                 })
-                ->when(request()->etat, function ($query, $etat) {
-                    $query->where('etat',$etat); 
-                })
                 ->when($this->id, function ($query, $staff) {
                     $query->where('receiver_staff_id',$staff); 
                 })
@@ -66,6 +63,6 @@ class UsersCommandesExport implements FromView, WithTitle
     
     public function title(): string
     {
-        Return "Livreur ".$this->fullname;
+        Return "Commandes par Livreur ".$this->fullname;
     }
 }

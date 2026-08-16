@@ -31,7 +31,7 @@
                                 <span class="badge badge--danger">@lang('Impayé')</span>
                             @endif
                             <br>
-                            <b>@lang("Magasin d'Expédition"):</b> {{ __($livraisonInfo->senderMagasin->name) }}<br>
+                            <b>@lang("Magasin d'Expédition"):</b> {{ __($livraisonInfo->senderMagasin->name ?? null) }}<br>
                             <b>@lang("Magasin de Recepiton"):</b> {{ __($livraisonInfo->receiverMagasin->name) }}
 
                         </div>
@@ -68,19 +68,17 @@
                                         <th>@lang("Date d'envoi")</th>
                                         <th>@lang('Prix')</th>
                                         <th>@lang('Qte')</th>
-                                        <th> </th>
                                         <th>@lang('Sous-total')</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($livraisonInfo->products as $livraisonProductInfo)
-                                        <tr @if($livraisonProductInfo->etat==0) style="opacity:0.5" @endif>
+                                        <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ __($livraisonProductInfo->produit->name) }}</td>
                                             <td>{{ showDateTime($livraisonProductInfo->created_at) }}</td>
                                             <td>{{ showAmount($livraisonProductInfo->fee) }} {{ $general->cur_sym }}</td>
-                                            <td>{{ $livraisonProductInfo->qty }}</td>
-                                            <td>@if($livraisonProductInfo->etat==0) <span class="text-danger" style="font-size: 12px;"> Brouillon</span> @endif</td>
+                                            <td>{{ $livraisonProductInfo->qty }} {{ __(@$livraisonProductInfo->produit->categorie->name) }}</td>
                                             <td>{{ showAmount($livraisonProductInfo->fee) }} {{ $general->cur_sym }}</td>
                                         </tr>
                                     @endforeach
@@ -108,7 +106,7 @@
                                         </tr>
                                         <tr>
                                             <th>@lang('Frais de livraison'):</th>
-                                            <td>{{ showAmount($livraisonInfo->payment->frais_livraison) }} {{ $general->cur_sym }} 
+                                            <td>{{ showAmount($livraisonInfo->payment->frais_livraison) }} {{ $general->cur_sym }}
                                             </td>
                                         </tr>
                                         <tr>

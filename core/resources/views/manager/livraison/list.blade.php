@@ -13,7 +13,7 @@
                             <div class="flex-grow-1">
                                 <label>@lang('Staff')</label>
                                 <select name="staff" class="form-control">
-                                    <option value="">@lang("Tous")</option>  
+                                    <option value="">@lang("Tous")</option>
                                     @foreach($staffs as $staff)
                                         <option value="{{ $staff->id }}" {{ request()->staff == $staff->id ? 'selected' : '' }} >
                                         {{ $staff->lastname }} {{ $staff->firstname }}</option>
@@ -23,7 +23,7 @@
                             <div class="flex-grow-1">
                                 <label>@lang('Status de livraison')</label>
                                 <select name="status" class="form-control">
-                                    <option value="">@lang("Tous")</option> 
+                                    <option value="">@lang("Tous")</option>
                                     <option value="2">@lang('En attente')</option>
                                     <option value="3">@lang('Livré')</option>
                                     <option value="1">@lang('Annulé')</option>
@@ -57,7 +57,7 @@
 
                                     <th>@lang('Magasin Expéditeur - Staff')</th>
                                     <th>@lang('Destinataire - Client')</th>
-                                    <th>@lang('Montant - Numéro Commande')</th> 
+                                    <th>@lang('Montant - Numéro Commande')</th>
                                     <th>@lang("Date estimée d'envoi")</th>
                                     <th>@lang('Status de paiement')</th>
                                     <th>@lang('Status')</th>
@@ -65,14 +65,14 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            
-                                @forelse($livraisonLists as $livraisonInfo) 
-                                 
+
+                                @forelse($livraisonLists as $livraisonInfo)
+
                                     <tr>
 
                                         <td>
-                                            <span>{{ __($livraisonInfo->senderMagasin->name) }}</span><br>
-                                            {{ __($livraisonInfo->senderStaff->fullname) }}
+                                            <span>{{ __($livraisonInfo->senderMagasin->name ?? null) }}</span><br>
+                                            {{ __($livraisonInfo->senderStaff->fullname ?? null) }}
                                         </td>
 
                                         <td>
@@ -93,7 +93,7 @@
                                                 {{ __($general->cur_text) }}
                                             </span>
                                             <span>{{ $livraisonInfo->code }}</span>
-                                        </td> 
+                                        </td>
                                         <td>
                                             {{ showDateTime($livraisonInfo->estimate_date, 'd M Y') }}
                                         </td>
@@ -125,7 +125,7 @@
                                                     class="las la-info-circle"></i> @lang('Details')</a>
                                         </td>
                                     </tr>
-                                    
+
                                 @empty
                                     <tr>
                                         <td class="text-muted text-center" colspan="100%">{{ __($emptyMessage) }}</td>

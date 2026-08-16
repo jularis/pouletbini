@@ -33,7 +33,7 @@
                                     <div class="row">
                                         <div class="form-group col-lg-6">
                                             <label>@lang('Selectionner Magasin')</label>
-                                            <select class="form-control " name="magasin" id="magasin" required>
+                                            <select class="form-control" name="magasin" id="magasin" required>
                                                 <option value>@lang('Selectionner une Option')</option>
                                                 @foreach($magasins as $magasin)
                                                 <option value="{{$magasin->id}}" @selected(old('magasin') ==$magasin->id)>{{__($magasin->name)}}</option>
@@ -144,12 +144,12 @@
                                                     <select class="form-control selected_type" name="items[{{ $loop->index}}][produit]" required>
                                                         <option disabled selected value="">@lang('Selectionner Produit')</option>
                                                         @foreach($produits as $produit)
-                                                            <option value="{{$produit->id}}"   
+                                                            <option value="{{$produit->id}}" @if($produit->quantity==0) disabled @endif  
                                                                 @selected($item['produit']==$produit->id)
                                                                 data-categorie="{{$produit->categorie->name}}" 
-                                                                data-quantity="{{$produit->quantite}}" 
+                                                                data-quantity="{{$produit->quantity}}" 
                                                                 data-price="{{ getAmount($produit->price)}}"  >
-                                                                {{__($produit->categorie->name)}}
+                                                                {{__($produit->name)}}
                                                             </option>
                                                         @endforeach
                                                     </select>
@@ -158,7 +158,7 @@
                                                     <div class="input-group mb-3">
                                                     
                                                         <input type="number" class="form-control quantity" value="{{$item['quantity']}}"  name="items[{{ $loop->index }}][quantity]"
-                                                        min="1"  required>
+                                                        min="1" max="" required>
                                                         <span class="input-group-text categorie"><i class="las la-balance-scale"></i></span>
                                                     </div>
                                                 </div>
@@ -282,9 +282,7 @@
     (function ($) {
 
 
-
         $('.addUserData').on('click', function () {
-            $('.showMsg').hide();
             let length=$("#addedField").find('.single-item').length;
             let html = `
             <div class="row single-item gy-2">
@@ -292,17 +290,16 @@
                     <select class="form-control selected_type" name="items[${length}][produit]" required>
                         <option disabled selected value="">@lang('Selectionner Produit')</option>
                         @foreach($produits as $produit)
-                            <option value="{{$produit->categorie_id}}" 
-                            data-categorie="{{$produit->categorie->name}}" data-quantity="{{$produit->quantite}}" data-price={{ getAmount($produit->price)}} >{{__($produit->categorie->name)}}</option>
+                            <option value="{{$produit->id}}" @if($produit->quantity==0) disabled @endif
+                            data-categorie="{{$produit->categorie->name}}" data-quantity="{{$produit->quantity}}" data-price={{ getAmount($produit->price)}} >{{__($produit->name)}}</option>
                         @endforeach
                     </select>
                 </div> 
                 <div class="col-md-4">
                     <div class="input-group mb-3">
                     
-                        <input type="number" class="form-control quantity" placeholder="@lang('Quantite')" disabled min="1"  name="items[${length}][quantity]"  required>
+                        <input type="number" class="form-control quantity" placeholder="@lang('Quantite')" disabled min="1" max="" name="items[${length}][quantity]"  required>
                         <span class="input-group-text categorie"><i class="las la-balance-scale"></i></span>
-                        <span class="text-danger showMsg" style="font-size: 12px;display:none">La quantité supplémentaire sera mise en brouillon</span>
                     </div>
                 </div>
                 <div class="col-md-3">
@@ -325,7 +322,8 @@
             let parent = $(this).closest('.single-item');
             $(parent).find('.quantity').attr('disabled', false);
             let quantity = $(this).find('option:selected').data('quantity');
-            $(parent).find('.quantity').attr({     
+            $(parent).find('.quantity').attr({
+              "max" : quantity,       
               "min" : 1      
             });
             $(parent).find('.categorie').html(`${categorie+'('+quantity+')' || '<i class="las la-balance-scale"></i>'}`); 
@@ -380,14 +378,8 @@
 
             $.each(items, function (i, item) {
                 let price = parseFloat($(item).find('.selected_type option:selected').data('price') || 0);
-                let qte = parseFloat($(item).find('.selected_type option:selected').data('quantity') || 0);
-                 
                 let quantity = parseFloat($(item).find('.quantity').val() || 0);
-                if(qte<quantity){
-                    $(item).find('.showMsg').show();
-                }else{
-                    $(item).find('.showMsg').hide();
-                }
+                
                 subTotal+=price*quantity;
             });
 

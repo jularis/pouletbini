@@ -1,13 +1,29 @@
 @extends('admin.layouts.app')
 @section('panel')
- 
+
+    @if (@json_decode($general->system_info)->message)
+        <div class="row">
+            @foreach (json_decode($general->system_info)->message as $msg)
+                <div class="col-md-12">
+                    <div class="alert border border--primary" role="alert">
+                        <div class="alert__icon bg--primary"><i class="far fa-bell"></i></div>
+                        <p class="alert__message">@php echo $msg; @endphp</p>
+                        <button type="button" class="close" data-bs-dismiss="alert" aria-label="Fermer">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
     <div class="row gy-4">
+
         <div class="col-md-12">
         <div class="card b-radius--10 mb-3">
                 <div class="card-body">
                     <form action="">
                         <div class="d-flex flex-wrap gap-4">
-                             
+
                             <div class="flex-grow-1">
                                 <label>@lang('Date')</label>
                                 <input name="date" type="text" class="dates form-control"
@@ -22,8 +38,9 @@
                 </div>
             </div>
         </div>
+
      <!-- dashboard-w1 end -->
-        <div class="col-xxl-4 col-sm-6">
+        <div class="col-xxl-3 col-sm-6">
             <div class="card bg--deep-purple has-link box--shadow2">
                 <a href="{{ route('admin.livraison.info.index') . '?status=2' }}" class="item-link"></a>
                 <div class="card-body">
@@ -32,96 +49,31 @@
                             <i class="lab la-accessible-icon f-size--56"></i>
                         </div>
                         <div class="col-8 text-end">
-                            <span class="text-white text--small">@lang("En attente de Livraison du mois")</span>
+                            <span class="text-white text--small">@lang("En attente de Livraison")</span>
                             <h2 class="text-white">{{ $deliveryInQueue }}</h2>
                         </div>
                     </div>
                 </div>
             </div>
-        </div><!-- dashboard-w1 end --> 
- 
-        <div class="col-xxl-4 col-sm-6">
-            <div class="card bg--orange has-link box--shadow2">
-                <a href="#" class="item-link"></a>
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-2">
-                            <i class="las la-money-bill-wave f-size--56"></i>
-                        </div>
-                        <div class="col-10 text-end">
-                            <span class="text-white text--small">@lang("Revenus Journaliers")</span>
-                            <h2 class="text-white">{{ showAmount($totalIncomeDays) }} {{ $general->cur_sym }}</h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div><!-- dashboard-w1 end -->
-        <div class="col-xxl-4 col-sm-6">
-            <div class="card bg--green has-link box--shadow2">
-                <a href="#" class="item-link"></a>
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-2">
-                            <i class="las la-dolly-flatbed f-size--56"></i>
-                        </div>
-                        <div class="col-10 text-end">
-                            <span class="text-white text--small">@lang('Total Livraison Journaliere')</span>
-                            <h2 class="text-white">{{ $totalLivraisonDays }}</h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div><!-- dashboard-w1 end -->
-        <div class="col-xxl-4 col-sm-6">
-            <div class="card bg--pink has-link box--shadow2">
-                <a href="#" class="item-link"></a>
+        <div class="col-xxl-3 col-sm-6">
+            <div class="card bg--info has-link box--shadow2">
+                <a href="{{ route('admin.livraison.info.index') . '?status=3' }}" class="item-link"></a>
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-4">
-                            <i class="las la-dolly-flatbed f-size--56"></i>
+                            <i class="las  la-list-alt f-size--56"></i>
                         </div>
                         <div class="col-8 text-end">
-                            <span class="text-white text--small">@lang('Total Livraison du mois')</span>
-                            <h2 class="text-white">{{ $livraisonInfoCount }}</h2>
+                            <span class="text-white text--small">@lang("Livré")</span>
+                            <h2 class="text-white">{{ $delivered }}</h2>
                         </div>
                     </div>
                 </div>
             </div>
         </div><!-- dashboard-w1 end -->
-        <div class="col-xxl-4 col-sm-6">
-            <div class="card bg--pink has-link box--shadow2">
-                <a href="#" class="item-link"></a>
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-4">
-                            <i class="las la-dolly-flatbed f-size--56"></i>
-                        </div>
-                        <div class="col-8 text-end">
-                            <span class="text-white text--small">@lang('Total Annulé du mois')</span>
-                            <h2 class="text-white">{{ $livraisonInfoCountCancel }}</h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div><!-- dashboard-w1 end -->
-      
-        <div class="col-xxl-4 col-sm-6">
-            <div class="card bg--orange has-link box--shadow2">
-                <a href="#" class="item-link"></a>
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-2">
-                            <i class="las la-money-bill-wave f-size--56"></i>
-                        </div>
-                        <div class="col-10 text-end">
-                            <span class="text-white text--small">@lang("Total Revenus du mois")</span>
-                            <h2 class="text-white">{{ showAmount($totalIncome) }} {{ $general->cur_sym }}</h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div><!-- dashboard-w1 end -->
-        <div class="col-xxl-4 col-sm-6">
+
+        <div class="col-xxl-3 col-sm-6">
             <div class="card bg--primary has-link overflow-hidden box--shadow2">
                 <a href="{{ route('admin.magasin.index') }}" class="item-link"></a>
                 <div class="card-body">
@@ -137,17 +89,63 @@
                 </div>
             </div>
         </div><!-- dashboard-w1 end -->
-      
-
+        <div class="col-xxl-3 col-sm-6">
+            <div class="card bg--cyan has-link box--shadow2">
+                <a href="{{ route('admin.magasin.manager.index') }}" class="item-link"></a>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-4">
+                            <i class="las la-user-check f-size--56"></i>
+                        </div>
+                        <div class="col-8 text-end">
+                            <span class="text-white text--small">@lang('Total Manager')</span>
+                            <h2 class="text-white">{{ $managerCount }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- dashboard-w1 end -->
+        <div class="col-xxl-8 col-sm-8">
+            <div class="card bg--orange has-link box--shadow2">
+                <a href="{{ route('admin.livraison.magasin.income') }}" class="item-link"></a>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-4">
+                            <i class="las la-money-bill-wave f-size--56"></i>
+                        </div>
+                        <div class="col-8 text-end">
+                            <span class="text-white text--small">@lang("Total Revenus")</span>
+                            <h2 class="text-white">{{ showAmount($totalIncome) }} {{ $general->cur_sym }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- dashboard-w1 end -->
+        <div class="col-xxl-4 col-sm-4">
+            <div class="card bg--pink has-link box--shadow2">
+                <a href="{{ route('admin.livraison.info.index') }}" class="item-link"></a>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-4">
+                            <i class="las la-dolly-flatbed f-size--56"></i>
+                        </div>
+                        <div class="col-8 text-end">
+                            <span class="text-white text--small">@lang('Total Livraison')</span>
+                            <h2 class="text-white">{{ $livraisonInfoCount }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- dashboard-w1 end -->
     </div><!-- row end-->
 
- 
+
 
     <div class="row mb-none-30 mt-5">
         <div class="col-xl-4 col-lg-6 mb-30">
             <div class="card overflow-hidden">
                 <div class="card-body">
-                    <h5 class="card-title">Total Arrivage par Ferme</h5>
+                    <h5 class="card-title">@lang("Connexion par Navigateur") (@lang('30 Derniers Jours'))</h5>
                     <canvas id="userBrowserChart"></canvas>
                 </div>
             </div>
@@ -155,7 +153,7 @@
         <div class="col-xl-4 col-lg-6 mb-30">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Livraison par Categorie</h5>
+                    <h5 class="card-title">@lang('Connexion Par OS') (@lang('30 Derniers Jours'))</h5>
                     <canvas id="userOsChart"></canvas>
                 </div>
             </div>
@@ -163,13 +161,12 @@
         <div class="col-xl-4 col-lg-6 mb-30">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Livraison par Livreur</h5>
+                    <h5 class="card-title">@lang('Login By Country') (@lang('30 Derniers Jours'))</h5>
                     <canvas id="userCountryChart"></canvas>
                 </div>
             </div>
         </div>
     </div>
-     
 @endsection
 @push('style-lib')
     <link rel="stylesheet" href="{{ asset('assets/viseradmin/css/vendor/datepicker.min.css') }}">
@@ -180,17 +177,17 @@
     <script src="{{ asset('assets/viseradmin/js/vendor/datepicker.en.js') }}"></script>
 @endpush
 @push('script')
-    <script> 
+    <script>
         (function($) {
             "use strict";
- 
+
             $('.dates').datepicker({
                 maxDate: new Date(),
                 range: true,
                 multipleDatesSeparator: "-",
                 language: 'fr'
             });
- 
+
 
         })(jQuery)
 
@@ -205,11 +202,11 @@
         "use strict";
         var ctx = document.getElementById('userBrowserChart');
         var myChart = new Chart(ctx, {
-            type: 'pie',
+            type: 'doughnut',
             data: {
-                labels: @json(Arr::whereNotNull(Arr::pluck($arrivageByFerme,'nom'))),
+                labels: @json($chart['user_browser_counter']->keys()),
                 datasets: [{
-                    data:  @json(Arr::whereNotNull(Arr::pluck($arrivageByFerme,'total'))),
+                    data: {{ $chart['user_browser_counter']->flatten() }},
                     backgroundColor: [
                         '#ff7675',
                         '#6c5ce7',
@@ -260,17 +257,17 @@
                     }]
                 },
                 legend: {
-                    display: true,
+                    display: false,
                 }
             }
         });
         var ctx = document.getElementById('userOsChart');
         var myChart = new Chart(ctx, {
-            type: 'bar',
+            type: 'doughnut',
             data: {
-                labels: @json(Arr::whereNotNull(Arr::pluck($livraisonByCategorie,'name'))),
+                labels: @json($chart['user_os_counter']->keys()),
                 datasets: [{
-                    data: @json(Arr::whereNotNull(Arr::pluck($livraisonByCategorie,'total'))),
+                    data: {{ $chart['user_os_counter']->flatten() }},
                     backgroundColor: [
                         '#ff7675',
                         '#6c5ce7',
@@ -313,10 +310,10 @@
                 },
                 scales: {
                     xAxes: [{
-                        display: true
+                        display: false
                     }],
                     yAxes: [{
-                        display: true
+                        display: false
                     }]
                 },
                 legend: {
@@ -327,11 +324,11 @@
         // Donut chart
         var ctx = document.getElementById('userCountryChart');
         var myChart = new Chart(ctx, {
-            type: 'bar',
+            type: 'doughnut',
             data: {
-                labels: @json(Arr::whereNotNull(Arr::pluck($livraisonByLivreur,'name'))),
+                labels: @json($chart['user_country_counter']->keys()),
                 datasets: [{
-                    data: @json(Arr::whereNotNull(Arr::pluck($livraisonByLivreur,'total'))),
+                    data: {{ $chart['user_country_counter']->flatten() }},
                     backgroundColor: [
                         '#ff7675',
                         '#6c5ce7',
@@ -374,10 +371,10 @@
                 },
                 scales: {
                     xAxes: [{
-                        display: true
+                        display: false
                     }],
                     yAxes: [{
-                        display: true
+                        display: false
                     }]
                 },
                 legend: {

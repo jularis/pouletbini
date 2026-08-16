@@ -10,7 +10,7 @@
                                 <tr>
                                     <th>@lang('Magasin Expéditeur - Staff')</th>
                                     <th>@lang('Magasin Destinataire - Client')</th>
-                                    <th>@lang('Montant - Numéro Commande')</th> 
+                                    <th>@lang('Montant - Numéro Commande')</th>
                                     <th>@lang("Date estimée d'envoi")</th>
                                     <th>@lang('Status de paiement')</th>
                                     {{-- <th>@lang('Status')</th> --}}
@@ -22,8 +22,8 @@
                                     <tr>
                                     <tr>
                                         <td>
-                                            <span class="fw-bold">{{ __($livraisonInfo->senderMagasin->name) }}</span><br>
-                                            {{ __($livraisonInfo->senderStaff->fullname) }}
+                                            <span class="fw-bold">{{ __($livraisonInfo->senderMagasin->name ?? null) }}</span><br>
+                                            {{ __($livraisonInfo->senderStaff->fullname ?? null) }}
                                         </td>
 
                                         <td>
@@ -38,7 +38,7 @@
                                             @if ($livraisonInfo->receiver_client_id)
                                                 {{ __($livraisonInfo->receiver_name) }}<br>
                                                 <a href="tel:{{$livraisonInfo->receiver_phone}}">{{$livraisonInfo->receiver_phone}}</a>
-                                                 
+
                                             @else
                                                 <span>@lang('N/A')</span>
                                             @endif
@@ -49,7 +49,7 @@
                                                 {{ __($general->cur_text) }}</span><br>
                                             <span>{{ $livraisonInfo->code }}</span>
                                         </td>
- 
+
                                         <td>
                                             {{ showDateTime($livraisonInfo->estimate_date, 'd M Y') }}
                                         </td>
@@ -64,7 +64,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                           
+
                                             <a href="{{ route('staff.livraison.details', encrypt($livraisonInfo->id)) }}"
                                                 title="" class="btn btn-sm btn-outline--primary"><i
                                                     class="las la-info-circle"></i> @lang('Details')</a>
@@ -106,7 +106,7 @@
             </div>
         </div>
     </div>
-      
+
 
     @if(session('codePaie'))
     <div class="modal fade" id="paymentByAuto" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelAuto"
@@ -124,15 +124,15 @@
                     @method('POST')
                     <input type="hidden" name="code" value="{{ session('codePaie') }}">
                     <div class="modal-body">
-                         
+
                         <div class="swal2-header">
                         <h2 class="swal2-title" id="swal2-title" style="display: flex;">Montant total:&nbsp;<span id="recu"></span>&nbsp;FCFA</h2>
                         <h2 class="swal2-title" id="swal2-title" style="display: flex;">Montant restant:&nbsp;<span id="restant"></span>&nbsp;FCFA</h2>
                         <h2 class="swal2-title" id="swal2-title" style="display: flex;">Entrer le montant reçu</h2>
-                        </div> 
+                        </div>
                        <div class="swal2-content">
                        <p><input class="swal2-input" placeholder="" name="montant" type="number" style="display: flex;" min="500" max="" id="montant" required></p>
-                       </div> 
+                       </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn--dark" data-bs-dismiss="modal">@lang("Non")</button>
@@ -147,7 +147,7 @@
         $(document).ready(function(){
         $("#paymentByAuto").modal('show');
     });
- 
+
 </script>
 @endpush
     @else
@@ -166,15 +166,15 @@
                     @method('POST')
                     <input type="hidden" name="code">
                     <div class="modal-body">
-                        
+
                        <div class="swal2-header">
                        <h2 class="swal2-title" id="swal2-title" style="display: flex;">Montant total:&nbsp;<span id="recu"></span>&nbsp;FCFA</h2>
                        <h2 class="swal2-title" id="swal2-title" style="display: flex;">Montant restant:&nbsp;<span id="restant"></span>&nbsp;FCFA</h2>
                         <h2 class="swal2-title" id="swal2-title" style="display: flex;">Entrer le montant reçu</h2>
-                        </div> 
+                        </div>
                        <div class="swal2-content">
                        <p><input class="swal2-input" placeholder="" name="montant" type="number" style="display: flex;" min="500" max="" id="montant" required></p>
-                       </div> 
+                       </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn--dark" data-bs-dismiss="modal">@lang("Non")</button>
@@ -187,22 +187,22 @@
     @push('script')
     <script>
         (function($) {
-  
+
             $('.payment').on('click', function() {
                 var modal = $('#paymentBy');
                 modal.find('input[name=code]').val($(this).data('code'))
-                $('#recu').html($(this).data('finalamount')) 
+                $('#recu').html($(this).data('finalamount'))
                 $('#restant').html($(this).data('finalamount')-$(this).data('partialamount'))
                 modal.find('input[name=montant]').prop('max',$(this).data('finalamount')-$(this).data('partialamount'))
                 modal.modal('show');
-            }); 
+            });
         })(jQuery)
     </script>
 @endpush
     @endif
 
     @if(session('code'))
-     
+
     <div class="modal fade" id="deliveryByAuto" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelAuto"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -233,9 +233,9 @@
         $(document).ready(function(){
         $("#deliveryByAuto").modal('show');
     });
- 
+
 </script>
-@endpush 
+@endpush
     @else
     <div class="modal fade" id="deliveryBy" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -264,10 +264,10 @@
     </div>
     @push('script')
     <script>
-        (function($) { 
+        (function($) {
             $('.delivery').on('click', function() {
                 var modal = $('#deliveryBy');
-                modal.find('input[name=code]').val($(this).data('code'))  
+                modal.find('input[name=code]').val($(this).data('code'))
                 modal.modal('show');
             });
         })(jQuery)
@@ -279,7 +279,7 @@
     <x-search-form placeholder="Livraison Code" />
     <x-date-filter placeholder="Date de Début - Date de Fin" />
 @endpush
- 
+
 @push('style')
 <style type="text/css">
 .swal2-input[type=number] {
@@ -287,7 +287,7 @@
     margin: 0px auto;
 }
 .swal2-file, .swal2-input, .swal2-textarea {
-    box-sizing: border-box; 
+    box-sizing: border-box;
     transition: border-color .3s,box-shadow .3s;
     border: 1px solid #d9d9d9;
     border-radius: 0.1875em;
@@ -333,4 +333,3 @@
 </style>
 
 @endpush
- 

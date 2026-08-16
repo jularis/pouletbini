@@ -27,10 +27,10 @@
                                             <input type="checkbox" class="childCheckBox" data-id="{{ $livraisonInfo->id }}">
                                         </td>
                                         <td>
-                                            <span class="fw-bold">{{ __($livraisonInfo->senderMagasin->name) }}</span><br>
+                                            <span class="fw-bold">{{ __($livraisonInfo->senderMagasin->name ?? null) }}</span><br>
 
                                             <small class="text-mute"><i>
-                                                    {{ __($livraisonInfo->senderStaff->fullname) }}</i></small>
+                                                    {{ __($livraisonInfo->senderStaff->fullname ?? null) }}</i></small>
                                         </td>
 
                                         <td>
@@ -75,7 +75,7 @@
                                                     class="las la-file-invoice"></i>@lang('Facture')</a>
                                             <a href="{{ route('staff.livraison.details', encrypt($livraisonInfo->id)) }}"
                                                 title="" class="btn btn-sm btn-outline--primary"><i
-                                                    class="las la-info-circle"></i>@lang('Details')</a> 
+                                                    class="las la-info-circle"></i>@lang('Details')</a>
                                             @if($livraisonInfo->paymentInfo->status == Status::UNPAID)
                                                 <button type="button" class="btn btn-outline--success m-1 payment"
                                                     data-code="{{ $livraisonInfo->code }}">
@@ -86,7 +86,7 @@
                                                 data-action="{{ route('staff.livraison.dispatched', $livraisonInfo->id) }}"
                                                 data-question="@lang('Etre-vous sûr de vouloir expédier cette livraison?')">
                                                 <i class="las la-arrow-circle-right"></i>@lang('Expédiée')
-                                            </button> 
+                                            </button>
                                         </td>
                                     </tr>
                                 @empty

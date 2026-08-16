@@ -60,62 +60,19 @@ Route::middleware('admin')->group(function () {
         Route::get('list', 'index')->name('index');
         Route::get('create', 'create')->name('create');
         Route::post('store', 'store')->name('store');
-        Route::get('edit/{id}', 'edit')->name('edit'); 
+        Route::get('edit/{id}', 'edit')->name('edit');
+
         Route::get('staff/{id}', 'staffList')->name('staff.list');
         Route::post('status/{id}', 'status')->name('status');
         Route::get('dashboard/{id}', 'login')->name('dashboard');
-        Route::get('staff/dashboard/{id}', 'staffLogin')->name('staff'); 
+        Route::get('staff/dashboard/{id}', 'staffLogin')->name('staff');
+
         Route::get('manager/{id}', 'magasinManager')->name('list');
-    });
-
-     //Ferme
-     Route::controller('FermeController')->name('ferme.')->prefix('ferme')->group(function () {
-        Route::get('index', 'index')->name('index');
-        Route::get('modal', 'createFermeModal')->name('fermeModal.index');
-        Route::post('store/modal', 'storeModal')->name('store.modal');
-        Route::get('create', 'create')->name('create');
-        Route::post('store', 'store')->name('store'); 
-        Route::get('edit/{id}', 'edit')->name('edit');  
-        Route::get('show/{id}', 'show')->name('show'); 
-        Route::post('status/{id}', 'status')->name('status'); 
-    });
-
-     //Bande
-     Route::controller('BandeController')->name('bande.')->prefix('bande')->group(function () {
-        Route::get('index', 'index')->name('index');
-        Route::get('modal', 'createBandeModal')->name('bandeModal.index');
-        Route::get('create', 'create')->name('create');
-        Route::post('store', 'store')->name('store');
-        Route::get('edit/{id}', 'edit')->name('edit');  
-        Route::get('show/{id}', 'show')->name('show');  
-        Route::post('status/{id}', 'status')->name('status'); 
-        
-    });
-    //Arrivage
-    Route::controller('ArrivageController')->name('arrivage.')->prefix('arrivage')->group(function () {
-        Route::get('index', 'index')->name('index');
-        Route::get('create', 'create')->name('create');
-        Route::post('store', 'store')->name('store');
-        Route::post('get/bande', 'getBande')->name('getBande');
-        Route::get('edit/{id}', 'edit')->name('edit');  
-        Route::get('show/{id}', 'show')->name('show'); 
-        Route::post('delete/{id}', 'delete')->name('delete');
-        Route::post('status/{id}', 'status')->name('status'); 
-        Route::post('send/{id}', 'send')->name('send'); 
-        Route::post('verify/quantity', 'verifyQuantity')->name('verifyQuantity');
-        Route::get('decoupe/{id}', 'decoupe')->name('decoupe');
-        Route::get('create/decoupe/{id}', 'createDecoupe')->name('create.decoupe');
-        Route::post('decoupe/store', 'storeDecoupe')->name('store.decoupe');
     });
 
     Route::controller('LivraisonSettingController')->name('livraison.')->prefix('livraison')->group(function () {
 
         Route::name('categorie.')->prefix('manage')->group(function () {
-
-            Route::get('unite', 'uniteIndex')->name('unite.index');
-            Route::post('unite/store', 'uniteStore')->name('unite.store');
-            Route::post('status/status/{id}', 'uniteStatus')->name('unite.status');
-
             Route::get('categorie', 'categorieIndex')->name('index');
             Route::post('categorie/store', 'categorieStore')->name('store');
             Route::post('status/{id}', 'status')->name('status');
@@ -127,15 +84,8 @@ Route::middleware('admin')->group(function () {
             Route::get('client/', 'clientIndex')->name('client.index');
             Route::post('client/store', 'clientStore')->name('client.store');
             Route::post('client/status/{id}', 'clientStatus')->name('client.status');
-            Route::post('client/delete/{id}', 'clientDelete')->name('client.delete');
             Route::get('/exportClientsExcel', 'exportExcel')->name('client.exportExcel.clientAll');
             Route::post('/client/uploadcontent', 'uploadContent')->name('client.uploadcontent');
-
-            Route::get('fournisseur/', 'fournisseurIndex')->name('fournisseur.index');
-            Route::post('fournisseur/store', 'fournisseurStore')->name('fournisseur.store');
-            Route::post('fournisseur/status/{id}', 'fournisseurStatus')->name('fournisseur.status');
-            Route::post('fournisseur/delete/{id}', 'fournisseurDelete')->name('fournisseur.delete');
-            Route::get('/exportFournisseursExcel', 'exportExcel')->name('fournisseur.exportExcel.fournisseurAll');
         });
 
         Route::get('magasin/income', 'magasinIncome')->name('magasin.income');
@@ -145,12 +95,6 @@ Route::middleware('admin')->group(function () {
         Route::get('list', 'livraisonInfo')->name('info.index');
         Route::get('details/{id}', 'livraisonDetail')->name('info.details');
         Route::get('invoice/{id}', 'invoice')->name('invoice');
-        Route::get('brouillon', 'brouillon')->name('brouillon');
-        Route::get('check/brouillon', 'checkbrouillon')->name('check.brouillon');
-        Route::get('brouillon/details/{id}', 'livraisonBrouillonDetail')->name('brouillon.details');
-        Route::get('brouillon/edit/{id}', 'editBrouillon')->name('brouillon.edit');
-        Route::post('brouillon/update/{id}', 'updateBrouillon')->name('brouillon.update');
-        Route::post('delete/{id}', 'delete')->name('delete');
         Route::get('/exportCommandesExcel', 'exportExcel')->name('exportExcel.commandeAll');
     });
 
@@ -159,6 +103,8 @@ Route::middleware('admin')->group(function () {
     Route::controller('StaffController')->name('staff.')->prefix('staff')->group(function () {
         Route::get('/', 'list')->name('index');
     });
+
+
 
     // Report
     Route::controller('ReportController')->prefix('report')->name('report.')->group(function () {

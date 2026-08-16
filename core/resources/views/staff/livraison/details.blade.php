@@ -93,38 +93,25 @@
                         <div class="card-body">
                             <div class="table-responsive--md  table-responsive">
                                 <table class="table table--light style--two">
-                                <thead>
+                                    <thead>
                                         <tr>
                                         <th>@lang('Catégorie')</th>
                                             <th>@lang('Produit')</th>
                                             <th>@lang('Prix')</th>
                                             <th>@lang('Qte')</th>
-                                            <th> </th>
                                             <th>@lang('Sous-total')</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                    @php
-                                
-                                    $produitsUniques = App\Models\LivraisonProduct::joinRelationship('produit')->where('livraison_info_id',$livraisonInfo->id)->groupby('categorie_id','etat')->select('livraison_products.*',DB::RAW('SUM(qty) as qte'),DB::RAW('SUM(fee) as prix'))->get();
-                                     
-                                    @endphp
-                                    @foreach($produitsUniques as $livraisonProductInfo)
-                                    <?php
-                                    if($livraisonProductInfo->etat==0)
-                                    {
-                                        continue;
-                                    }
-                                    ?>
-                                        <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ __(@$livraisonProductInfo->produit->categorie->name) }}</td>
-                                            <td>{{ showAmount($livraisonProductInfo->type_price) }} {{ $general->cur_sym }}</td>
-                                            <td>{{ $livraisonProductInfo->qte }} </td>
-                                            <td>@if($livraisonProductInfo->etat==0) <span class="text-danger" style="font-size: 12px;"> Brouillon</span> @endif</td>
-                                            <td>{{ showAmount($livraisonProductInfo->prix) }} {{ $general->cur_sym }}</td>
-                                        </tr>
-                                    @endforeach
+                                        @foreach ($livraisonInfo->products as $livraisonProductInfo)
+                                            <tr>
+                                                <td>{{ __(@$livraisonProductInfo->produit->categorie->name) }}</td>
+                                                <td>{{ __($livraisonProductInfo->produit->name) }}</td>
+                                                <td>{{ showAmount($livraisonProductInfo->type_price) }} {{ $general->cur_sym }}</td>
+                                                <td>{{ $livraisonProductInfo->qty }}</td>
+                                                <td>{{ showAmount($livraisonProductInfo->fee) }} {{ $general->cur_sym }}</td>
+                                            </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>

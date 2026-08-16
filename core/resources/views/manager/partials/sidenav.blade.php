@@ -13,7 +13,7 @@
                         <span class="menu-title">@lang('Tableau de Bord')</span>
                     </a>
                 </li>
-              
+
                 <li class="sidebar-menu-item {{ menuActive('manager.staff*') }}">
                     <a href="{{ route('manager.staff.index') }}" class="nav-link ">
                         <i class="menu-icon las la-user-friends"></i>
@@ -23,27 +23,27 @@
                 <li class="sidebar-menu-item sidebar-dropdown">
                     <a href="javascript:void(0)" class="{{ menuActive('manager.livraison.categorie.*', 3) }}">
                         <i class="menu-icon las la-tasks"></i>
-                        <span class="menu-title">@lang('Paramètres')</span>
+                        <span class="menu-title">{{ __($general->site_name) }} @lang('Setting')</span>
                     </a>
                     <div class="sidebar-submenu {{ menuActive('manager.livraison.categorie.*', 2) }} ">
                         <ul>
                             <li class="sidebar-menu-item {{ menuActive('manager.livraison.categorie.index') }} ">
                                 <a href="{{ route('manager.livraison.categorie.index') }}" class="nav-link">
                                     <i class="menu-icon las la-dot-circle"></i>
-                                    <span class="menu-title">@lang('Gestion Categories')</span>
+                                    <span class="menu-title">@lang('Gestion Categorie')</span>
                                 </a>
                             </li>
 
                             <li class="sidebar-menu-item {{ menuActive('manager.livraison.categorie.produit.index') }} ">
                                 <a href="{{ route('manager.livraison.categorie.produit.index') }}" class="nav-link">
                                     <i class="menu-icon las la-dot-circle"></i>
-                                    <span class="menu-title">@lang('Gestion Produits')</span>
+                                    <span class="menu-title">@lang('Gestion Produit')</span>
                                 </a>
                             </li>
                             <li class="sidebar-menu-item {{ menuActive('manager.livraison.categorie.client.index') }} ">
                                 <a href="{{ route('manager.livraison.categorie.client.index') }}" class="nav-link">
                                     <i class="menu-icon las la-dot-circle"></i>
-                                    <span class="menu-title">@lang('Gestion Clients')</span>
+                                    <span class="menu-title">@lang('Gestion Client')</span>
                                 </a>
                             </li>
                         </ul>
@@ -51,11 +51,11 @@
                 </li>
 
                 <li class="sidebar-menu-item sidebar-dropdown">
-                    <a href="javascript:void(0)" class="{{ menuActive(['manager.livraison*','manager.livraison.delivery.queue','manager.livraison.manage.delivered','manager.livraison.manage.credit','manager.livraison.manage.list'], 3) }}">
+                    <a href="javascript:void(0)" class="{{ menuActive(['manager.livraison*','manager.livraison.delivery.queue','manager.livraison.commande.queue','manager.livraison.manage.delivered','manager.livraison.manage.credit','manager.livraison.manage.list'], 3) }}">
                         <i class="menu-icon las la-university"></i>
                         <span class="menu-title">@lang('Gestion Commandes') </span>
                     </a>
-                    <div class="sidebar-submenu {{ menuActive(['manager.livraison*','manager.livraison.delivery.queue','manager.livraison.manage.delivered','manager.livraison.manage.credit','manager.livraison.manage.list'], 2) }} ">
+                    <div class="sidebar-submenu {{ menuActive(['manager.livraison*','manager.livraison.delivery.queue','manager.livraison.commande.queue','manager.livraison.manage.delivered','manager.livraison.manage.credit','manager.livraison.manage.list'], 2) }} ">
                         <ul>
                         <li class="sidebar-menu-item {{ menuActive('manager.livraison.create') }}">
                     <a href="{{ route('manager.livraison.create') }}" class="nav-link ">
@@ -82,6 +82,12 @@
                                     <span class="menu-title">@lang('Encours')</span>
                                 </a>
                             </li> -->
+                            <li class="sidebar-menu-item active {{ menuActive('manager.livraison.commande.queue') }}">
+                                <a href="{{ route('manager.livraison.commande.queue') }}" class="nav-link">
+                                    <i class="menu-icon las la-dot-circle"></i>
+                                    <span class="menu-title">@lang("Commandes En attente")</span>
+                                </a>
+                            </li>
                             <li class="sidebar-menu-item {{ menuActive('manager.livraison.delivery.queue') }}">
                                 <a href="{{ route('manager.livraison.delivery.queue') }}" class="nav-link">
                                     <i class="menu-icon las la-dot-circle"></i>
@@ -120,7 +126,7 @@
                                     <span class="menu-title">@lang("Toutes les Commandes")</span>
                                 </a>
                             </li>
-                           
+
 
                         </ul>
                     </div>

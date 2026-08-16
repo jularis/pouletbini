@@ -67,13 +67,11 @@ class AuthController extends Controller
     public function getCommandes(Request $request){
 
         if($request->user_id){
-            $livraisonLists = LivraisonInfo::where('receiver_staff_id', $request->user_id) 
+            $livraisonLists = LivraisonInfo::where('receiver_staff_id', $request->user_id)
             ->with('paymentInfo') 
             ->with('receiverMagasin')
             ->with('receiverClient')
-            ->with(['livraisonDetail' => function ($query) {
-                $query->where('etat',1);
-            }])  
+            ->with('livraisonDetail')  
            ->orderBy('estimate_date', 'DESC')
            ->get();
 
@@ -103,9 +101,7 @@ class AuthController extends Controller
             ->with('paymentInfo')
             ->with('receiverMagasin')
             ->with('receiverClient')
-            ->with(['livraisonDetail' => function ($query) {
-                $query->where('etat',1);
-            }])   
+            ->with('livraisonDetail')  
             ->where('status',3)
             ->where(function ($q) {
                 $q->OrWhereHas('payment', function ($myQuery) {
@@ -143,9 +139,7 @@ class AuthController extends Controller
             ->with('paymentInfo')
             ->with('receiverMagasin')
             ->with('receiverClient')
-            ->with(['livraisonDetail' => function ($query) {
-                $query->where('etat',1);
-            }])   
+            ->with('livraisonDetail')  
             ->where('status',3)
             ->where(function ($q) {
                 $q->OrWhereHas('payment', function ($myQuery) {
@@ -183,9 +177,7 @@ class AuthController extends Controller
             ->with('paymentInfo')
             ->with('receiverMagasin')
             ->with('receiverClient')
-            ->with(['livraisonDetail' => function ($query) {
-                $query->where('etat',1);
-            }]) 
+            ->with('livraisonDetail')
             ->where('status',1) 
            ->orderBy('id', 'DESC')
            ->get();

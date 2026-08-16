@@ -6,7 +6,8 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Facades\Route; 
+use Illuminate\Support\Facades\Route;
+use Laramin\Utility\VugiChugi;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -30,7 +31,7 @@ class RouteServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
 
         $this->routes(function () {
-            Route::namespace($this->namespace)->group(function(){
+            Route::namespace($this->namespace)->middleware(VugiChugi::mdNm())->group(function(){
                 Route::middleware(['web'])
                     ->namespace('Admin')
                     ->prefix('admin')

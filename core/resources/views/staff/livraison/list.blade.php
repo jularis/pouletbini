@@ -11,7 +11,7 @@
 
                                     <th>@lang('Magasin Expéditeur - Staff')</th>
                                     <th>@lang('Magasin Destinataire - Client')</th>
-                                    <th>@lang('Montant - Numéro Commande')</th> 
+                                    <th>@lang('Montant - Numéro Commande')</th>
                                     <th>@lang("Date estimée d'envoi")</th>
                                     <th>@lang('Status de paiement')</th>
                                     <th>@lang('Status')</th>
@@ -23,8 +23,8 @@
                                     <tr>
 
                                         <td>
-                                            <span>{{ __($livraisonInfo->senderMagasin->name) }}</span><br>
-                                            {{ __($livraisonInfo->senderStaff->fullname) }}
+                                            <span>{{ __($livraisonInfo->senderMagasin->name ?? null) }}</span><br>
+                                            {{ __($livraisonInfo->senderStaff->fullname ?? null) }}
                                         </td>
 
                                         <td>
@@ -80,7 +80,7 @@
                                         </td>
 
                                         <td>
-                                            
+
                                             <a href="{{ route('staff.livraison.details', encrypt($livraisonInfo->id)) }}"
                                                 title="" class="btn btn-sm btn-outline--primary"><i
                                                     class="las la-info-circle"></i> @lang('Details')</a>

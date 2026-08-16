@@ -13,15 +13,15 @@
     <link rel="stylesheet" href="{{ asset('assets/viseradmin/css/vendor/bootstrap-toggle.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/global/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/global/css/line-awesome.min.css') }}">
-
+    <link rel="stylesheet" href="{{ asset('assets/dropify/css/dropify.min.css') }}">
     @stack('style-lib')
 
     <link rel="stylesheet" href="{{ asset('assets/viseradmin/css/vendor/select2.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/viseradmin/css/app.css') }}"> 
+    <link rel="stylesheet" href="{{ asset('assets/viseradmin/css/app.css') }}">
     <style>
     hr {
     margin-top: 30px;
-    margin-bottom: 30px; 
+    margin-bottom: 30px;
 }
 .error {
     color: red;
@@ -46,14 +46,15 @@ span.input-group-text.categorie {
     <script src="{{ asset('assets/viseradmin/js/vendor/jquery.slimscroll.min.js') }}"></script>
     <script src="{{ asset('assets/global/js/jquery.validate.js') }}"></script>
 <script src="{{ asset('assets/global/js/messages_fr.js') }}"></script>
+
     @include('partials.notify')
     @stack('script-lib')
     <script src="{{ asset('assets/viseradmin/js/nicEdit.js') }}"></script>
     <script src="{{ asset('assets/viseradmin/js/printThis.js') }}"></script>
-
+<script src="{{ asset('assets/dropify/js/dropify.min.js') }}"></script>
     <script src="{{ asset('assets/viseradmin/js/vendor/select2.min.js') }}"></script>
     <script src="{{ asset('assets/viseradmin/js/app.js') }}"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_VVwtAhchqsINCTqin22MG1AzMn7d6gk"></script> 
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_VVwtAhchqsINCTqin22MG1AzMn7d6gk"></script>
 
 
     {{-- LOAD NIC EDIT --}}
@@ -79,6 +80,7 @@ span.input-group-text.categorie {
 $("#flocal").validate();
 });
 
+
 function geoFindMe() {
   const status = document.querySelector("#status");
   function success(position) {
@@ -99,8 +101,8 @@ $("input[name=longitude], input[name=latitude]").attr({"readonly": 'readonly'})
     navigator.geolocation.getCurrentPosition(success, error);
   }
 }
- 
-document.querySelector("#find-me").addEventListener("click", geoFindMe); 
+
+document.querySelector("#find-me").addEventListener("click", geoFindMe);
     </script>
 
     @stack('script')

@@ -24,7 +24,7 @@
                     <div class="d-flex justify-content-between mt-3">
                         <div class="text-center">
                         <?php echo QrCode::size(150)->generate($livraisonInfo->code); ?>
-                             
+
                         </div>
                         <div>
                             <b>@lang("N° Commande"):</b> {{ $livraisonInfo->code }}<br>
@@ -35,7 +35,7 @@
                                 <span class="badge badge--danger">@lang('Impayé')</span>
                             @endif
                             <br>
-                            <b>@lang('Sender Magasin'):</b> {{ __($livraisonInfo->senderMagasin->name) }}<br>
+                            <b>@lang('Sender Magasin'):</b> {{ __($livraisonInfo->senderMagasin->name ?? null) }}<br>
                             <b>@lang('Receiver Magasin'):</b> {{ __($livraisonInfo->receiverMagasin->name) }}
                         </div>
                     </div>
@@ -109,7 +109,7 @@
                                         </tr>
                                         <tr>
                                             <th>@lang('Frais de livraison'):</th>
-                                            <td>{{ showAmount($livraisonInfo->payment->frais_livraison) }} {{ $general->cur_sym }} 
+                                            <td>{{ showAmount($livraisonInfo->payment->frais_livraison) }} {{ $general->cur_sym }}
                                             </td>
                                         </tr>
                                         <tr>

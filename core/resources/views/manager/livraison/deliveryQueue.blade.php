@@ -13,7 +13,7 @@
                             <div class="flex-grow-1">
                                 <label>@lang('Staff')</label>
                                 <select name="staff" class="form-control">
-                                    <option value="">@lang("Tous")</option>  
+                                    <option value="">@lang("Tous")</option>
                                     @foreach($staffs as $staff)
                                         <option value="{{ $staff->id }}" {{ request()->staff == $staff->id ? 'selected' : '' }} >
                                         {{ $staff->lastname }} {{ $staff->firstname }}</option>
@@ -23,7 +23,7 @@
                             <div class="flex-grow-1">
                                 <label>@lang('Status de livraison')</label>
                                 <select name="status" class="form-control">
-                                    <option value="">@lang("Tous")</option> 
+                                    <option value="">@lang("Tous")</option>
                                     <option value="2">@lang('En attente')</option>
                                     <option value="3">@lang('Livré')</option>
                                 </select>
@@ -55,7 +55,7 @@
                                 <tr>
                                     <th>@lang('Magasin Expéditeur - Staff')</th>
                                     <th>@lang('Destinataire - Client')</th>
-                                    <th>@lang('Montant - Numéro Commande')</th> 
+                                    <th>@lang('Montant - Numéro Commande')</th>
                                     <th>@lang("Date estimée d'envoi")</th>
                                     <th>@lang('Status de paiement')</th>
                                     {{-- <th>@lang('Status')</th> --}}
@@ -67,13 +67,13 @@
                                     <tr>
                                     <tr>
                                         <td>
-                                            <span class="fw-bold">{{ __($livraisonInfo->senderMagasin->name) }}</span><br>
-                                            {{ __($livraisonInfo->senderStaff->fullname) }}
+                                            <span class="fw-bold">{{ __($livraisonInfo->senderMagasin->name ?? null) }}</span><br>
+                                            {{ __($livraisonInfo->senderStaff->fullname ?? null) }}
                                         </td>
 
                                         <td>
                                             <span class="fw-bold">
-                                            {{ __($livraisonInfo->receiverClient->address) }}
+                                            {{ $livraisonInfo->receiverClient->address ?? "Aucune" }}
                                             </span>
                                             <br>
                                             @if ($livraisonInfo->receiver_client_id)
@@ -89,7 +89,7 @@
                                                 {{ __($general->cur_text) }}</span><br>
                                             <span>{{ $livraisonInfo->code }}</span>
                                         </td>
- 
+
                                         <td>
                                             {{ showDateTime($livraisonInfo->estimate_date, 'd M Y') }}
                                         </td>
@@ -108,7 +108,11 @@
                                                 class="btn btn-sm btn-outline--primary">
                                                 <i class="las la-pen"></i>@lang('Edit')
                                             </a>
-                                           
+                                            @if($livraisonInfo->paymentInfo->status == Status::UNPAID)
+                                            {!! Form::open(['method' => 'DELETE','route' => ['manager.livraison.delete', encrypt($livraisonInfo->id)],'style'=>'display:inline']) !!}
+                                            <button class="btn btn-sm btn-outline--danger" type="submit"  onclick="return confirm('Etes vous sûr de vouloir supprimer cette commande?')"><i class="las la-trash"></i>Delete</button>
+                    {!! Form::close() !!}
+                    @endif
                                             <a href="{{ route('manager.livraison.invoice', encrypt($livraisonInfo->id)) }}"
                                                 title="" class="btn btn-sm btn-outline--info"><i
                                                     class="las la-file-invoice"></i> @lang('Facture')</a>
@@ -125,15 +129,7 @@
                                                     data-code="{{ $livraisonInfo->code }}"><i class="las la-truck"></i>
                                                     @lang('Terminer la livraison')</button>
                                             @endif
-                                            @if($livraisonInfo->paymentInfo->status == Status::UNPAID)
-                                            <a href="javascript:void(0);"
-                                                class="btn btn-sm btn-danger confirmationBtn"
-                                                data-action="{{ route('manager.livraison.delete', encrypt($livraisonInfo->id)) }}"
-                                                data-question="@lang('Etre-vous sûr de vouloir supprimer cette commande?')"
-                                                ><i
-                                                    class="las la-trash"></i> @lang('Delete')</a> 
-                                             
-                    @endif
+
                                         </td>
                                     </tr>
                                 @empty
@@ -156,7 +152,7 @@
         </div>
     </div>
 
- 
+
     @if(session('codePaie'))
     <div class="modal fade" id="paymentByAuto" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelAuto"
         aria-hidden="true">
@@ -177,10 +173,10 @@
                        <h2 class="swal2-title" id="swal2-title" style="display: flex;">Montant total:&nbsp;<span id="recu"></span>&nbsp;FCFA</h2>
                        <h2 class="swal2-title" id="swal2-title" style="display: flex;">Montant restant:&nbsp;<span id="restant"></span>&nbsp;FCFA</h2>
                         <h2 class="swal2-title" id="swal2-title" style="display: flex;">Entrer le montant reçu</h2>
-                        </div> 
+                        </div>
                        <div class="swal2-content">
                        <p><input class="swal2-input" placeholder="" name="montant" type="number" style="display: flex;" min="1" max="" id="montant" required></p>
-                       </div> 
+                       </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn--dark" data-bs-dismiss="modal">@lang("Non")</button>
@@ -195,7 +191,7 @@
         $(document).ready(function(){
         $("#paymentByAuto").modal('show');
     });
- 
+
 </script>
 @endpush
     @else
@@ -218,10 +214,10 @@
                        <h2 class="swal2-title" id="swal2-title" style="display: flex;">Montant total:&nbsp;<span id="recu"></span>&nbsp;FCFA</h2>
                        <h2 class="swal2-title" id="swal2-title" style="display: flex;">Montant restant:&nbsp;<span id="restant"></span>&nbsp;FCFA</h2>
                         <h2 class="swal2-title" id="swal2-title" style="display: flex;">Entrer le montant reçu</h2>
-                        </div> 
+                        </div>
                        <div class="swal2-content">
                        <p><input class="swal2-input" placeholder="" name="montant" type="number" style="display: flex;" min="1" max="" id="montant" required></p>
-                       </div> 
+                       </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn--dark" data-bs-dismiss="modal">@lang("Non")</button>
@@ -234,22 +230,22 @@
     @push('script')
     <script>
         (function($) {
-  
+
             $('.payment').on('click', function() {
                 var modal = $('#paymentBy');
                 modal.find('input[name=code]').val($(this).data('code'))
-                $('#recu').html($(this).data('finalamount')) 
+                $('#recu').html($(this).data('finalamount'))
                 $('#restant').html($(this).data('finalamount')-$(this).data('partialamount'))
                 modal.find('input[name=montant]').prop('max',$(this).data('finalamount')-$(this).data('partialamount'))
                 modal.modal('show');
-            }); 
+            });
         })(jQuery)
     </script>
 @endpush
     @endif
 
     @if(session('code'))
-     
+
     <div class="modal fade" id="deliveryByAuto" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelAuto"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -277,12 +273,11 @@
     </div>
     @push('script')
     <script>
-        $(document).ready(function(){
-        $("#deliveryByAuto").modal('show');
-    });
- 
+    //     $(document).ready(function(){
+    //     $("#deliveryByAuto").modal('show');
+    // });
 </script>
-@endpush 
+@endpush
     @else
     <div class="modal fade" id="deliveryBy" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -311,7 +306,7 @@
     </div>
     @push('script')
     <script>
-        (function($) { 
+        (function($) {
             $('.delivery').on('click', function() {
                 var modal = $('#deliveryBy');
                 modal.find('input[name=code]').val($(this).data('code'))
@@ -321,11 +316,10 @@
     </script>
 @endpush
     @endif
-
-    <x-confirmation-modal />
 @endsection
 @push('breadcrumb-plugins')
-<badge class="btn btn-danger">{{ showAmount(@$sommeTotal) }} FCFA</badge> 
+<badge class="btn btn-danger">{{ showAmount(@$sommeTotal) }} FCFA</badge>
+<a href="{{ route('manager.livraison.delivery.queue.export.excel') }}?{{ http_build_query(request()->all()) }}" class="btn btn-outline--warning ms-2"><i class="las la-cloud-download-alt"></i> Exporter Excel</a>
 @endpush
 @push('style-lib')
     <link rel="stylesheet" href="{{ asset('assets/viseradmin/css/vendor/datepicker.min.css') }}">
@@ -337,9 +331,9 @@
 @endpush
 @push('script')
     <script>
-        
+
         (function($) {
-            
+
 
             $('.date').datepicker({
                 // maxDate:new Date(),
@@ -348,7 +342,7 @@
                 language:'fr'
             });
 
-           
+
         })(jQuery)
         $('form select').on('change', function(){
     $(this).closest('form').submit();
@@ -362,7 +356,7 @@
     margin: 0px auto;
 }
 .swal2-file, .swal2-input, .swal2-textarea {
-    box-sizing: border-box; 
+    box-sizing: border-box;
     transition: border-color .3s,box-shadow .3s;
     border: 1px solid #d9d9d9;
     border-radius: 0.1875em;
@@ -408,4 +402,3 @@
 </style>
 
 @endpush
- 

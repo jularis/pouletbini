@@ -1,6 +1,6 @@
 @extends('manager.layouts.app')
 @section('panel')
-<div class="row">
+    <div class="row">
         <div class="col-lg-12">
             <div class="card b-radius--10">
                 <div class="card-body p-0">
@@ -8,20 +8,46 @@
                         <table class="table table--light style--two">
                             <thead>
                                 <tr>
-                                <th>@lang('Unite')</th>
+                                    <th>@lang('Image')</th>
                                     <th>@lang('Nom')</th>
-                                    <th>@lang('Prix')</th>
-                                    <th>@lang('Status')</th> 
+                                    <th>@lang('Status')</th>
+                                    <th>@lang('Action')</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($categories as $categorie)
                                     <tr>
-                                    <td>{{ __($categorie->unite->name) }}</td>
+                                        <td>
+                                            @if ($categorie->image != null)
+                                                <img src="{{ asset('core/storage/app/'.$categorie->image) }}" style = " width: 100px;"/>
+                                            @else
+                                                <img src="{{ asset('assets/images/default.png') }}"
+                                                    alt="image" style = " width: 100px;">
+                                            @endif
+                                        </td>
                                         <td>{{ __($categorie->name) }}</td>
-                                        <td>{{ __($categorie->price) }}</td>
                                         <td> @php  echo $categorie->statusBadge; @endphp </td>
-                                    
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-outline--primary updateCategorie"
+                                                data-id="{{ $categorie->id }}" data-name="{{ $categorie->name }}"><i
+                                                    class="las la-pen"></i>@lang('Edit')</button>
+
+                                            @if ($categorie->status == Status::DISABLE)
+                                                <button type="button"
+                                                    class="btn btn-sm btn-outline--success confirmationBtn"
+                                                    data-action="{{ route('manager.livraison.categorie.status', $categorie->id) }}"
+                                                    data-question="@lang('Etes-vous sûr de vouloir activer ce categorie?')">
+                                                    <i class="la la-eye"></i> @lang("Activer")
+                                                </button>
+                                            @else
+                                                <button type="button"
+                                                    class="btn btn-sm btn-outline--danger confirmationBtn"
+                                                    data-action="{{ route('manager.livraison.categorie.status', $categorie->id) }}"
+                                                    data-question="@lang('Etes-vous sûr de vouloir désactiver ce categorie?')">
+                                                    <i class="la la-eye-slash"></i>@lang("Désactiver")
+                                                </button>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -42,12 +68,42 @@
         </div>
     </div>
 
-
- 
+    <div id="categorieModel" class="modal fade">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@lang('Ajouter Categorie')</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal">
+                        <i class="las la-times"></i></button>
+                </div>
+                <form action="{{ route('manager.livraison.categorie.store') }}" class="resetForm" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" name='id'>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>@lang('Nom')</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>@lang('Image')</label>
+                            <div class="input-group mb-3">
+                                <input type="file" name="picture" accept="image/*" class="form-control "
+                                placeholder="Choisir une image" id="picture">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn--primary h-45 w-100">@lang("Envoyer")</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <x-confirmation-modal />
 @endsection
 
-@push('breadcrumb-plugins') 
+@push('breadcrumb-plugins')
+    <button class="btn btn-sm btn-outline--primary addCategorie"><i class="las la-plus"></i>@lang("Créer un nouveau")</button>
 @endpush
 
 @push('script')

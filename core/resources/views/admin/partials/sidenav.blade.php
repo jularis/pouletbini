@@ -1,6 +1,3 @@
-<?php
-$array_users = array('admin','eddy','abenan');
-?>
 <div class="sidebar bg--dark">
     <button class="res-sidebar-close-btn"><i class="las la-times"></i></button>
     <div class="sidebar__inner">
@@ -17,39 +14,7 @@ $array_users = array('admin','eddy','abenan');
                         <span class="menu-title">@lang('Tableau de Bord')</span>
                     </a>
                 </li>
-                
-@if(!in_array(auth()->guard('admin')->user()->username, $array_users))
-                <li class="sidebar-menu-item sidebar-dropdown">
-                    <a href="javascript:void(0)" class="side-menu--open {{ menuActive(['admin.ferme.*','admin.bande.*','admin.arrivage.*'], 3) }}">
-                        <i class="menu-icon las la-tasks"></i>
-                        <span class="menu-title">@lang('Approvisionnement')</span>
-                    </a>
-                    <div class="sidebar-submenu sidebar-submenu__open {{ menuActive(['admin.ferme.*','admin.bande.*','admin.arrivage.*'], 2) }} " style="display: block;">
-                        <ul>
-                        <li class="sidebar-menu-item {{ menuActive('admin.ferme.*') }} ">
-                                <a href="{{ route('admin.ferme.index') }}" class="nav-link">
-                                    <i class="menu-icon las la-dot-circle"></i>
-                                    <span class="menu-title">@lang('Gestion des Fermes')</span>
-                                </a>
-                            </li>
 
-                            <li class="sidebar-menu-item {{ menuActive('admin.bande.*') }} ">
-                                <a href="{{ route('admin.bande.index') }}" class="nav-link">
-                                    <i class="menu-icon las la-dot-circle"></i>
-                                    <span class="menu-title">@lang('Gestion des Bandes')</span>
-                                </a>
-                            </li>
-                            <li class="sidebar-menu-item {{ menuActive('admin.arrivage.*') }} ">
-                                <a href="{{ route('admin.arrivage.index') }}" class="nav-link">
-                                    <i class="menu-icon las la-dot-circle"></i>
-                                    <span class="menu-title">@lang('Arrivages Abattoirs')</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                @endif
-                @if(in_array(auth()->guard('admin')->user()->username, $array_users))
                 <li class="sidebar-menu-item {{ menuActive('admin.all') }}">
                     <a href="{{ route('admin.all') }}" class="nav-link ">
                         <i class="menu-icon las la-users"></i>
@@ -91,83 +56,35 @@ $array_users = array('admin','eddy','abenan');
                     </div>
                 </li>
                 <li class="sidebar-menu-item sidebar-dropdown">
-                    <a href="javascript:void(0)" class="{{ menuActive(['admin.livraison.categorie.unite.index','admin.livraison.categorie.index'], 3) }}">
+                    <a href="javascript:void(0)" class="{{ menuActive('admin.livraison.categorie*', 3) }}">
                         <i class="menu-icon las la-tasks"></i>
-                        <span class="menu-title">@lang('Paramètres')</span>
+                        <span class="menu-title">{{ __($general->site_name) }} @lang('Setting')</span>
                     </a>
-                    <div class="sidebar-submenu {{ menuActive(['admin.livraison.categorie.unite.index','admin.livraison.categorie.index'], 2) }} ">
+                    <div class="sidebar-submenu {{ menuActive('admin.livraison.categorie*', 2) }} ">
                         <ul>
-                        <li class="sidebar-menu-item {{ menuActive('admin.livraison.categorie.unite.index') }} ">
-                                <a href="{{ route('admin.livraison.categorie.unite.index') }}" class="nav-link">
-                                    <i class="menu-icon las la-dot-circle"></i>
-                                    <span class="menu-title">@lang('Gestion Unités')</span>
-                                </a>
-                            </li>
                             <li class="sidebar-menu-item {{ menuActive('admin.livraison.categorie.index') }} ">
                                 <a href="{{ route('admin.livraison.categorie.index') }}" class="nav-link">
                                     <i class="menu-icon las la-dot-circle"></i>
-                                    <span class="menu-title">@lang('Gestion Categories')</span>
+                                    <span class="menu-title">@lang('Gestion Categorie')</span>
                                 </a>
                             </li>
 
-                        </ul>
-                    </div>
-                </li>
-                <li class="sidebar-menu-item sidebar-dropdown">
-                    <a href="javascript:void(0)" class="{{ menuActive(['admin.ferme.*','admin.bande.*','admin.arrivage.*','admin.livraison.categorie.produit.*','admin.livraison.categorie.client.*','admin.livraison.categorie.fournisseur.*'], 3) }}">
-                        <i class="menu-icon las la-tasks"></i>
-                        <span class="menu-title">@lang('Approvisionnement')</span>
-                    </a>
-                    <div class="sidebar-submenu {{ menuActive(['admin.ferme.*','admin.bande.*','admin.arrivage.*','admin.livraison.categorie.produit.*','admin.livraison.categorie.client.*','admin.livraison.categorie.fournisseur.*'], 2) }} ">
-                        <ul>
-                            
-                        <li class="sidebar-menu-item {{ menuActive('admin.livraison.categorie.produit.index') }} ">
+                            <li class="sidebar-menu-item {{ menuActive('admin.livraison.categorie.produit.index') }} ">
                                 <a href="{{ route('admin.livraison.categorie.produit.index') }}" class="nav-link">
                                     <i class="menu-icon las la-dot-circle"></i>
-                                    <span class="menu-title">@lang('Gestion Produits')</span>
+                                    <span class="menu-title">@lang('Gestion Produit')</span>
                                 </a>
                             </li>
                             <li class="sidebar-menu-item {{ menuActive('admin.livraison.categorie.client.index') }} ">
                                 <a href="{{ route('admin.livraison.categorie.client.index') }}" class="nav-link">
                                     <i class="menu-icon las la-dot-circle"></i>
-                                    <span class="menu-title">@lang('Gestion Clients')</span>
-                                </a>
-                            </li>
-                            <li class="sidebar-menu-item {{ menuActive('admin.livraison.categorie.fournisseur.index') }} ">
-                                <a href="{{ route('admin.livraison.categorie.fournisseur.index') }}" class="nav-link">
-                                    <i class="menu-icon las la-dot-circle"></i>
-                                    <span class="menu-title">@lang('Gestion Fournisseurs')</span>
-                                </a>
-                            </li>
-                            <li class="sidebar-menu-item {{ menuActive('admin.ferme.*') }} ">
-                                <a href="{{ route('admin.ferme.index') }}" class="nav-link">
-                                    <i class="menu-icon las la-dot-circle"></i>
-                                    <span class="menu-title">@lang('Gestion des Fermes')</span>
-                                </a>
-                            </li>
-
-                            <li class="sidebar-menu-item {{ menuActive('admin.bande.*') }} ">
-                                <a href="{{ route('admin.bande.index') }}" class="nav-link">
-                                    <i class="menu-icon las la-dot-circle"></i>
-                                    <span class="menu-title">@lang('Gestion des Bandes')</span>
-                                </a>
-                            </li>
-                            <li class="sidebar-menu-item {{ menuActive('admin.arrivage.*') }} ">
-                                <a href="{{ route('admin.arrivage.index') }}" class="nav-link">
-                                    <i class="menu-icon las la-dot-circle"></i>
-                                    <span class="menu-title">@lang('Arrivages Abattoirs')</span>
+                                    <span class="menu-title">@lang('Gestion Client')</span>
                                 </a>
                             </li>
                         </ul>
                     </div>
                 </li>
-                <li class="sidebar-menu-item  {{ menuActive(['admin.livraison.brouillon']) }}">
-                    <a href="{{ route('admin.livraison.brouillon') }}" class="nav-link">
-                        <i class="menu-icon las la-fax"></i>
-                        <span class="menu-title">@lang('Commandes en brouillon')</span>
-                    </a>
-                </li>
-                <li class="sidebar-menu-item  {{ menuActive(['admin.livraison.invoice']) }}">
+                <li class="sidebar-menu-item  {{ menuActive(['admin.livraison.info*', 'admin.livraison.invoice']) }}">
                     <a href="{{ route('admin.livraison.info.index') }}" class="nav-link">
                         <i class="menu-icon las la-fax"></i>
                         <span class="menu-title">@lang('Gestion Commandes')</span>
@@ -430,7 +347,6 @@ $array_users = array('admin','eddy','abenan');
                         <span class="menu-title">@lang('Report & Request') </span>
                     </a>
                 </li>
-                @endif
             </ul>
             <div class="text-center mb-3 text-uppercase">
                 <span class="text--primary">{{ __(systemDetails()['name']) }}</span>

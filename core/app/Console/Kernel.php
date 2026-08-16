@@ -12,18 +12,10 @@ class Kernel extends ConsoleKernel
      *
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
      * @return void
-     */ 
-    protected $commands = [
-        //
-        Commands\CheckBrouillon::class,
-        Commands\DeleteDraft::class,
-    ];
-
+     */
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
-       $schedule->command('check:draft')->everyThirtyMinutes();
-       $schedule->command('delete:draft')->dailyAt('00:30');
     }
 
     /**

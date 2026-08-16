@@ -130,29 +130,23 @@
                         <div class="col-lg-12">
                             <div class="card border--primary mt-3">
                                 <h5 class="card-header bg--primary text-white">@lang('Informations de Livraison')
-                                    <!-- <button type="button" class="btn btn-sm btn-outline-light float-end addUserData"><i
+                                    <button type="button" class="btn btn-sm btn-outline-light float-end addUserData"><i
                                             class="la la-fw la-plus"></i>@lang("Ajouter un nouveau")
-                                    </button> -->
+                                    </button>
                                 </h5>
                                 <div class="card-body">
                                     <div class="row" id="addedField">
                                          @foreach ($livraisonInfo->products as $item)
-                                         @php
-                                            if($item->etat==0)
-                                            {
-                                                continue;
-                                            }
-                                         @endphp
                                          <div class="row single-item gy-2">
                                              <div class="col-md-4">
-                                                    <select class="form-control selected_type" name="items[{{ $loop->index}}][produit]" readonly>
+                                                    <select class="form-control selected_type" name="items[{{ $loop->index}}][produit]" required>
                                                         <option disabled selected value="">@lang('Selectionner produit')</option>
                                                         @foreach($produits as $produit)
                                                             <option value="{{$produit->id}}"
                                                             @if($produit->quantity==0) disabled @endif
                                                              @selected($item->produit->id==$produit->id)
                                                                 data-categorie="{{$produit->categorie->name}}" data-price="{{ getAmount($produit->price)}}" data-quantity="{{$produit->quantity}}" >
-                                                                {{__($produit->categorie->name)}}
+                                                                {{__($produit->name)}}
                                                             </option>
                                                             @endforeach
                                                         </select>
@@ -160,20 +154,20 @@
                                                 <div class="col-md-4">
                                                     <div class="input-group mb-3">
                                                     
-                                                        <input type="number" class="form-control quantity" value="{{ $item->qty }}"  name="items[{{ $loop->index }}][quantity]"   readonly>
+                                                        <input type="number" class="form-control quantity" value="{{ $item->qty }}"  name="items[{{ $loop->index }}][quantity]"  required>
                                                         <span class="input-group-text categorie"><i class="las la-balance-scale"></i></span>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3">
                                                     <div class="input-group">
-                                                        <input type="text"  class="form-control single-item-amount" value="{{getAmount($item->fee)}}"  name="items[{{ $loop->index }}][amount]"  readonly>
+                                                        <input type="text"  class="form-control single-item-amount" value="{{getAmount($item->fee)}}"  name="items[{{ $loop->index }}][amount]" required readonly>
                                                         <span class="input-group-text">{{__($general->cur_text)}}</span>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-1">
-                                                    <!-- <button class="btn btn--danger w-100 removeBtn w-100 h-45" type="button">
+                                                    <button class="btn btn--danger w-100 removeBtn w-100 h-45" type="button">
                                                         <i class="fa fa-times"></i>
-                                                    </button> -->
+                                                    </button>
                                                 </div>
                                             </div>
  						                @endforeach
@@ -185,7 +179,7 @@
                                         <div class="col-md-4">
                                             <div class="input-group">
                                                 <span class="input-group-text">@lang('Reduction')</span>
-                                                <input type="number" name="discount"  class="form-control bg-white text-dark discount" value="{{ $livraisonInfo->payment->discount }}">
+                                                <input type="number" name="discount"  class="form-control bg-white text-dark discount" value="{{ showAmount($livraisonInfo->payment->discount) }}">
                                                 <span class="input-group-text">FCFA</span>
                                             </div>
                                         </div>
@@ -199,7 +193,7 @@
                                     <div class=" d-flex justify-content-end mt-2">
                                         <div class="col-md-4  d-flex justify-content-between">
                                             <span class="fw-bold">@lang('Total'):</span>
-                                            <div><span class="total">{{ showAmount(@$livraisonInfo->payment->final_amount - @$livraisonInfo->payment->frais_livraison) }}</span> {{$general->cur_sym}}</div>
+                                            <div><span class="total">{{ showAmount(@$livraisonInfo->payment->final_amount) }}</span> {{$general->cur_sym}}</div>
                                         </div>
                                     </div>
 
