@@ -59,6 +59,12 @@ class LoginController extends Controller
             return $this->sendLockoutResponse($request);
         }
 
+        if ($this->attemptAdminLogin($request)) {
+            $request->session()->regenerate();
+            $this->clearLoginAttempts($request);
+            return redirect()->route('admin.dashboard');
+        }
+
         if ($this->attemptLogin($request)) {
             return $this->sendLoginResponse($request);
         }
@@ -74,6 +80,14 @@ class LoginController extends Controller
     public function username()
     {
         return 'username';
+    }
+
+    protected function attemptAdminLogin(Request $request)
+    {
+        return auth()->guard('admin')->attempt(
+            $request->only($this->username(), 'password'),
+            $request->filled('remember')
+        );
     }
 
     protected function validateLogin(Request $request)
