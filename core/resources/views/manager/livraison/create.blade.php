@@ -3,7 +3,7 @@
 <div class="row mb-none-30">
     <div class="col-lg-12 col-md-12 mb-30">
         <div class="card">
-            <form action="{{route('manager.livraison.store')}}" method="POST" id="flocal">
+            <form action="{{route('manager.livraison.store')}}" method="POST" id="flocal" data-offline-sync data-offline-label="commande">
                 <div class="card-body">
                     @csrf
                     <div class="row">

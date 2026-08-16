@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'poulet-bini-v1';
+const CACHE_VERSION = 'poulet-bini-v2';
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const STATIC_ASSETS = [
   '/',
@@ -10,6 +10,7 @@ const STATIC_ASSETS = [
   '/assets/global/css/line-awesome.min.css',
   '/assets/global/js/jquery-3.6.0.min.js',
   '/assets/global/js/bootstrap.bundle.min.js',
+  '/assets/global/js/offline-sync.js',
   '/assets/viseradmin/css/app.css',
   '/assets/viseradmin/js/app.js',
   '/assets/templates/basic/css/main.css',

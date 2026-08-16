@@ -1,3 +1,7 @@
 core/.env
 core/vendor/
-
+core/bootstrap/cache/
+core/storage/debugbar/
+core/storage/framework/views/
+core/storage/logs/
+error_log

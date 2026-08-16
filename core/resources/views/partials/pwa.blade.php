@@ -92,3 +92,4 @@
         });
     })();
 </script>
+<script src="{{ asset('assets/global/js/offline-sync.js') }}"></script>
