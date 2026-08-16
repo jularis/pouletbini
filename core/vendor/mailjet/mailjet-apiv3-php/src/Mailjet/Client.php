@@ -11,8 +11,6 @@ declare(strict_types=1);
 
 namespace Mailjet;
 
-use Mailjet\Normalizer\NormalizerInterface;
-
 class Client
 {
     public const WRAPPER_VERSION = Config::WRAPPER_VERSION;
@@ -121,16 +119,6 @@ class Client
 
         $result = $this->_call('GET', $resource[0], $resource[1], $args);
 
-        if (isset($resource['normalizer']) && class_exists($resource['normalizer'])) {
-            /**
-             * @var $normalizer NormalizerInterface
-             */
-            $normalizer = $resource['normalizer'];
-            if ($normalizer::shouldBeNormalized($args)) {
-                $result = $normalizer::normalizeResponse($result);
-            }
-        }
-
         if (!empty($this->changed)) {
             $this->setSettings();
         }
@@ -139,7 +127,7 @@ class Client
     }
 
     /**
-     * Trigger a PUT request.
+     * Trigger a POST request.
      *
      * @param  array $resource Mailjet Resource/Action pair
      * @param  array $args     Request arguments
@@ -162,7 +150,7 @@ class Client
     }
 
     /**
-     * Trigger a DELETE request.
+     * Trigger a GET request.
      *
      * @param  array $resource Mailjet Resource/Action pair
      * @param  array $args     Request arguments

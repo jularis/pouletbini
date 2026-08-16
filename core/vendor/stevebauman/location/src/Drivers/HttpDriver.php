@@ -34,12 +34,8 @@ abstract class HttpDriver extends Driver
     public function process(Request $request): Fluent|false
     {
         return rescue(fn () => new Fluent(
-            $this->http()
-                ->throw()
-                ->acceptJson()
-                ->get($this->url($request->getIp()))
-                ->json()
-        ), false, false);
+            $this->http()->get($this->url($request->getIp()))->json()
+        ), false);
     }
 
     /**

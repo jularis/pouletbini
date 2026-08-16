@@ -35,6 +35,13 @@
       0 => 'Kirschbaum\\PowerJoins\\PowerJoinsServiceProvider',
     ),
   ),
+  'laramin/utility' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Laramin\\Utility\\UtilityServiceProvider',
+    ),
+  ),
   'laravel/sail' => 
   array (
     'providers' => 

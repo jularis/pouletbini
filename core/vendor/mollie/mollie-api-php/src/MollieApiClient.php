@@ -30,10 +30,7 @@ use Mollie\Api\Endpoints\PermissionEndpoint;
 use Mollie\Api\Endpoints\ProfileEndpoint;
 use Mollie\Api\Endpoints\ProfileMethodEndpoint;
 use Mollie\Api\Endpoints\RefundEndpoint;
-use Mollie\Api\Endpoints\SettlementCaptureEndpoint;
-use Mollie\Api\Endpoints\SettlementChargebackEndpoint;
 use Mollie\Api\Endpoints\SettlementPaymentEndpoint;
-use Mollie\Api\Endpoints\SettlementRefundEndpoint;
 use Mollie\Api\Endpoints\SettlementsEndpoint;
 use Mollie\Api\Endpoints\ShipmentEndpoint;
 use Mollie\Api\Endpoints\SubscriptionEndpoint;
@@ -50,7 +47,7 @@ class MollieApiClient
     /**
      * Version of our client.
      */
-    public const CLIENT_VERSION = "2.65.0";
+    public const CLIENT_VERSION = "2.61.0";
 
     /**
      * Endpoint of the remote API.
@@ -121,32 +118,11 @@ class MollieApiClient
     public $settlements;
 
     /**
-     * RESTful Settlement capture resource.
-     *
-     * @var \Mollie\Api\Endpoints\SettlementCaptureEndpoint
-     */
-    public $settlementCaptures;
-
-    /**
-     * RESTful Settlement chargeback resource.
-     *
-     * @var \Mollie\Api\Endpoints\SettlementChargebackEndpoint
-     */
-    public $settlementChargebacks;
-
-    /**
      * RESTful Settlement payment resource.
      *
      * @var \Mollie\Api\Endpoints\SettlementPaymentEndpoint
      */
     public $settlementPayments;
-
-    /**
-     * RESTful Settlement refund resource.
-     *
-     * @var \Mollie\Api\Endpoints\SettlementRefundEndpoint
-     */
-    public $settlementRefunds;
 
     /**
      * RESTful Subscription resource.
@@ -389,10 +365,7 @@ class MollieApiClient
         $this->profileMethods = new ProfileMethodEndpoint($this);
         $this->customers = new CustomerEndpoint($this);
         $this->settlements = new SettlementsEndpoint($this);
-        $this->settlementCaptures = new SettlementCaptureEndpoint($this);
-        $this->settlementChargebacks = new SettlementChargebackEndpoint($this);
         $this->settlementPayments = new SettlementPaymentEndpoint($this);
-        $this->settlementRefunds = new SettlementRefundEndpoint($this);
         $this->subscriptions = new SubscriptionEndpoint($this);
         $this->customerPayments = new CustomerPaymentsEndpoint($this);
         $this->mandates = new MandateEndpoint($this);

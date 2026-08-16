@@ -223,11 +223,4 @@ class Payment extends Entity
 
         return $this->request('GET', $relativeUrl);
     }
-
-    public function expandedDetails($options = array())
-    {
-        $relativeUrl = $this->getEntityUrl(). $this->id;
-
-        return $this->request('GET', $relativeUrl, $options);
-    }
 }

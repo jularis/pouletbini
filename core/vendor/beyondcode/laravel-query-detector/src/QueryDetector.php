@@ -74,10 +74,6 @@ class QueryDetector
                 }
 
                 $sources = $this->findSource($backtrace);
-                
-                if (empty($sources)) {
-                    return;
-                }
 
                 $key = md5($query->sql . $model . $relationName . $sources[0]->name . $sources[0]->line);
 

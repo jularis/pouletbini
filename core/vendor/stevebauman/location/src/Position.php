@@ -18,72 +18,67 @@ class Position implements Arrayable
     public string $driver;
 
     /**
-     * The location's country name.
+     * The country name.
      */
     public ?string $countryName = null;
 
     /**
-     * The location's currency code.
-     */
-    public ?string $currencyCode;
-
-    /**
-     * The location's country code.
+     * The country code.
      */
     public ?string $countryCode = null;
 
     /**
-     * The location's region code.
+     * The region code.
      */
     public ?string $regionCode = null;
 
     /**
-     * The location's region name.
+     * The region name.
      */
     public ?string $regionName = null;
 
     /**
-     * The location's city name.
+     * The city name.
      */
     public ?string $cityName = null;
 
     /**
-     * The location's zip code.
+     * The zip code.
      */
     public ?string $zipCode = null;
 
     /**
-     * The location's ISO code.
+     * The ISO code.
      */
     public ?string $isoCode = null;
 
     /**
-     * The location's postal code.
+     * The postal code.
      */
     public ?string $postalCode = null;
 
     /**
-     * The location's latitude.
+     * The latitude.
      */
     public ?string $latitude = null;
 
     /**
-     * The location's longitude.
+     * The longitude.
      */
     public ?string $longitude = null;
 
     /**
-     * The location's metro code.
+     * The metro code.
      */
     public ?string $metroCode = null;
 
     /**
-     * The location's area code.
+     * The area code.
      */
     public ?string $areaCode = null;
 
     /**
-     * The location's timezone.
+     * The timezone.
      */
     public ?string $timezone = null;
 
@@ -100,7 +95,7 @@ class Position implements Arrayable
     }
 
     /**
-     * Transform the instance to an array.
+     * Get the instance as an array.
      */
     public function toArray(): array
     {

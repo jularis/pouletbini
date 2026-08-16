@@ -11,13 +11,16 @@ declare(strict_types=1);
 
 namespace Mailjet;
 
-use Mailjet\Normalizer\ContactNormalizer;
-
 /**
+ * PHP version 7.2.
+ *
  * This is the Mailjet Resources Class
+ *
  * @category Mailjet_API
+ *
  * @author  Guillaume Badi <gbadi@mailjet.com>
  * @license MIT https://opensource.org/licenses/MIT
+ *
  * @see dev.mailjet.com
  */
 class Resources
@@ -45,8 +48,7 @@ class Resources
     public static $Campaignoverview = ['campaignoverview', ''];
     public static $Campaignstatistics = ['campaignstatistics', ''];
     public static $Clickstatistics = ['clickstatistics', ''];
-    public static $Contact = ['contact', '', 'normalizer' => ContactNormalizer::class];
-    public static $Contacts = ['contacts', ''];
+    public static $Contact = ['contact', ''];
     public static $ContactManagecontactslists = ['contact', 'managecontactslists'];
     public static $ContactGetcontactslists = ['contact', 'getcontactslists'];
     public static $ContactManagemanycontacts = ['contact', 'managemanycontacts'];

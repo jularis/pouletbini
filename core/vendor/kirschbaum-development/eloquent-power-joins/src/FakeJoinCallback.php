@@ -5,8 +5,10 @@ namespace Kirschbaum\PowerJoins;
 /**
  * @method static as(string $alias)
  */
-class FakeJoinCallback extends PowerJoinClause
+class FakeJoinCallback
 {
+    protected ?string $alias = null;
+
     public function getAlias(): ?string
     {
         return $this->alias;

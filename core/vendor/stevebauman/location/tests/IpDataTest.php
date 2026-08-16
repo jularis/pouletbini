@@ -20,7 +20,6 @@ it('it can process fluent response', function () {
         'postal' => '55555',
         'latitude' => '50',
         'longitude' => '50',
-        'currency' => ['code' => 'USD'],
         'time_zone' => ['name' => 'America/Toronto'],
     ];
 
@@ -49,7 +48,6 @@ it('it can process fluent response', function () {
         'metroCode' => null,
         'areaCode' => null,
         'ip' => '66.102.0.0',
-        'currencyCode' => 'USD',
         'timezone' => 'America/Toronto',
         'driver' => get_class($driver),
     ]);

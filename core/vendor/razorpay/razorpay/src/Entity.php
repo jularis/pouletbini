@@ -231,16 +231,4 @@ class Entity extends Resource implements ArrayableInterface
 
         return $array;
     }
-
-    public function setFile($attributes)
-    {
-        if(isset($attributes['file'])){
-            $attributes['file'] = new \CURLFILE(
-                $attributes['file'],
-                mime_content_type($attributes['file'])
-            );
-        }
-
-        return $attributes;   
-    }
 }

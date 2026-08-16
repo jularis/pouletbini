@@ -26,7 +26,6 @@ return [
     */
 
     'fallbacks' => [
-        Stevebauman\Location\Drivers\Ip2locationio::class,
         Stevebauman\Location\Drivers\IpInfo::class,
         Stevebauman\Location\Drivers\GeoPlugin::class,
         Stevebauman\Location\Drivers\MaxMind::class,
@@ -101,10 +100,6 @@ return [
 
     'ipdata' => [
         'token' => env('IPDATA_TOKEN'),
-    ],
-
-    'ip2locationio' => [
-        'token' => env('IP2LOCATIONIO_TOKEN'),
     ],
 
     /*
