@@ -2,7 +2,7 @@
   "name": "Poulet Bini",
   "short_name": "Poulet Bini",
   "description": "Application Poulet Bini disponible en ligne et avec un mode hors connexion.",
-  "start_url": "/",
+  "start_url": "https://new.pouletbini.com/admin/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
