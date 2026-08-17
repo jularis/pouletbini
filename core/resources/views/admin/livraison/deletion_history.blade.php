@@ -91,6 +91,8 @@
                                             @else
                                                 <button type="button" class="btn btn-sm btn-outline--success confirmationBtn"
                                                     data-action="{{ route('admin.livraison.delete.restore', $history->id) }}"
+                                                    data-offline-sync
+                                                    data-offline-label="restauration"
                                                     data-question="@lang('Etes-vous sur de vouloir restaurer cette commande?')">
                                                     <i class="las la-undo"></i> @lang('Restaurer')
                                                 </button>

@@ -8,6 +8,7 @@ use App\Models\Magasin;
 use App\Models\Payment;
 use App\Models\LivraisonDeletionHistory;
 use App\Models\LivraisonInfo;
+use App\Models\OfflineSyncRequest;
 use App\Exports\ExportCommandes;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -80,6 +81,11 @@ class LivraisonController extends Controller
 
     public function restoreDeletion($id)
     {
+        if ($this->offlineRequestProcessed('admin.livraison.delete.restore')) {
+            $notify[] = ['success', 'Restauration deja synchronisee.'];
+            return back()->withNotify($notify);
+        }
+
         $history = LivraisonDeletionHistory::findOrFail($id);
 
         if ($history->restored_at) {
@@ -131,6 +137,8 @@ class LivraisonController extends Controller
             $history->restored_at = now();
             $history->restored_by_admin_id = auth()->guard('admin')->id();
             $history->save();
+
+            $this->markOfflineRequestProcessed('admin.livraison.delete.restore');
         });
 
         $notify[] = ['success', 'La commande a ete restauree avec succes.'];
@@ -144,6 +152,29 @@ class LivraisonController extends Controller
         }
 
         return array_intersect_key($data, array_flip(Schema::getColumnListing($table)));
+    }
+
+    private function offlineRequestProcessed($action)
+    {
+        if (!request()->filled('offline_sync_id')) {
+            return false;
+        }
+
+        return OfflineSyncRequest::where('sync_id', request()->offline_sync_id)
+            ->where('action', $action)
+            ->exists();
+    }
+
+    private function markOfflineRequestProcessed($action)
+    {
+        if (!request()->filled('offline_sync_id')) {
+            return;
+        }
+
+        OfflineSyncRequest::firstOrCreate(
+            ['sync_id' => request()->offline_sync_id, 'action' => $action],
+            ['guard' => 'admin', 'user_id' => auth()->guard('admin')->id()]
+        );
     }
 
     public function exportExcel()

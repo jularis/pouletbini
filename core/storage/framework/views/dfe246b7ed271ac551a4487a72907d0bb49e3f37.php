@@ -91,6 +91,16 @@
                     </a>
                 </li>
 
+                <li class="sidebar-menu-item  <?php echo e(menuActive('admin.livraison.delete.history')); ?>">
+                    <a href="<?php echo e(route('admin.livraison.delete.history')); ?>" class="nav-link">
+                        <i class="menu-icon las la-history"></i>
+                        <span class="menu-title"><?php echo app('translator')->get('Suppression commande'); ?></span>
+                        <?php if(0 < $deletedCommandeCount): ?>
+                            <span class="menu-badge pill bg--danger ms-auto"><?php echo e($deletedCommandeCount); ?></span>
+                        <?php endif; ?>
+                    </a>
+                </li>
+
                 <li class="sidebar-menu-item  <?php echo e(menuActive(['admin.staff.index'])); ?>">
                     <a href="<?php echo e(route('admin.staff.index')); ?>" class="nav-link">
                         <i class="menu-icon las la-users"></i>

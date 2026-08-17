@@ -9,6 +9,7 @@ use App\Models\Magasin;
 use App\Models\LivraisonInfo;
 use App\Models\LivraisonPayment;
 use App\Models\LivraisonProduct;
+use App\Models\OfflineSyncRequest;
 use App\Models\Produit;
 use App\Models\User;
 use App\Models\Client;
@@ -59,10 +60,16 @@ class LivraisonController extends Controller
 
     public function dispatched($id)
     {
+        if ($this->offlineRequestProcessed('staff.livraison.dispatched')) {
+            $notify[] = ['success', 'Action deja synchronisee'];
+            return back()->withNotify($notify);
+        }
+
         $user                = auth()->user();
         $livraisonInfo         = LivraisonInfo::where([['receiver_staff_id', $user->id]])->findOrFail($id);
         $livraisonInfo->status = Status::COURIER_DELIVERYQUEUE;
         $livraisonInfo->save();
+        $this->markOfflineRequestProcessed('staff.livraison.dispatched');
         $notify[] = ['success', 'La Livraison a été expédiée avec succès'];
         return back()->withNotify($notify);
     }
@@ -133,9 +140,15 @@ class LivraisonController extends Controller
 
     public function receive($id)
     {
+        if ($this->offlineRequestProcessed('staff.livraison.receive')) {
+            $notify[] = ['success', 'Action deja synchronisee'];
+            return back()->withNotify($notify);
+        }
+
         $livraisonInfo         = LivraisonInfo::findOrFail($id);
         $livraisonInfo->status = Status::COURIER_DELIVERYQUEUE;
         $livraisonInfo->save();
+        $this->markOfflineRequestProcessed('staff.livraison.receive');
         $notify[] = ['success', 'Livraison received successfully'];
         return back()->withNotify($notify);
     }
@@ -162,7 +175,14 @@ class LivraisonController extends Controller
         $request->validate([
             'code' => 'required',
             'montant' => 'required',
+            'offline_sync_id' => 'nullable|string|max:100',
         ]);
+
+        if ($this->offlineRequestProcessed('staff.livraison.payment')) {
+            $notify[] = ['success', 'Paiement deja synchronise'];
+            return back()->withNotify($notify);
+        }
+
         $user = auth()->user();
 
         $livraison = LivraisonInfo::where('code', $request->code)->first();
@@ -186,6 +206,7 @@ class LivraisonController extends Controller
         $livraisonPayment->partial_amount = $partial;
         
         $livraisonPayment->save();
+        $this->markOfflineRequestProcessed('staff.livraison.payment');
 
         $adminNotification            = new AdminNotification();
         $adminNotification->user_id   = $user->id;
@@ -207,7 +228,14 @@ class LivraisonController extends Controller
     {
         $request->validate([
             'code' => 'required|exists:livraison_infos,code',
+            'offline_sync_id' => 'nullable|string|max:100',
         ]);
+
+        if ($this->offlineRequestProcessed('staff.livraison.delivery')) {
+            $notify[] = ['success', 'Livraison deja synchronisee'];
+            return back()->withNotify($notify);
+        }
+
         $user = auth()->user();
         $livraison = LivraisonInfo::where('code', $request->code)->where('status', Status::COURIER_DELIVERYQUEUE)->firstOrFail();
         $clientId = $livraison->receiver_client_id;
@@ -223,6 +251,7 @@ $currentUserInfo = Location::get($ip);
         $client->latitude = $currentUserInfo->latitude;
 
         $client->save();
+        $this->markOfflineRequestProcessed('staff.livraison.delivery');
 
         $adminNotification            = new AdminNotification();
         $adminNotification->user_id   = $user->id;
@@ -278,5 +307,28 @@ $currentUserInfo = Location::get($ip);
         $livraisonLists = LivraisonInfo::where('receiver_staff_id', $user->id)->orderBy('id', 'DESC')->with('senderMagasin', 'receiverMagasin', 'senderStaff', 'receiverStaff', 'paymentInfo')
             ->paginate(getPaginate());
         return view('staff.livraison.list', compact('pageTitle', 'livraisonLists'));
+    }
+
+    private function offlineRequestProcessed($action)
+    {
+        if (!request()->filled('offline_sync_id')) {
+            return false;
+        }
+
+        return OfflineSyncRequest::where('sync_id', request()->offline_sync_id)
+            ->where('action', $action)
+            ->exists();
+    }
+
+    private function markOfflineRequestProcessed($action)
+    {
+        if (!request()->filled('offline_sync_id')) {
+            return;
+        }
+
+        OfflineSyncRequest::firstOrCreate(
+            ['sync_id' => request()->offline_sync_id, 'action' => $action],
+            ['guard' => 'staff', 'user_id' => auth()->id()]
+        );
     }
 }

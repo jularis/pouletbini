@@ -119,7 +119,7 @@
                         <i class="las la-times"></i>
                     </button>
                 </div>
-                <form action="{{ route('staff.livraison.payment') }}" method="POST">
+                <form action="{{ route('staff.livraison.payment') }}" method="POST" data-offline-sync data-offline-label="paiement">
                     @csrf
                     @method('POST')
                     <input type="hidden" name="code" value="{{ session('codePaie') }}">
@@ -161,7 +161,7 @@
                         <i class="las la-times"></i>
                     </button>
                 </div>
-                <form action="{{ route('staff.livraison.payment') }}" method="POST">
+                <form action="{{ route('staff.livraison.payment') }}" method="POST" data-offline-sync data-offline-label="paiement">
                     @csrf
                     @method('POST')
                     <input type="hidden" name="code">
@@ -213,7 +213,7 @@
                         <span class="fa fa-times"></span>
                     </button>
                 </div>
-                <form action="{{ route('staff.livraison.delivery') }}" method="POST">
+                <form action="{{ route('staff.livraison.delivery') }}" method="POST" data-offline-sync data-offline-label="livraison">
                     @csrf
                     @method('POST')
                     <input type="hidden" name="code" value="{{ session('code')}}">
@@ -247,7 +247,7 @@
                         <span class="fa fa-times"></span>
                     </button>
                 </div>
-                <form action="{{ route('staff.livraison.delivery') }}" method="POST">
+                <form action="{{ route('staff.livraison.delivery') }}" method="POST" data-offline-sync data-offline-label="livraison">
                     @csrf
                     @method('POST')
                     <input type="hidden" name="code">

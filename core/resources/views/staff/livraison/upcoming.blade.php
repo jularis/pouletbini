@@ -78,6 +78,8 @@
                                             @endif
                                             <button type="button" class="btn btn-sm btn-outline--success confirmationBtn"
                                                 data-action="{{ route('staff.livraison.receive', $livraisonInfo->id) }}"
+                                                data-offline-sync
+                                                data-offline-label="reception"
                                                 data-question="@lang('Etre-vous sûr de vouloir confirmer la reception de cette livraison?')">
                                                 <i class="las la-check-circle"></i> @lang('Reçu')
                                             </button>
@@ -111,7 +113,7 @@
                         <i class="las la-times"></i> </button>
                 </div>
 
-                <form action="{{ route('staff.livraison.payment') }}" method="POST">
+                <form action="{{ route('staff.livraison.payment') }}" method="POST" data-offline-sync data-offline-label="paiement">
                     @csrf
                     @method('POST')
                     <input type="hidden" name="code">

@@ -104,7 +104,7 @@
                         <i class="las la-times"></i> </button>
                 </div>
 
-                <form action="{{ route('staff.livraison.payment') }}" method="POST">
+                <form action="{{ route('staff.livraison.payment') }}" method="POST" data-offline-sync data-offline-label="paiement">
                     @csrf
                     @method('POST')
                     <input type="hidden" name="code">

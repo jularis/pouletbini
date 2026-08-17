@@ -29,7 +29,17 @@
                 var modal = $('#confirmationModal');
                 let data = $(this).data();
                 modal.find('.question').text(`${data.question}`);
-                modal.find('form').attr('action', `${data.action}`);
+                let form = modal.find('form');
+                form.attr('action', `${data.action}`);
+
+                if (data.offlineSync !== undefined) {
+                    form.attr('data-offline-sync', '');
+                    form.attr('data-offline-label', data.offlineLabel || 'action');
+                } else {
+                    form.removeAttr('data-offline-sync');
+                    form.removeAttr('data-offline-label');
+                }
+
                 modal.modal('show');
             });
         })(jQuery);

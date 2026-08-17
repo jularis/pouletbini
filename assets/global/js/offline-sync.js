@@ -66,11 +66,20 @@
     }
 
     function describeRequest(request) {
+        var label = request.label || "commande";
+        var code = getFieldValue(request, "code");
         var receiver = getFieldValue(request, "receiver_name") || "Client non renseigne";
         var phone = getFieldValue(request, "receiver_phone");
         var total = getFieldValue(request, "frais_livraison");
         var itemCount = getItemsCount(request);
         var details = [];
+
+        if (code && label !== "commande") {
+            return {
+                title: label.charAt(0).toUpperCase() + label.slice(1) + " " + code,
+                meta: "Action hors ligne"
+            };
+        }
 
         if (phone) {
             details.push(phone);
