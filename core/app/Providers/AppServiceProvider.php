@@ -6,10 +6,12 @@ use App\Constants\Status;
 use App\Models\AdminNotification;
 use App\Models\Frontend;
 use App\Models\Language;
+use App\Models\LivraisonDeletionHistory;
 use App\Models\Page;
 use App\Models\SupportTicket;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -46,6 +48,9 @@ class AppServiceProvider extends ServiceProvider
         view()->composer('admin.partials.sidenav', function ($view) {
             $view->with([
                 'pendingTicketCount' => SupportTicket::whereIN('status', [Status::TICKET_OPEN, Status::TICKET_REPLY])->count(),
+                'deletedCommandeCount' => Schema::hasTable('livraison_deletion_histories')
+                    ? LivraisonDeletionHistory::whereNull('restored_at')->count()
+                    : 0,
 
             ]);
         });

@@ -95,6 +95,9 @@
                     <a href="{{ route('admin.livraison.delete.history') }}" class="nav-link">
                         <i class="menu-icon las la-history"></i>
                         <span class="menu-title">@lang('Suppression commande')</span>
+                        @if (0 < $deletedCommandeCount)
+                            <span class="menu-badge pill bg--danger ms-auto">{{ $deletedCommandeCount }}</span>
+                        @endif
                     </a>
                 </li>
 
