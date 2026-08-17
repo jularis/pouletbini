@@ -95,6 +95,8 @@ Route::middleware('admin')->group(function () {
         Route::get('list', 'livraisonInfo')->name('info.index');
         Route::get('details/{id}', 'livraisonDetail')->name('info.details');
         Route::get('invoice/{id}', 'invoice')->name('invoice');
+        Route::get('delete/history', 'deletionHistory')->name('delete.history');
+        Route::post('delete/history/{id}/restore', 'restoreDeletion')->name('delete.restore');
         Route::get('/exportCommandesExcel', 'exportExcel')->name('exportExcel.commandeAll');
     });
 

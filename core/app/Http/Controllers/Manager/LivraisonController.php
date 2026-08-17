@@ -6,6 +6,7 @@ use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\AdminNotification;
 use App\Models\Client;
+use App\Models\LivraisonDeletionHistory;
 use App\Models\LivraisonInfo;
 use App\Models\LivraisonPayment;
 use App\Models\LivraisonProduct;
@@ -14,6 +15,7 @@ use App\Models\Produit;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Excel;
 use App\Exports\ManagerDeliveryQueueExport;
@@ -715,10 +717,48 @@ class LivraisonController extends Controller
 
     public function destroy($id)
     {
+        $id = decrypt($id);
+        $user = auth()->user();
 
-        LivraisonInfo::find(decrypt($id))->delete();
-        LivraisonPayment::where('livraison_info_id',decrypt($id))->delete();
-        LivraisonProduct::where('livraison_info_id',decrypt($id))->delete();
+        DB::transaction(function () use ($id, $user) {
+            $livraisonInfo = LivraisonInfo::with(
+                'senderMagasin',
+                'receiverMagasin',
+                'senderStaff',
+                'receiverStaff',
+                'receiverClient',
+                'paymentInfo',
+                'products.produit.categorie'
+            )->findOrFail($id);
+
+            LivraisonDeletionHistory::create([
+                'livraison_info_id'    => $livraisonInfo->id,
+                'code'                 => $livraisonInfo->code,
+                'invoice_id'           => $livraisonInfo->invoice_id,
+                'sender_magasin_id'    => $livraisonInfo->sender_magasin_id,
+                'receiver_magasin_id'  => $livraisonInfo->receiver_magasin_id,
+                'sender_staff_id'      => $livraisonInfo->sender_staff_id,
+                'receiver_staff_id'    => $livraisonInfo->receiver_staff_id,
+                'sender_name'          => $livraisonInfo->sender_name,
+                'sender_phone'         => $livraisonInfo->sender_phone,
+                'receiver_name'        => $livraisonInfo->receiver_name,
+                'receiver_phone'       => $livraisonInfo->receiver_phone,
+                'final_amount'         => @$livraisonInfo->paymentInfo->final_amount,
+                'payment_status'       => @$livraisonInfo->paymentInfo->status,
+                'livraison_status'     => $livraisonInfo->status,
+                'products_count'       => $livraisonInfo->products->sum('qty'),
+                'deleted_by_user_id'   => $user->id,
+                'deleted_by_name'      => trim(($user->lastname ?? '') . ' ' . ($user->firstname ?? '')) ?: ($user->username ?? null),
+                'deleted_by_type'      => $user->user_type,
+                'order_created_at'     => $livraisonInfo->created_at,
+                'deleted_at'           => now(),
+                'payload'              => json_encode($livraisonInfo->toArray()),
+            ]);
+
+            LivraisonPayment::where('livraison_info_id', $id)->delete();
+            LivraisonProduct::where('livraison_info_id', $id)->delete();
+            $livraisonInfo->delete();
+        });
 
         $notify[] = ['success', 'La commande a été supprimé avec succès.'];
         return back()->withNotify($notify);

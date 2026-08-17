@@ -151,6 +151,7 @@
 @endsection
 @push('breadcrumb-plugins')
     <badge class="btn btn-danger">{{ showAmount(@$sommeTotal) }} FCFA</badge>
+    <a href="{{ route('admin.livraison.delete.history') }}" class="btn btn-outline--danger h-45"><i class="las la-history"></i> Historique suppressions</a>
     <a href="{{ route('admin.livraison.exportExcel.commandeAll') }}?search={{request()->search}}&magasin={{request()->magasin}}&staff={{request()->staff}}&status={{request()->status}}&payment_status={{request()->payment_status}}&date={{request()->date}}" class="btn  btn-outline--warning h-45"><i class="las la-cloud-download-alt"></i> Exporter en Excel</a>
 @endpush
 @push('style-lib')
@@ -194,4 +195,3 @@ $('form select').on('change', function(){
 });
     </script>
 @endpush
-

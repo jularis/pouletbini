@@ -91,6 +91,13 @@
                     </a>
                 </li>
 
+                <li class="sidebar-menu-item  {{ menuActive('admin.livraison.delete.history') }}">
+                    <a href="{{ route('admin.livraison.delete.history') }}" class="nav-link">
+                        <i class="menu-icon las la-history"></i>
+                        <span class="menu-title">@lang('Suppression commande')</span>
+                    </a>
+                </li>
+
                 <li class="sidebar-menu-item  {{ menuActive(['admin.staff.index']) }}">
                     <a href="{{ route('admin.staff.index') }}" class="nav-link">
                         <i class="menu-icon las la-users"></i>
