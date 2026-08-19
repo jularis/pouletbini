@@ -2,21 +2,22 @@
   "name": "Poulet Bini",
   "short_name": "Poulet Bini",
   "description": "Application Poulet Bini disponible en ligne et en mode hors connexion.",
-  "start_url": "https://new.pouletbini.com/admin/",
-  "scope": "/",
+  "id": "./admin/",
+  "start_url": "./admin/",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#f15b2a",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/assets/images/logoIcon/pwa-192.png",
+      "src": "./assets/images/logoIcon/pwa-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/assets/images/logoIcon/pwa-512.png",
+      "src": "./assets/images/logoIcon/pwa-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"

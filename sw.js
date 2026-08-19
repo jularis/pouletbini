@@ -1,21 +1,22 @@
 const CACHE_VERSION = 'poulet-bini-v4';
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
+const BASE_PATH = new URL('./', self.location).pathname;
 const STATIC_ASSETS = [
-  '/',
-  '/offline.html',
-  '/manifest.json',
-  '/assets/images/logoIcon/favicon.png',
-  '/assets/global/css/bootstrap.min.css',
-  '/assets/global/css/all.min.css',
-  '/assets/global/css/line-awesome.min.css',
-  '/assets/global/js/jquery-3.6.0.min.js',
-  '/assets/global/js/bootstrap.bundle.min.js',
-  '/assets/global/js/offline-sync.js',
-  '/assets/viseradmin/css/app.css',
-  '/assets/viseradmin/js/app.js',
-  '/assets/templates/basic/css/main.css',
-  '/assets/templates/basic/css/custom.css',
-  '/assets/templates/basic/js/main.js'
+  BASE_PATH,
+  `${BASE_PATH}offline.html`,
+  `${BASE_PATH}manifest.json`,
+  `${BASE_PATH}assets/images/logoIcon/favicon.png`,
+  `${BASE_PATH}assets/global/css/bootstrap.min.css`,
+  `${BASE_PATH}assets/global/css/all.min.css`,
+  `${BASE_PATH}assets/global/css/line-awesome.min.css`,
+  `${BASE_PATH}assets/global/js/jquery-3.6.0.min.js`,
+  `${BASE_PATH}assets/global/js/bootstrap.bundle.min.js`,
+  `${BASE_PATH}assets/global/js/offline-sync.js`,
+  `${BASE_PATH}assets/viseradmin/css/app.css`,
+  `${BASE_PATH}assets/viseradmin/js/app.js`,
+  `${BASE_PATH}assets/templates/basic/css/main.css`,
+  `${BASE_PATH}assets/templates/basic/css/custom.css`,
+  `${BASE_PATH}assets/templates/basic/js/main.js`
 ];
 
 self.addEventListener('install', (event) => {
@@ -67,7 +68,7 @@ async function networkFirst(request) {
     return response;
   } catch (error) {
     const cached = await caches.match(request);
-    return cached || caches.match('/offline.html');
+    return cached || caches.match(`${BASE_PATH}offline.html`);
   }
 }
 

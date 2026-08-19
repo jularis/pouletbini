@@ -239,7 +239,7 @@
 
         if ("serviceWorker" in navigator) {
             window.addEventListener("load", function () {
-                navigator.serviceWorker.register("{{ url('/sw.js') }}", { scope: "{{ url('/') }}/" }).catch(function () {});
+                navigator.serviceWorker.register("{{ url('/sw.js') }}", { scope: "{{ rtrim(url('/'), '/') }}/" }).catch(function () {});
             });
         }
 
